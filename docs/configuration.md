@@ -1,0 +1,197 @@
+# Configuration-Driven Architecture
+
+How the system adapts to any topic through `requirements.md` configuration.
+
+---
+
+## How It Works
+
+All agents, commands, and skills read `requirements.md` at runtime to extract:
+
+| Configuration | Purpose |
+|---------------|---------|
+| Topic/Platform | What you're writing about |
+| Official Documentation | Where authoritative sources are |
+| Brand Voice | How content should sound |
+| Target Audience | Who you're writing for |
+| Content Strategy | What formats and mix to use |
+
+**Result:** Change one file to completely reconfigure the entire system.
+
+---
+
+## Quick Start
+
+### 1. Copy the template
+
+```bash
+cp requirements-template.md project/requirements.md
+```
+
+### 2. Fill in project details
+
+- Industry/Niche
+- Platform/Product
+- Official Documentation Sources
+- Brand Identity
+- Focus Areas
+
+### 3. Run the workflow
+
+```bash
+/content-calendar October 2025
+/write-article Calendar/2025/October/content-calendar.md ART-202510-001
+```
+
+---
+
+## Available Example Configurations
+
+| Example | Domain | File |
+|---------|--------|------|
+| WordPress/WooCommerce | Technical web development | `examples/requirements-wordpress.md` |
+| React.js | Frontend framework tutorials | `examples/requirements-react.md` |
+| Python | Data science and automation | `examples/requirements-python.md` |
+| Personal Finance | Investment and retirement | `examples/requirements-finance.md` |
+| Psychology | Clinical practice guidance | `examples/requirements-psychology.md` |
+| Entertainment | Film and TV criticism | `examples/requirements-entertainment.md` |
+
+---
+
+## Switching Topics
+
+```bash
+# View available configurations
+ls examples/
+
+# Switch to React.js
+cp examples/requirements-react.md project/requirements.md
+
+# Switch to Finance
+cp examples/requirements-finance.md project/requirements.md
+
+# All subsequent generation uses new config
+/content-calendar November 2025
+```
+
+---
+
+## Configuration Dimensions
+
+### Example Comparison
+
+| Dimension | WordPress | React.js | Python |
+|-----------|-----------|----------|--------|
+| **Niche** | Plugins, e-commerce | Components, patterns | Data, ML, automation |
+| **Audience** | Site owners, devs (beginner-intermediate) | JS devs (intermediate) | Data pros (beginner-advanced) |
+| **Brand Voice** | Friendly, practical | Clear, example-driven | Rigorous, educational |
+| **Content Mix** | Tutorials 40-60%, analysis 20-40% | Tutorials 60-80%, deep-dives 20-40% | Tutorials 50%, cases 30%, theory 20% |
+| **Length** | 700-2,200 words | 1,000-3,000 words | 1,500-4,000 words |
+| **Examples** | Code snippets, plugin configs | CodeSandbox, GitHub repos | Jupyter notebooks, datasets |
+| **CTA** | Newsletter subscribe | GitHub star, newsletter | Course enrollment, newsletter |
+
+---
+
+## Universal vs. Platform-Specific Components
+
+### Universal (Topic-Agnostic)
+
+These adapt to any topic via configuration:
+
+- **Agents**: researcher, writer, editor
+- **Commands**: content-calendar, write-article
+- **Skills**: competitive-gap-analyzer, content-research, seo-optimization, requirements-validator
+
+### Platform-Specific
+
+Tied to specific platforms:
+
+| Skill | Platform | Configuration |
+|-------|----------|---------------|
+| `gutenberg-formatter` | WordPress | Set `CMS Platform: WordPress (Gutenberg editor)` |
+
+For non-WordPress projects, set `HTML Formatter Skill: none`
+
+---
+
+## Adding Platform-Specific Skills
+
+1. Create skill in `.claude/skills/[platform]-[feature]/`
+2. Document in `requirements-template.md`
+3. Add conditional logic in commands if needed
+
+---
+
+## Cross-Domain Examples
+
+### Technical Tutorial (React.js)
+
+```
+Topic: "React Server Components: When to Use Them"
+Research: Official React docs + RFC discussions + community patterns
+Differentiation: Comparison matrix of CSR/SSR/RSC tradeoffs
+Content: Tutorial with CodeSandbox examples + decision flowchart
+Word Count: 2,400 words
+```
+
+### Non-Technical Analysis (Finance)
+
+```
+Topic: "Tax-Loss Harvesting: A Complete Guide for 2025"
+Research: IRS regulations + academic studies + platform docs
+Differentiation: Worked examples with actual tax calculations
+Content: Step-by-step guide with decision trees
+Word Count: 1,800 words
+```
+
+**Observation:** Same workflow (research → gap analysis → write → review), different execution based on domain.
+
+---
+
+## Directory Structure
+
+```
+project/
+├── .claude/
+│   ├── agents/
+│   │   ├── researcher.md
+│   │   ├── writer.md
+│   │   └── editor.md
+│   ├── commands/
+│   │   ├── content-calendar.md
+│   │   └── write-article.md
+│   └── skills/
+│       ├── competitive-gap-analyzer/
+│       ├── content-research/
+│       ├── seo-optimization/
+│       ├── requirements-validator/
+│       └── gutenberg-formatter/
+├── requirements.md           # Active configuration
+├── requirements-template.md  # Template for new projects
+├── examples/                 # Pre-configured examples
+├── Calendar/                 # Monthly calendars
+└── Articles/                 # Article folders
+```
+
+---
+
+## Distribution Channels by Domain
+
+| Domain | Channels |
+|--------|----------|
+| Blog/Content Sites | Newsletter, RSS, social media |
+| Technical Documentation | npm, PyPI, GitHub, API docs |
+| Video Tutorials | YouTube, Vimeo, Udemy |
+| Research/Academic | Journals, arXiv, conferences |
+| Business/Finance | LinkedIn, industry publications |
+
+---
+
+## Quality Metrics
+
+| Metric | Measurement |
+|--------|-------------|
+| Editorial compliance | Review pass rate |
+| SEO performance | Keyword rankings |
+| Engagement | Subscriptions, shares, downloads |
+| Accuracy | Validation rate, corrections needed |
