@@ -1,0 +1,20 @@
+{
+  "name": "claude-content-tools",
+  "owner": {
+    "name": "Alireza Arjvand"
+  },
+  "metadata": {
+    "description": "Topic-agnostic content generation system with AI agents (researcher, writer, editor)",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "content-generator",
+      "source": "./plugins/content-generator",
+      "description": "AI-powered content generation with researcher, writer, and editor agents. Includes SEO optimization, fact-checking, and multi-format publishing.",
+      "version": "1.0.0",
+      "category": "content",
+      "tags": ["content", "seo", "writing", "research", "wordpress", "agents"]
+    }
+  ]
+}

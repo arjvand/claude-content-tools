@@ -104,7 +104,7 @@ This file configures the content generation system. Agents read this file at run
 ### Publication Platform
 
 * **CMS Platform**: Markdown files (static site with MkDocs or Hugo)
-* **HTML Formatter Skill**: none
+* **Export Format**: markdown
 
 ### Visual Standards
 

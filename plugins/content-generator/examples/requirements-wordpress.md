@@ -103,7 +103,7 @@ This file configures the content generation system. Agents read this file at run
 ### Publication Platform
 
 * **CMS Platform**: WordPress (Gutenberg editor)
-* **HTML Formatter Skill**: gutenberg‑formatter
+* **Export Format**: gutenberg
 
 ### Visual Standards
 

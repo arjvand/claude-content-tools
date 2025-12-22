@@ -990,21 +990,27 @@ If critical issues found:
 
 ---
 
-### Phase 7: Generate HTML Export (Conditional - 5 minutes)
+### Phase 7: Generate CMS Export (Conditional - 5 minutes)
 
-Note: Applies only to this repo’s content publishing pipeline. Skip for non-content deliverables.
+Note: Applies only to this repo's content publishing pipeline. Skip for non-content deliverables.
 
-**Check CMS Platform configuration from Phase 0:**
+**Check Export Format configuration from Phase 0:**
 
 ```markdown
-If CMS Platform = "WordPress (Gutenberg editor)":
-  → Generate Gutenberg-ready HTML using gutenberg-formatter skill
+If Export Format = "gutenberg":
+  → Generate WordPress Gutenberg HTML using cms-formatter skill
 
-If CMS Platform = "Markdown files" or "none":
-  → Skip HTML generation (markdown only)
+If Export Format = "ghost":
+  → Generate Ghost-compatible HTML using cms-formatter skill
 
-If CMS Platform = "Ghost" or other platforms:
-  → Use appropriate formatter skill if configured, otherwise skip
+If Export Format = "medium":
+  → Generate Medium-compatible HTML using cms-formatter skill
+
+If Export Format = "html":
+  → Generate generic semantic HTML using cms-formatter skill
+
+If Export Format = "markdown" or not specified:
+  → Skip HTML generation (markdown is the final deliverable)
 
 After finalizing the markdown article (if HTML export is configured):
 
@@ -1054,11 +1060,11 @@ project/Articles/[ARTICLE-ID]/article.html
 - [ ] No unclosed tags
 - [ ] Clean, readable HTML
 
-5. **User Instructions** (Conditional):
+5. **User Instructions** (Based on Export Format):
 
-**If CMS Platform = "WordPress (Gutenberg editor)":**
+**If Export Format = "gutenberg":**
 ```
-✅ Gutenberg-ready HTML created!
+Gutenberg-ready HTML created!
 
 **Article ID**: [ARTICLE-ID]
 **File**: project/Articles/[ARTICLE-ID]/article.html
@@ -1068,30 +1074,48 @@ project/Articles/[ARTICLE-ID]/article.html
 2. Copy all contents (Ctrl+A, Ctrl+C)
 3. Open WordPress post editor (Gutenberg)
 4. Paste (Ctrl+V)
-5. Gutenberg will auto-convert to blocks
+5. Blocks will appear immediately - no conversion needed
 6. Review and publish!
-
-All headings, links, lists, code blocks, and formatting will be preserved.
 ```
 
-**If CMS Platform = "Markdown files":**
+**If Export Format = "ghost":**
 ```
-✅ Article finalized!
+Ghost-compatible HTML created!
+
+**Article ID**: [ARTICLE-ID]
+**File**: project/Articles/[ARTICLE-ID]/article.html
+
+Paste into Ghost editor or import via API.
+```
+
+**If Export Format = "medium":**
+```
+Medium-compatible HTML created!
+
+**Article ID**: [ARTICLE-ID]
+**File**: project/Articles/[ARTICLE-ID]/article.html
+
+Paste into Medium editor.
+```
+
+**If Export Format = "html":**
+```
+HTML export created!
+
+**Article ID**: [ARTICLE-ID]
+**File**: project/Articles/[ARTICLE-ID]/article.html
+
+Use this HTML for your publishing platform.
+```
+
+**If Export Format = "markdown" or not specified:**
+```
+Article ready!
 
 **Article ID**: [ARTICLE-ID]
 **File**: project/Articles/[ARTICLE-ID]/article.md
 
-The markdown file is ready for your static site generator or publishing platform.
-```
-
-**If CMS Platform = other:**
-```
-✅ Article finalized!
-
-**Article ID**: [ARTICLE-ID]
-**File**: project/Articles/[ARTICLE-ID]/article.md
-
-Follow your platform's publishing workflow.
+The markdown file is the final deliverable for your static site generator.
 ```
 ```
 
@@ -1107,7 +1131,7 @@ project/Articles/[ARTICLE-ID]/
 ├── research-brief.md    # Created by @researcher
 ├── draft.md             # Created by @writer
 ├── article.md           # Final version (you create this)
-├── article.html         # Gutenberg HTML export (you create this)
+├── article.html         # CMS-specific HTML export (you create this, if configured)
 └── meta.yml             # Metadata (you create this)
 
 # After approval workflow:
@@ -1118,8 +1142,8 @@ cat project/Articles/[ARTICLE-ID]/draft.md
 # 2. Make edits and save final version:
 # Save to: project/Articles/[ARTICLE-ID]/article.md
 
-# 3. Generate Gutenberg-compatible HTML:
-# (Use gutenberg-formatter skill to convert markdown to HTML)
+# 3. Generate CMS-specific HTML (if Export Format is not "markdown"):
+# (Use cms-formatter skill to convert markdown to HTML)
 # Save to: project/Articles/[ARTICLE-ID]/article.html
 
 # 4. Create metadata file:

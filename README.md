@@ -1,168 +1,178 @@
-# WordPress/WooCommerce Content Generation System
+# Claude Content Tools
 
-An AI-powered content generation and editorial workflow system built with Claude Code for producing high-quality WordPress and WooCommerce blog content.
+A Claude Code Plugin Marketplace for topic-agnostic content generation using AI agents (researcher, writer, editor).
 
-## Overview
+## Installation
 
-This project automates the content creation process for a WordPress/WooCommerce-focused blog, from initial content calendar planning through article research, writing, SEO optimization, and editorial review. The system uses Claude AI agents with specialized skills to ensure consistent brand voice, technical accuracy, and SEO best practices.
+Add this marketplace to Claude Code:
+
+```bash
+/plugin marketplace add arjvand/claude-content-tools
+```
+
+Install the content-generator plugin:
+
+```bash
+/plugin install content-generator@claude-content-tools
+```
 
 ## Features
 
-- **Automated Content Calendar Generation**: Creates monthly content calendars with original, timely, and SEO-optimized topics
-- **Multi-Phase Article Production**: Complete workflow from research to publication-ready content
-- **Specialized AI Agents**: Dedicated agents for research, writing, and editing with domain expertise
-- **SEO Optimization**: Built-in SEO analysis and optimization for better search visibility
-- **Requirements Validation**: Automated checks against brand voice, audience level, and editorial standards
-- **Flexible Content Formats**: Supports tutorials/how-tos, industry analysis/opinion pieces, and product announcements
+- **AI Agents**: Specialized researcher, writer, and editor agents for content production
+- **14 Skills**: Competitive gap analysis, fact-checking, SEO optimization, and more
+- **5 Commands**: Generate content calendars, write articles, create X threads
+- **Topic-Agnostic**: Configure for any niche via `requirements.md`
+- **6 Example Templates**: WordPress, React, Python, Finance, Psychology, Entertainment
 
-## Project Structure
+## Quick Start
 
-```
-Blog2/
-├── .claude/                    # Claude Code configuration
-│   ├── agents/                 # Specialized AI agents
-│   │   ├── researcher.md       # Research agent for gathering information
-│   │   ├── writer.md          # Writing agent for content creation
-│   │   └── editor.md          # Editorial review agent
-│   ├── commands/               # Custom slash commands
-│   │   ├── content-calendar.md # Generate monthly content calendars
-│   │   └── write-article.md    # Create complete articles
-│   ├── skills/                 # Specialized skills
-│   │   ├── requirements-validator/  # Validate against requirements.md
-│   │   └── seo-optimization/       # SEO analysis and optimization
-│   └── settings.local.json    # Local configuration
-├── Articles/                   # Generated content
-│   ├── Drafts/                # Work-in-progress articles
-│   └── Ready/                 # Publication-ready articles
-├── Calendar/                   # Content calendars
-│   └── 2025/
-│       └── October/
-│           └── content-calendar.md
-└── requirements.md            # Editorial requirements and brand guidelines
-```
+1. **Install the plugin** (see above)
 
-## Content Requirements
+2. **Choose a topic template** (or use the generic default):
+   ```bash
+   # Generic technology/business blog (recommended starting point):
+   cp plugins/content-generator/examples/requirements-generic.md project/requirements.md
 
-The system follows strict editorial requirements defined in [requirements.md](requirements.md):
+   # Or choose a specialized template:
+   # cp plugins/content-generator/examples/requirements-wordpress.md project/requirements.md
+   ```
 
-- **Niche**: WordPress plugins (performance, security, ecommerce, editorial workflow)
-- **Target Audience**: Site owners, freelance developers, agencies, content managers (beginner to intermediate)
-- **Brand Voice**: Friendly, approachable, practical, precise, no hype
-- **Focus**: WooCommerce-first, then general WordPress
-- **Content Mix**: Tutorials (40-60%), industry analysis (20-40%), product announcements (0-20%)
-- **Length**: 700-2,200 words (quality-first approach)
-- **Language**: US English
-- **SEO Strategy**: Keyword-first, topic clusters/pillars, trend/opportunistic
+3. **Generate a content calendar**:
+   ```bash
+   /content-generator:content-calendar October 2025
+   ```
 
-## Usage
+4. **Write an article**:
+   ```bash
+   /content-generator:write-article Calendar/2025/October/content-calendar.md ART-202510-001
+   ```
 
-### Prerequisites
+## Commands
 
-- Claude Code (VS Code Extension or CLI)
-- Access to Claude Sonnet 4.5 model
+| Command | Description |
+|---------|-------------|
+| `/content-generator:content-calendar [Month] [Year]` | Generate monthly content calendar (8-10 articles) |
+| `/content-generator:write-article [calendar-path] [article-id]` | Generate complete article from calendar entry |
+| `/content-generator:generate-x-post [article-id]` | Generate X (Twitter) thread from article |
+| `/content-generator:generate-featured-image [article-id]` | Generate featured image JSON prompt |
+| `/content-generator:update-article [article-id]` | Update existing article with edits |
 
-### Generate a Content Calendar
+## Agents
 
-Create a monthly content calendar with 8-10 original, timely article ideas:
+| Agent | Role |
+|-------|------|
+| `@researcher` | Verify originality, gather sources, run gap analysis |
+| `@writer` | Create drafts following brand voice and differentiation strategy |
+| `@editor` | Review for accuracy, SEO, compliance; final approval |
 
-```bash
-/content-calendar October 2025
-```
+## Skills
 
-The command will:
-1. Research recent WooCommerce/WordPress developments
-2. Verify topic originality through web searches
-3. Generate a content calendar table with keywords, formats, and priorities
-4. Save to `Calendar/{Year}/{Month}/content-calendar.md`
-
-### Generate an Article
-
-Create a complete, publication-ready article from a calendar entry:
-
-```bash
-/write-article Calendar/2025/October/content-calendar.md 1
-```
-
-The workflow includes:
-1. **Research Phase**: Gather recent updates, verify uniqueness, identify angles
-2. **Outline Creation**: Structure content based on format (tutorial/analysis)
-3. **Draft Writing**: Create content following brand voice guidelines
-4. **SEO Optimization**: Optimize metadata, keywords, and internal linking
-5. **Editorial Review**: Validate requirements, technical accuracy, and readability
-6. **Metadata Generation**: Create publication metadata file
-
-Output files:
-- Draft: `Articles/Drafts/YYYY-MM-DD-[slug].md`
-- Final: `Articles/Ready/YYYY-MM-DD-[slug].md`
-- Metadata: `Articles/Ready/YYYY-MM-DD-[slug]-meta.yml`
-
-## Custom Skills
-
-### Requirements Validator
-Validates content against specifications in [requirements.md](requirements.md) including brand voice, audience level, length, and format requirements.
-
-### SEO Optimization
-Optimizes content for search engines with keyword placement, meta descriptions, internal linking suggestions, and content structure improvements.
-
-## Workflow
-
-### Content Production Pipeline
-
-1. **Planning** → Generate monthly content calendar
-2. **Research** → Verify originality and gather information
-3. **Writing** → Create draft following brand guidelines
-4. **SEO** → Optimize for search visibility
-5. **Review** → Editorial QA and validation
-6. **Ready** → Legal/compliance review (external)
-7. **Publish** → Schedule and distribute
-
-### Review Requirements
-
-- All posts require legal/compliance review
-- Extra scrutiny for claims, benchmarks, comparisons
-- SME involvement required for technical tutorials
-- Author self-publish after approvals
-
-## Distribution Channels
-
-- Newsletter (primary CTA)
-- RSS feed
-
-## Quality Standards
-
-- **Originality**: Every topic verified for uniqueness through web research
-- **Timeliness**: Content tied to recent releases, updates, or emerging trends
-- **Audience Fit**: Appropriate skill level (beginner to intermediate)
-- **SEO Excellence**: Keyword-optimized with proper internal linking
-- **Brand Consistency**: Friendly, practical, precise voice with no hype
-- **Technical Accuracy**: SME-reviewed where required
+| Skill | Purpose |
+|-------|---------|
+| `competitive-gap-analyzer` | Analyze competitors, identify differentiation opportunities |
+| `content-research` | Research topics with official documentation sources |
+| `fact-checker` | Verify claims via source audit or web search |
+| `media-discovery` | Discover embeddable media (videos, social posts) |
+| `seo-optimization` | Keywords, meta descriptions, internal linking |
+| `requirements-validator` | Validate against requirements.md |
+| `cms-formatter` | Convert to CMS-specific formats (Gutenberg, Ghost, Medium, HTML) |
+| `x-thread-generator` | Generate X (Twitter) threads |
+| `featured-image-generator` | Generate image prompts |
 
 ## Configuration
 
-### Local Settings
+All behavior is driven by `project/requirements.md`. Configure:
 
-Custom configuration in [.claude/settings.local.json](.claude/settings.local.json)
+- **Topic/Platform**: Industry, focus areas, official docs
+- **Brand Voice**: Traits, DO/DON'T examples
+- **Target Audience**: Roles, skill level
+- **Content Strategy**: Formats, word counts, topic pillars
+- **SEO Strategy**: Keywords, CTA patterns
 
-### Modifying Requirements
+### Example Templates
 
-Edit [requirements.md](requirements.md) to adjust:
-- Target audience
-- Brand voice traits
-- Content strategy
-- Editorial policies
-- Distribution channels
+Pre-built templates in `examples/`:
 
-## Key Metrics
+| Template | Use For |
+|----------|---------|
+| `requirements-generic.md` | Technology & business (recommended starting point) |
+| `requirements-wordpress.md` | WordPress/WooCommerce content |
+| `requirements-react.md` | React.js development |
+| `requirements-python.md` | Python programming |
+| `requirements-finance.md` | Personal finance |
+| `requirements-psychology.md` | Psychology/mental health |
+| `requirements-entertainment.md` | Entertainment/media |
 
-- **Primary KPI**: Brand lift/impressions
-- **Content Quality**: Assessed via editorial review
-- **SEO Performance**: Keyword rankings, organic traffic
-- **Engagement**: Newsletter subscriptions, community feedback
+## Workflow
+
+```
+/content-calendar October 2025
+    |
+    v
+Gap pre-analysis (batch parallel)
+    |
+    v
+/write-article Calendar/.../ART-202510-001
+    |
+    v
+@researcher (parallel research)
+    |
+    v
+fact-checker (quick mode)
+    |
+    v
+@writer creates draft
+    |
+    v
+@editor reviews
+    |
+    v
+fact-checker (comprehensive)
+    |
+    v
+seo-optimization
+    |
+    v
+Final article + X thread + featured image
+```
+
+## Output Structure
+
+```
+project/
+├── requirements.md                    # Your configuration
+├── Calendar/{Year}/{Month}/
+│   └── content-calendar.md            # Monthly calendar
+└── Articles/{ARTICLE-ID}/
+    ├── research-brief.md              # Research output
+    ├── draft.md                       # Writer output
+    ├── article.md                     # Final article
+    ├── x-thread.md                    # X thread
+    └── featured-image-prompt.json     # Image prompt
+```
+
+## Local Development
+
+To work on this plugin locally:
+
+```bash
+# Test locally without GitHub
+/plugin marketplace add ./
+/plugin install content-generator@claude-content-tools
+
+# Validate marketplace structure
+/plugin validate .
+```
 
 ## License
 
-This project is proprietary content generation system for WordPress/WooCommerce content.
+MIT
 
-## Support
+## Author
 
-For issues or questions about using this system, refer to Claude Code documentation or contact the editorial team.
+Alireza Arjvand
+
+## Links
+
+- [Repository](https://github.com/arjvand/claude-content-tools)
+- [Claude Code Docs](https://code.claude.com/docs)

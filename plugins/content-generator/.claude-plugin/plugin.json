@@ -1,0 +1,10 @@
+{
+  "name": "content-generator",
+  "description": "Topic-agnostic content generation system using Claude AI agents",
+  "version": "1.0.0",
+  "author": {
+    "name": "Alireza Arjvand"
+  },
+  "repository": "https://github.com/arjvand/claude-content-tools",
+  "license": "MIT"
+}

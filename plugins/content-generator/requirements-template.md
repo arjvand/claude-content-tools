@@ -159,8 +159,8 @@ List your main content themes. One primary pillar, 3-5 secondary pillars:
 
 ### Publication Platform
 
-* **CMS Platform**: [Your publishing platform - e.g., "WordPress (Gutenberg editor)" OR "Markdown files (static site)" OR "Ghost" OR "Medium"]
-* **HTML Formatter Skill**: [Formatter to use if CMS requires HTML - e.g., "gutenberg-formatter" if WordPress, "none" if Markdown-only, or create custom formatter for your platform]
+* **CMS Platform**: [Your publishing platform - e.g., "WordPress (Gutenberg editor)", "Ghost", "Medium", "Markdown files (static site generator)"]
+* **Export Format**: [Output format for final article - e.g., "gutenberg" for WordPress, "ghost" for Ghost, "medium" for Medium/Dev.to, "html" for generic HTML, "markdown" for static sites (default)]
 
 ### Visual Standards
 
@@ -251,6 +251,7 @@ All agents and commands will automatically adapt to your configuration!
 ## Examples
 
 See the `examples/` directory for complete, working configurations:
+- `examples/requirements-generic.md` - Technology & business blog (recommended starting point)
 - `examples/requirements-wordpress.md` - WordPress/WooCommerce blog
 - `examples/requirements-react.md` - React.js tutorial site
 - `examples/requirements-python.md` - Python programming blog

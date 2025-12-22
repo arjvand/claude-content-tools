@@ -30,7 +30,7 @@ Topic-agnostic content generation system using Claude AI agents (researcher, wri
 | `media-discovery` | Discover embeddable media (videos, social posts) with quality filtering |
 | `seo-optimization` | Keywords, meta descriptions, internal linking |
 | `requirements-validator` | Validate against requirements.md |
-| `gutenberg-formatter` | Convert to WordPress Gutenberg HTML (optional) |
+| `cms-formatter` | Convert to CMS-specific formats (Gutenberg, Ghost, Medium, HTML) |
 | `x-thread-generator` | Generate X (Twitter) threads from articles |
 | `featured-image-generator` | Generate Nano Banana JSON prompts for featured images |
 
@@ -78,7 +78,7 @@ All agents read `requirements.md` at runtime for:
 cp examples/requirements-react.md project/requirements.md
 ```
 
-Available examples: `wordpress`, `react`, `python`, `finance`, `psychology`, `entertainment`
+Available examples: `generic` (recommended), `wordpress`, `react`, `python`, `finance`, `psychology`, `entertainment`
 
 ---
 
@@ -192,21 +192,22 @@ cat project/requirements.md
 ## Agents Directory
 
 ```
-.claude/agents/researcher.md    # Research and fact-checking
-.claude/agents/writer.md        # Content creation
-.claude/agents/editor.md        # Editorial review
+agents/researcher.md       # Research and fact-checking
+agents/writer.md          # Content creation
+agents/editor.md          # Editorial review
+agents/signal-researcher.md  # Trend analysis
 ```
 
 ## Skills Directory
 
 ```
-.claude/skills/competitive-gap-analyzer/
-.claude/skills/content-research/
-.claude/skills/fact-checker/
-.claude/skills/media-discovery/
-.claude/skills/seo-optimization/
-.claude/skills/requirements-validator/
-.claude/skills/gutenberg-formatter/
-.claude/skills/x-thread-generator/
-.claude/skills/featured-image-generator/
+skills/competitive-gap-analyzer/
+skills/content-research/
+skills/fact-checker/
+skills/media-discovery/
+skills/seo-optimization/
+skills/requirements-validator/
+skills/cms-formatter/
+skills/x-thread-generator/
+skills/featured-image-generator/
 ```

@@ -9,6 +9,10 @@ This directory contains working example configurations demonstrating how the con
 1. **Browse the examples** to see how different projects are configured
 2. **Copy an example** that's closest to your project:
    ```bash
+   # Recommended starting point (generic/neutral):
+   cp examples/requirements-generic.md requirements.md
+
+   # Or choose a specialized template:
    cp examples/requirements-react.md requirements.md
    ```
 3. **Customize** the configuration for your specific needs
@@ -21,6 +25,24 @@ This directory contains working example configurations demonstrating how the con
 ---
 
 ## Available Examples
+
+### 0. requirements-generic.md (RECOMMENDED DEFAULT)
+**Technology & Business Blog**
+
+* **Industry**: Technology trends, digital transformation, business software
+* **Audience**: Business professionals, IT decision-makers, tech enthusiasts, startup founders
+* **Content Mix**: Analysis (40%), How-to guides (35%), News (15%), Case studies (10%)
+* **Technical Level**: Beginner to intermediate (accessible)
+* **Key Features**:
+  - **Non-technical content** (no code)
+  - Vendor-neutral, balanced analysis
+  - CMS Platform: Markdown (most portable)
+  - No HTML export by default
+  - Focus on practical decision-making
+
+**Use this example for**: General technology blogs, business content, SaaS marketing, or as a starting point for any new project.
+
+---
 
 ### 1. requirements-wordpress.md
 **WordPress/WooCommerce Content Operations Blog**
@@ -139,47 +161,59 @@ This directory contains working example configurations demonstrating how the con
 
 The examples demonstrate the system's versatility across:
 
+**General/Cross-Industry**:
+- Generic (technology & business - recommended starting point)
+
 **Technical Content**:
 - WordPress/WooCommerce (web development)
 - React.js (frontend frameworks)
 - Python (programming and data science)
 
 **Non-Technical Content**:
+- Generic (technology & business - accessible)
 - Psychology (healthcare/clinical)
 - Finance (education/planning)
 - Entertainment (criticism/analysis)
 
 **Content Depth**:
-- Beginner-friendly (Python, Finance)
+- Beginner-friendly (Generic, Python, Finance)
 - Intermediate (All examples)
 - Advanced (WordPress, React, Psychology)
 
 **Platform Types**:
 - WordPress with HTML export (WordPress, Psychology, Entertainment)
-- Static sites with Markdown (React, Python, Finance)
+- Static sites with Markdown (Generic, React, Python, Finance)
 
 ---
 
 ## Key Configuration Differences
 
-| Aspect | WordPress | React | Python | Psychology | Finance | Entertainment |
-|--------|-----------|-------|--------|------------|---------|---------------|
-| **Code Examples** | Yes (PHP, JS) | Yes (TS/JS) | Yes (Python) | No | No | No |
-| **Technical Depth** | High | High | Medium-High | N/A | N/A | N/A |
-| **SME Required** | Optional | Required | Optional | **REQUIRED** | Required | Optional |
-| **Legal Review** | Sometimes | No | No | **REQUIRED** | **REQUIRED** | No |
-| **HTML Export** | Yes | No | No | Yes | No | Yes |
-| **Update Frequency** | Quarterly | After releases | Quarterly | After research | **Annual** | Weekly |
-| **Disclaimers** | No | No | No | **REQUIRED** | **REQUIRED** | Spoiler warnings |
+| Aspect | Generic | WordPress | React | Python | Psychology | Finance | Entertainment |
+|--------|---------|-----------|-------|--------|------------|---------|---------------|
+| **Code Examples** | No | Yes (PHP, JS) | Yes (TS/JS) | Yes (Python) | No | No | No |
+| **Technical Depth** | Low | High | High | Medium-High | N/A | N/A | N/A |
+| **SME Required** | Optional | Optional | Required | Optional | **REQUIRED** | Required | Optional |
+| **Legal Review** | No | Sometimes | No | No | **REQUIRED** | **REQUIRED** | No |
+| **HTML Export** | No | Yes | No | No | Yes | No | Yes |
+| **Update Frequency** | Quarterly | Quarterly | After releases | Quarterly | After research | **Annual** | Weekly |
+| **Disclaimers** | No | No | No | No | **REQUIRED** | **REQUIRED** | Spoiler warnings |
 
 ---
 
 ## Choosing the Right Example
 
+**Not sure where to start?**
+- Choose **Generic** as the recommended starting point for any new project
+- Customize from there based on your specific needs
+
 **For technical programming content**:
 - Choose **React** for frontend/JavaScript
 - Choose **Python** for backend/data science
 - Choose **WordPress** for CMS/integration content
+
+**For business/technology content** (non-technical):
+- Choose **Generic** for SaaS, productivity, digital transformation
+- Adapt for consulting, B2B services, or startup content
 
 **For professional services**:
 - Choose **Psychology** for healthcare/clinical
@@ -191,6 +225,7 @@ The examples demonstrate the system's versatility across:
 - Adapt for music, gaming, or arts criticism
 
 **For education**:
+- Choose **Generic** for business/tech education
 - Choose **Python** for beginner-friendly technical education
 - Choose **Finance** for non-technical education
 - Adapt either for academic or professional training content
@@ -210,7 +245,7 @@ The examples demonstrate the system's versatility across:
 4. **Adjust technical requirements**:
    - Set Technology Stack to "N/A" for non-technical content
    - Set Code Snippets to "N/A" if not applicable
-   - Choose appropriate CMS Platform and HTML Formatter
+   - Choose appropriate CMS Platform and Export Format (gutenberg, ghost, medium, html, markdown)
 5. **Set appropriate guardrails**:
    - Add disclaimers if required by your industry
    - Set SME requirements based on content complexity

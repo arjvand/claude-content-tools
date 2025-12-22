@@ -410,7 +410,7 @@ Save to: `project/Articles/[ARTICLE-ID]/x-thread.md`
 Replace `[LINK]` with UTM-tracked URL:
 
 ```
-https://thebluemango.xyz/blog/[slug]?utm_source=twitter&utm_medium=social&utm_campaign=[article-id]
+https://[YOUR-DOMAIN]/blog/[slug]?utm_source=twitter&utm_medium=social&utm_campaign=[article-id]
 ```
 
 ---

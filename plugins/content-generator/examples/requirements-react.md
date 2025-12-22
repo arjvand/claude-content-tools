@@ -104,7 +104,7 @@ This file configures the content generation system. Agents read this file at run
 ### Publication Platform
 
 * **CMS Platform**: Markdown files (static site generator - Astro or Next.js)
-* **HTML Formatter Skill**: none
+* **Export Format**: markdown
 
 ### Visual Standards
 
