@@ -1,4 +1,5 @@
 ---
+name: media-discovery
 description: Systematically discover high-quality, embeddable media assets (videos, social posts, expert commentary) during research phase. Outputs ranked candidates with placement suggestions.
 ---
 

@@ -1,3 +1,8 @@
+---
+name: media-embedding
+description: Validate and convert media embeds (YouTube, Twitter, Instagram) from HTML comment syntax to platform-specific embed code with metadata fetching and accessibility compliance.
+---
+
 # Media Embedding Skill
 
 ## Purpose

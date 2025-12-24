@@ -1,4 +1,5 @@
 ---
+name: content-research
 description: Research any topic based on requirements.md configuration. Searches for recent releases, official documentation, and community discussions. Topic-agnostic.
 allowed-tools: Bash(curl:*), Bash(grep:*)
 ---

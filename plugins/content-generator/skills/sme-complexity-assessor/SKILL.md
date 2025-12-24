@@ -1,3 +1,8 @@
+---
+name: sme-complexity-assessor
+description: Systematically assess technical complexity and domain specificity to determine Subject Matter Expert requirements. Provides objective scoring and specific expertise profiles.
+---
+
 # SME Complexity Assessor Skill
 
 ## Purpose

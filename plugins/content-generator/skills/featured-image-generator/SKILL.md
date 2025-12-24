@@ -1,4 +1,5 @@
 ---
+name: featured-image-generator
 description: Generate Nano Banana (Gemini 2.5 Flash) JSON prompts for article featured images
 ---
 

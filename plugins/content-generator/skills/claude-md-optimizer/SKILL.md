@@ -1,4 +1,5 @@
 ---
+name: claude-md-optimizer
 description: Create, audit, and optimize CLAUDE.md files for Claude Code projects. Use when setting up new projects, reviewing existing CLAUDE.md files, or improving instruction effectiveness.
 ---
 

@@ -1,3 +1,8 @@
+---
+name: content-performance-analyzer
+description: Analyze historical content calendar and article performance to identify patterns and provide data-driven recommendations for future content strategy.
+---
+
 # Content Performance Analyzer Skill
 
 ## Purpose

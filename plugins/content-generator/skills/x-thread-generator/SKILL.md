@@ -1,4 +1,5 @@
 ---
+name: x-thread-generator
 description: Generate optimized X (Twitter) threads from article content
 ---
 

@@ -1,4 +1,5 @@
 ---
+name: fact-checker
 description: Verify factual claims via source audit (quick mode) or web search with authoritative cross-referencing (comprehensive mode). Outputs claim registry with confidence grades and escalation flags.
 ---
 

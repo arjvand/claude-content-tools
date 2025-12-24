@@ -1,4 +1,5 @@
 ---
+name: requirements-validator
 description: Validate content against requirements.md specifications. Use when reviewing articles to ensure they meet brand voice, audience level, length, and format requirements.
 allowed-tools: Bash(cat:project/requirements.md), Bash(wc:*)
 ---

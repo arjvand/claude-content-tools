@@ -1,4 +1,5 @@
 ---
+name: competitive-gap-analyzer
 description: Analyzes top-ranking competitors to identify strategic differentiation opportunities (coverage, depth, format, recency gaps)
 ---
 

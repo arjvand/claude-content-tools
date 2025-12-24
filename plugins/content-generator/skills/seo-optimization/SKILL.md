@@ -1,4 +1,5 @@
 ---
+name: seo-optimization
 description: Optimize content for SEO including keyword placement, meta descriptions, internal linking, and content structure. Use when finalizing articles, creating meta descriptions, or structuring content for search engines.
 ---
 

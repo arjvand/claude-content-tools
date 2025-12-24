@@ -1,4 +1,5 @@
 ---
+name: cms-formatter
 description: Convert markdown articles to CMS-specific formats for seamless publishing (Gutenberg, Ghost, Medium, HTML, Markdown)
 allowed-tools: Read, Write, Bash(pandoc:*)
 ---

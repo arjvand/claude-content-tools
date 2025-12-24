@@ -1,3 +1,8 @@
+---
+name: requirements-extractor
+description: Centralized configuration extraction and validation for requirements.md. Eliminates repeated ad-hoc parsing across commands and agents.
+---
+
 # Requirements Extractor Skill
 
 ## Purpose
