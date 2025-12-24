@@ -1,4 +1,5 @@
 ---
+name: generate-featured-image
 description: Generate a Nano Banana JSON prompt for article featured image (cross-industry)
 argument-hint: [article-id] (e.g., "ART-202511-001")
 ---

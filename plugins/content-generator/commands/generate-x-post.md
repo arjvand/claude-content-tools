@@ -1,4 +1,5 @@
 ---
+name: generate-x-post
 description: Generate a full X (Twitter) thread from a published article
 argument-hint: [article-id] (e.g., "ART-202511-001")
 ---

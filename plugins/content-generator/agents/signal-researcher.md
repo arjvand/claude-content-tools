@@ -1,3 +1,8 @@
+---
+name: signal-researcher
+description: Agent from content-generator plugin
+---
+
 # Signal Researcher Agent
 
 ## Personality

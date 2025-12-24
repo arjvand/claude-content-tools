@@ -1,8 +1,8 @@
 ---
-
+name: content-calendar
 description: Generate a monthly content calendar based on requirements.md configuration (cross‑industry)
 argument-hint: [month year] (e.g., "October 2025")
----------------------------------
+---
 
 # Generate Content Calendar (Cross‑Industry)
 
