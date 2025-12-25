@@ -49,6 +49,39 @@ Replaces manual duplicate checking with systematic, repeatable deduplication tha
   - `false`: Full analysis with similarity scores (standard behavior)
 - `external_check`: Perform external novelty check via web search (default: true)
 - `lookback_months`: Override theme index lookback (default: use index metadata)
+- `reference_date`: Date to use for all "months_ago" calculations (default: today). For historical calendars, use the target month as reference.
+  - Format: `YYYY-MM-DD` (e.g., "2021-10-01")
+  - When provided, all temporal calculations use this date instead of the current date
+  - Ensures historical calendars use appropriate temporal windows for deduplication
+
+---
+
+## Reference Date Calculations
+
+**IMPORTANT:** All `months_ago` calculations in this skill use the `reference_date` parameter (if provided) instead of the current date.
+
+**Calculation Formula:**
+```
+months_ago = difference_in_months(reference_date, topic_publish_date)
+
+# Example with reference_date = "2021-10-01":
+Topic published: 2021-08-15
+months_ago = October 2021 - August 2021 = 2 months
+
+# Example without reference_date (uses current date):
+Topic published: 2021-08-15
+months_ago = December 2025 - August 2021 = 52 months
+```
+
+**Why This Matters:**
+- For historical calendars (e.g., October 2021), deduplication should check what topics were "recent" at that time
+- A topic from August 2021 should be considered "2 months old" for an October 2021 calendar
+- Without reference_date, it would incorrectly be considered "52 months old"
+
+**Usage:**
+- Always pass `reference_date` when generating historical calendars
+- The 6-month hard-block window uses `reference_date` as the anchor point
+- Time decay calculations for differentiation thresholds use `reference_date`
 
 ---
 

@@ -36,19 +36,33 @@ Use these extracted values throughout the research process. The requirements-ext
 - Verifying technical claims or benchmarks
 - Finding community best practices
 
+## Reference Date Context
+
+When a `$REFERENCE_DATE` is provided (from calendar entry or command), all temporal calculations must use this date as "today" — NOT the current date.
+
+**Historical Mode (`$REFERENCE_DATE` is in the past):**
+- Only use sources published before `$REFERENCE_DATE`
+- Use date-filtered searches: `[query] before:$REFERENCE_DATE`
+- Calculate "recency" relative to `$REFERENCE_DATE`
+- Do NOT include information about events after `$REFERENCE_DATE`
+
+---
+
 ## Research Checklist
 
 ### 1. Official Sources First (from requirements.md)
 - [ ] **Primary Documentation** (extracted from config)
 - [ ] **Official Blog** (extracted from config)
 - [ ] **Repository** changelogs (extracted from config)
-- [ ] Release notes and version history
+- [ ] Release notes and version history (published before `$REFERENCE_DATE` in Historical Mode)
 
-### 2. Verify Recency (within 3 months)
-- [ ] Check release dates
-- [ ] Confirm version numbers
-- [ ] Validate deprecated features
-- [ ] Note breaking changes
+### 2. Verify Recency (relative to Reference Date)
+- [ ] Check release dates are within 3 months of `$REFERENCE_DATE` (not current date)
+- [ ] For historical dates: Only include releases/updates that existed before `$REFERENCE_DATE`
+- [ ] Use date-filtered searches when `$REFERENCE_DATE` is in the past
+- [ ] Confirm version numbers (only versions released before `$REFERENCE_DATE`)
+- [ ] Validate deprecated features (as of `$REFERENCE_DATE`)
+- [ ] Note breaking changes (that occurred before `$REFERENCE_DATE`)
 
 ### 3. Community Validation (from requirements.md)
 - [ ] **Community Forums** (extracted from config)

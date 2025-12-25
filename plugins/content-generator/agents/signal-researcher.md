@@ -135,6 +135,46 @@ User will provide target month/year (e.g., "November 2025"). Store as:
 - `$MONTH_START` (e.g., "2025-11-01")
 - `$MONTH_END` (e.g., "2025-11-30")
 
+**Step 1.4: Establish Reference Date Context**
+
+Store the reference date for all temporal calculations:
+- `$REFERENCE_DATE` = `$MONTH_START` (e.g., "2025-11-01")
+- `$REFERENCE_END` = `$MONTH_END` (e.g., "2025-11-30")
+
+**Historical Mode Check:**
+
+Compare `$REFERENCE_DATE` to today's actual date:
+
+```
+IF $REFERENCE_DATE < TODAY:
+  $HISTORICAL_MODE = true
+  All web searches MUST use date filtering: before:$REFERENCE_END
+  All "recency" checks compare to $REFERENCE_DATE, not today
+  Exclude any signals about events after $REFERENCE_DATE
+ELSE:
+  $HISTORICAL_MODE = false
+  Proceed with standard mode
+```
+
+**CRITICAL for Historical Mode (`$HISTORICAL_MODE = true`):**
+
+1. **Date-Filtered Searches**: Append `before:YYYY-MM-DD` to all search queries
+2. **Recency Evaluation**: Compare signal dates to `$REFERENCE_DATE`, not today
+3. **Time Windows**: "Within 3 months" = 3 months before `$REFERENCE_DATE`
+4. **Signal Rejection**: Reject any signals about events that occurred after `$REFERENCE_DATE`
+5. **No Future Knowledge**: Do NOT include information about releases, updates, or events that occurred after `$REFERENCE_DATE`
+
+**Example:**
+```
+Target: October 2021
+$REFERENCE_DATE = 2021-10-01
+$REFERENCE_END = 2021-10-31
+$HISTORICAL_MODE = true
+
+✅ Valid signal: "WordPress 5.8 released July 2021" (before reference date)
+❌ Invalid signal: "WordPress 6.0 features" (released May 2022, after reference date)
+```
+
 ---
 
 ### Phase 2: Signal Discovery (5-7 min)
@@ -245,6 +285,27 @@ For the configured industry, select 3-4 signal types and construct 4-6 search qu
 5. "[Service Type] insurance coverage changes [Year]"
 ```
 
+**Historical Mode Query Modification:**
+
+When `$HISTORICAL_MODE = true`, append date filter to ALL queries:
+
+```
+[Original Query] before:YYYY-MM-DD
+
+Example (Target: October 2021):
+  Standard: "WordPress release notes October 2021"
+  Historical: "WordPress release notes October 2021" before:2021-10-31
+
+  Standard: "React security vulnerability 2021"
+  Historical: "React security vulnerability 2021" before:2021-10-31
+```
+
+**Date Filter Formats by Search Engine:**
+- **Google/WebSearch**: `before:YYYY-MM-DD` or use Tools → Custom date range
+- **Bing**: `&filters=ex1:"ez5_YYYY-MM-DD_YYYY-MM-DD"` (date range filter)
+
+**CRITICAL**: Every web search in Historical Mode MUST include the date filter to prevent results containing future information.
+
 **Step 2.3: Execute Parallel Web Searches**
 
 Use WebSearch tool to execute all queries. For efficiency, run 2-3 searches in parallel:
@@ -269,10 +330,33 @@ From search results, extract 15-20 initial signal candidates:
 **Headline:** "[Signal Headline]"
 **URL:** [source URL]
 **Relevance:** [High/Medium/Low] ([rationale])
-**Recency:** ⭐⭐⭐⭐⭐ ([N] weeks old)
+**Recency:** ⭐⭐⭐⭐⭐ ([N] weeks/months before $REFERENCE_DATE)
 **Potential Topics:**
 - "[Potential Topic Title 1]"
 - "[Potential Topic Title 2]"
+```
+
+**Historical Mode Validation (when `$HISTORICAL_MODE = true`):**
+
+Before including any signal candidate, verify:
+
+1. **Signal Date Must Be Before Reference Date**:
+   - If signal date > `$REFERENCE_DATE` → **REJECT** signal
+   - Example: If target is Oct 2021 and signal is from Dec 2021 → REJECT
+
+2. **No Future References**:
+   - Signal content must NOT mention events after `$REFERENCE_DATE`
+   - Check for version numbers, release dates, announcements that came later
+
+3. **Recency Calculation**:
+   - Calculate recency relative to `$REFERENCE_DATE`, not today
+   - Example: Signal from Aug 2021 is "2 months old" for Oct 2021 target
+
+**Rejection Log:**
+When rejecting signals in Historical Mode, log:
+```
+⚠️ REJECTED (Historical Mode): [Signal Headline]
+   Reason: Signal date [YYYY-MM-DD] is after reference date [$REFERENCE_DATE]
 ```
 
 **Target:** 15-20 signal candidates (oversubscribe to allow filtering)

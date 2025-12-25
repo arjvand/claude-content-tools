@@ -47,6 +47,45 @@ Read the configuration to adapt tone, claims, and outputs:
 
 ---
 
+## Phase 0.3: Establish Reference Date
+
+**Extract reference date from calendar entry to enable Historical Mode when appropriate.**
+
+1. Parse `publish_date` from calendar entry
+2. Store as `$REFERENCE_DATE` (format: YYYY-MM-DD)
+3. Compare to today's actual date:
+
+```
+IF $REFERENCE_DATE < TODAY:
+  $HISTORICAL_MODE = true
+ELSE:
+  $HISTORICAL_MODE = false
+```
+
+**Historical Mode Rules for Article Production:**
+
+When `$HISTORICAL_MODE = true`:
+
+1. **Research Sources**: Only use sources published before `$REFERENCE_DATE`
+2. **Web Searches**: Use date-filtered searches (`before:$REFERENCE_DATE`)
+3. **Content Perspective**: Write as if `$REFERENCE_DATE` is "today"
+4. **No Future Knowledge**: Do NOT reference events, releases, or data after `$REFERENCE_DATE`
+5. **Version Numbers**: Only reference versions that existed at `$REFERENCE_DATE`
+6. **Language**: Use present tense for events current at `$REFERENCE_DATE`
+
+**Example:**
+```
+Calendar Entry: ART-202110-001
+Publish Date: 2021-10-15
+$REFERENCE_DATE = 2021-10-15
+$HISTORICAL_MODE = true (if today > 2021-10-15)
+
+✅ Valid: "React 17 introduced new JSX transform..."
+❌ Invalid: "React 18 (released 2022) added concurrent features..."
+```
+
+---
+
 ## Phase 0.5: Create Article Directory
 
 **Before proceeding, create the article directory structure:**
@@ -101,13 +140,14 @@ ls -la "project/Articles/[ARTICLE-ID]/"
 
 **@researcher — Focus on authoritative sources and evidence:**
 
-* Confirm topical **timeliness** (≤ 3 months past or upcoming ≤ 3 months)
+* Confirm topical **timeliness** relative to `$REFERENCE_DATE` (signals within 3 months before reference date)
+* **Historical Mode**: Only use sources published before `$REFERENCE_DATE`; use date-filtered searches (`before:$REFERENCE_DATE`)
 * Gather **primary sources** first (official docs, standards bodies, journals, regulatory sources)
-* Extract and **verify evidence** — record dates, versions, jurisdictions
+* Extract and **verify evidence** — record dates, versions, jurisdictions (all must predate `$REFERENCE_DATE` in Historical Mode)
 * Grade evidence strength (High/Moderate/Low) with source attribution
-* Note **policy/regulatory** implications and any **claim restrictions**
+* Note **policy/regulatory** implications and any **claim restrictions** (as they existed at `$REFERENCE_DATE`)
 * Flag **SME involvement** if topic is regulated or high‑stakes (health, finance, legal, safety)
-* List potential **quotes/data points** with dates
+* List potential **quotes/data points** with dates (verify all dates are before `$REFERENCE_DATE` in Historical Mode)
 
 **Save to:** `project/Articles/[ARTICLE-ID]/research-primary.md`
 
@@ -117,13 +157,13 @@ ls -la "project/Articles/[ARTICLE-ID]/"
 
 **@researcher — Focus on competitive landscape and differentiation:**
 
-* Invoke `competitive-gap-analyzer` skill for full gap analysis
-* Invoke `media-discovery` skill to find embeddable media (videos, social posts)
-* Identify **unique angles** vs. existing coverage (what competitors miss)
-* Capture **platform/channel considerations** (SEO updates, social algorithm notes)
-* Map the **content landscape** — saturation, format gaps, recency opportunities
-* Identify **practical examples** and community insights
-* Develop **differentiation strategy** — why our article will win
+* Invoke `competitive-gap-analyzer` skill for full gap analysis (pass `$REFERENCE_DATE` for Historical Mode)
+* Invoke `media-discovery` skill to find embeddable media (videos, social posts published before `$REFERENCE_DATE` in Historical Mode)
+* Identify **unique angles** vs. existing coverage (what competitors missed at `$REFERENCE_DATE`)
+* Capture **platform/channel considerations** (SEO updates, social algorithm notes as of `$REFERENCE_DATE`)
+* Map the **content landscape** — saturation, format gaps, recency opportunities (relative to `$REFERENCE_DATE`)
+* Identify **practical examples** and community insights (from before `$REFERENCE_DATE` in Historical Mode)
+* Develop **differentiation strategy** — why our article will win (based on landscape at `$REFERENCE_DATE`)
 
 **Save to:** `project/Articles/[ARTICLE-ID]/research-landscape.md`
 

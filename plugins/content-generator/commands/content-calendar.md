@@ -12,6 +12,47 @@ Create a comprehensive content calendar for **$ARGUMENTS** based on the editoria
 
 ---
 
+## Reference Date Context
+
+When generating content for a specific month/year (e.g., "October 2021"), all temporal calculations must use the specified month/year as the **reference date** — NOT the current date.
+
+### Reference Date Variables
+
+Parse `$ARGUMENTS` to establish:
+
+- `$TARGET_MONTH` — Month name (e.g., "October")
+- `$TARGET_YEAR` — Year (e.g., "2021")
+- `$REFERENCE_DATE` — First day of target month in ISO format (e.g., "2021-10-01")
+- `$REFERENCE_END` — Last day of target month (e.g., "2021-10-31")
+
+All temporal calculations use these variables:
+- "Within 3 months" = 3 months relative to `$REFERENCE_DATE`
+- "Last 6 months" = 6 months before `$REFERENCE_DATE`
+- "Months ago" = calculated from `$REFERENCE_DATE`
+
+### Historical Mode
+
+**If `$REFERENCE_DATE` is in the past (compared to today's actual date):**
+
+Set `$HISTORICAL_MODE = true` and apply these **CRITICAL RULES**:
+
+1. **No Future Knowledge**: Do NOT include topics about events, releases, updates, or facts that occurred after `$REFERENCE_DATE`
+2. **Search Filtering**: Use date-filtered searches (e.g., `before:2021-10-31` for Oct 2021)
+3. **Language**: Write as if `$REFERENCE_DATE` is "today" — use present tense for events at that time
+4. **Version Numbers**: Reference only versions released before `$REFERENCE_DATE`
+5. **Trends**: Only discuss trends that were observable by `$REFERENCE_DATE`
+
+**Example:**
+- Target: October 2021
+- ✅ DO include: React 17 features (released Oct 2020)
+- ❌ DO NOT include: React 18 features (released March 2022)
+
+**If `$REFERENCE_DATE` is today or in the future:**
+- Set `$HISTORICAL_MODE = false`
+- Proceed with standard mode (current date calculations)
+
+---
+
 ## Step 1: Load and Validate Configuration
 
 **Use the `requirements-extractor` skill** to load validated configuration:
@@ -101,8 +142,13 @@ Please use the requirements-extractor skill to load and validate configuration.
 **Use the `content-performance-analyzer` skill** to inform strategy with historical data:
 
 ```
-Please use the content-performance-analyzer skill to analyze the last 6 months and provide recommendations for [Month Year] calendar.
+Please use the content-performance-analyzer skill to analyze the 6 months preceding $REFERENCE_DATE and provide recommendations for [Month Year] calendar.
+
+Reference Date: $REFERENCE_DATE
+Historical Mode: $HISTORICAL_MODE
 ```
+
+**Note:** Analysis window is always relative to `$REFERENCE_DATE`, not the current date. For historical calendars, this means analyzing content performance as it existed at that time.
 
 **Skill will provide:**
 - High-performing topic/format patterns
@@ -135,7 +181,14 @@ Use insights to inform topic selection and content mix in subsequent steps.
 ```
 Agent: @signal-researcher
 Input: Target month/year from $ARGUMENTS
+Reference Date: $REFERENCE_DATE
+Historical Mode: $HISTORICAL_MODE
 ```
+
+**IMPORTANT for Historical Mode (`$HISTORICAL_MODE = true`):**
+- Pass `$REFERENCE_DATE` to agent so all temporal calculations use it
+- Agent MUST use date-filtered web searches (`before:$REFERENCE_END`)
+- Agent MUST reject any signals about events after `$REFERENCE_DATE`
 
 **Agent will:**
 1. Load configuration (via requirements-extractor skill)
@@ -420,7 +473,7 @@ Include all selected topics (no limit on number of rows).
 ### Requirements for Each Topic (Enforced)
 
 1. **Originality**: Distinct angle; confirm low saturation and cite primary sources.
-2. **Timeliness**: Anchor to recent (≤ 3 months) or upcoming (≤ 3 months) signals.
+2. **Timeliness**: Anchor to signals within 3 months of `$REFERENCE_DATE`. For historical dates (`$HISTORICAL_MODE = true`), only include signals that existed before `$REFERENCE_DATE`.
 3. **Relevance**: Align with **Industry/Brand**, **Themes**, **Audience**, **Locale**, and **Channels** from config.
 4. **Audience Fit**: Match the specified **persona** and **funnel stage**; state the expected reader outcome.
 5. **Search & Discovery**: Include a primary keyword (if SEO channel) and define search intent.
