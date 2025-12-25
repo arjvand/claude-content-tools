@@ -17,34 +17,25 @@ Automate the discovery of relevant video tutorials, expert commentary, and visua
 
 ## Configuration-Driven Approach
 
-**Before discovery, read requirements.md to extract configuration:**
+**Before discovery, load configuration using requirements-extractor:**
 
-```bash
-!cat project/requirements.md
+```markdown
+Please use the requirements-extractor skill to load validated configuration from project/requirements.md.
 ```
 
-**Extract the following configuration:**
+**Extract the following from structured output:**
 
-1. **Preferred Platforms**:
-   - Look for: `**Preferred Platforms**:` → [Extract platform list]
+1. **Preferred Platforms** from `media.preferred_platforms`: Platform list for media discovery
 
-2. **Recency Filter**:
-   - Look for: `**Recency Filter**:` → [Extract time window]
+2. **Recency Filter** from `media.recency_filter`: Time window for recent media
 
-3. **Credibility Requirements**:
-   - Look for: `**Credibility Requirement**:` → [Extract criteria]
+3. **Credibility Requirements** from `media.credibility_requirements`: Quality criteria
 
-4. **Max Embeds**:
-   - Look for: `**Max Embeds Per Article**:` → [Extract limit]
+4. **Max Embeds** from `media.max_embeds_per_article`: Embed limit per article
 
-5. **Visual Need by Content Type**:
-   - Look for: `**Visual Need by Content Type**:` → [Extract priority mapping]
+5. **Visual Standards** from `visual_standards.image_style` and `visual_standards.featured_images`: Visual preferences and constraints
 
-6. **Media Embed Standards** (from existing config):
-   - Look for: `**Embed Limits**:` → [Extract constraints]
-   - Look for: `**Quality Standards**:` → [Extract criteria]
-
-**Use these extracted values throughout the discovery process.**
+**Use these extracted values throughout the discovery process. The requirements-extractor provides validated, structured configuration.**
 
 ---
 
@@ -52,16 +43,14 @@ Automate the discovery of relevant video tutorials, expert commentary, and visua
 
 ### Phase 0: Load Configuration (1 minute)
 
-```bash
-!cat project/requirements.md
-```
+**Use previously loaded configuration from requirements-extractor:**
 
-Extract:
-- Preferred platforms
-- Recency filter
-- Credibility requirements
-- Max embeds per article
-- Visual need priorities by content type
+Extract from structured output:
+- Preferred platforms from `media.preferred_platforms`
+- Recency filter from `media.recency_filter`
+- Credibility requirements from `media.credibility_requirements`
+- Max embeds per article from `media.max_embeds_per_article`
+- Visual standards from `visual_standards`
 
 ---
 

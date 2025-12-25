@@ -11,22 +11,22 @@ Research and verify information for content based on `requirements.md` configura
 
 ## Configuration-Driven Approach
 
-**Before researching, ALWAYS read requirements.md:**
+**Before researching, ALWAYS load configuration using requirements-extractor:**
 
-```bash
-!cat project/requirements.md
+```markdown
+Please use the requirements-extractor skill to load validated configuration from project/requirements.md.
 ```
 
-**Extract the following:**
-- **Industry/Niche**: What domain are we researching?
-- **Platform/Product**: What specific platform/product?
-- **Official Documentation**: Where are authoritative sources?
-- **Community Forums**: Where does the community discuss?
-- **Official Blogs**: Where are official updates published?
-- **Repository**: Where is the code/project hosted?
-- **Focus Areas**: What topics should be prioritized?
+**Extract the following from the structured output:**
+- **Industry/Niche** from `project.industry`: What domain are we researching?
+- **Platform/Product** from `project.platform`: What specific platform/product?
+- **Official Documentation** from `project.official_docs`: Where are authoritative sources?
+- **Community Forums** from `project.community_forums`: Where does the community discuss?
+- **Official Blogs** from `project.official_blogs`: Where are official updates published?
+- **Repository** from `project.repository`: Where is the code/project hosted?
+- **Focus Areas** from `project.focus_areas`: What topics should be prioritized?
 
-Use these extracted values throughout the research process.
+Use these extracted values throughout the research process. The requirements-extractor provides validated, structured configuration eliminating parsing errors.
 
 ---
 

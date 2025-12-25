@@ -190,6 +190,69 @@ See `docs/workflow.md` Phase 2 for complete documentation.
 
 ---
 
+## Configuration Access Pattern (MANDATORY)
+
+**All agents and skills MUST use `requirements-extractor` for configuration access.**
+
+### ✅ CORRECT Pattern
+
+```markdown
+Please use the requirements-extractor skill to load and validate configuration from project/requirements.md.
+```
+
+The skill returns structured JSON with validated configuration including:
+- `project.industry`, `project.platform`, `project.official_docs`, etc.
+- `audience.primary_roles`, `audience.skill_level`
+- `brand.voice.traits`, `brand.voice.guidelines`
+- `content.formats`, `content.objectives`, `content.length`
+- `seo.intent`, `seo.internal_linking`, `seo.primary_cta`
+- `cms.platform`, `cms.export_format`
+
+**Benefits:**
+- **Validation**: Configuration errors caught upfront (not 20 minutes into workflow)
+- **Consistency**: All components parse config identically
+- **Structured Output**: JSON schema prevents field name typos
+- **Maintainability**: Single parsing implementation to update
+
+### ❌ WRONG Pattern (Anti-Pattern)
+
+```bash
+# DO NOT DO THIS
+!cat project/requirements.md
+# Then manually parse with grep/awk/sed
+```
+
+**Why this is wrong:**
+- No validation - malformed config causes late failures
+- Inconsistent parsing - different components extract differently
+- Error-prone - field name changes break multiple files
+- Hard to debug - ad-hoc parsing logic scattered everywhere
+
+### Enforcement
+
+**Plugin Validation Check:**
+```bash
+# Detect anti-pattern usage (should return 0 results)
+grep -r "cat.*requirements\.md" plugins/content-generator/agents/ plugins/content-generator/skills/
+```
+
+**Updated Components (Priority 4):**
+- ✅ `agents/researcher.md` - Uses requirements-extractor
+- ✅ `agents/writer.md` - Uses requirements-extractor
+- ✅ `agents/editor.md` - Uses requirements-extractor
+- ✅ `skills/content-research/` - Uses requirements-extractor
+- ✅ `skills/seo-optimization/` - Uses requirements-extractor
+- ✅ `skills/cms-formatter/` - Uses requirements-extractor
+- ✅ `skills/media-discovery/` - Uses requirements-extractor
+
+**Already Compliant:**
+- ✅ `agents/signal-researcher.md` - Uses requirements-extractor
+- ✅ `commands/content-calendar.md` - Uses requirements-extractor
+- ✅ `skills/sme-complexity-assessor/` - Uses requirements-extractor
+- ✅ `skills/requirements-validator/` - Uses requirements-extractor (self-referential)
+
+---
+
 ## Adding Platform-Specific Skills
 
 1. Create skill in `.claude/skills/[platform]-[feature]/`

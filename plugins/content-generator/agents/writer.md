@@ -103,21 +103,32 @@ Structure:
 
 ### Phase 0: Define Scope & Inputs (ALWAYS FIRST – 1–2 minutes)
 
-If project configuration exists, load it; otherwise use the provided brief.
+If project configuration exists, load it using the centralized requirements-extractor skill; otherwise use the provided brief.
 
-```bash
-!test -f project/requirements.md && cat project/requirements.md || echo "No requirements.md; use provided brief and research files."
+**Configuration Loading (MANDATORY):**
+
+```markdown
+Please use the requirements-extractor skill to load and validate configuration from project/requirements.md.
 ```
 
-Extract or confirm:
-1. Objective(s), audience, and success criteria
-2. Deliverable type and depth (tutorial/article/report/memo/brief)
-3. **Length target and spelling/style (US/UK, tone) — CRITICAL: Target 1,200 words; max 1,320 with justification; >1,320 requires user approval**
-4. Constraints (compliance, privacy, ethics)
-5. Whether SEO/content optimization is in scope
-6. Research inputs available (see below)
+The skill will return structured configuration including:
+- Brand voice traits and DO/DON'T examples (CRITICAL for tone)
+- Audience roles and skill level (CRITICAL for depth)
+- Content formats, word count ranges, and depth preferences
+- Spelling convention (US/UK English)
+- CTA patterns and distribution channels
+- Compliance/legal guardrails
 
-Research inputs to read first if present:
+**Extract from validated configuration:**
+1. Objective(s) from `content.objectives` and success criteria from `content.primary_kpi`
+2. Deliverable type from `content.formats` and depth from `content.depth`
+3. **Length target from `content.length` — CRITICAL: Target per format; max +10% with justification; >10% requires user approval**
+4. Spelling/style from `localization.spelling` and `brand.voice.traits`
+5. Brand voice DO/DON'T examples from `brand.voice.guidelines`
+6. Constraints from `editorial_guardrails` (compliance, privacy, ethics)
+7. SEO scope from `seo.intent` (if present, SEO is in scope)
+
+**Research inputs to read first if present:**
 - `project/Articles/[ARTICLE-ID]/research-brief.md`
 - `project/Articles/[ARTICLE-ID]/gap-analysis-report.md` (content/SEO only)
 

@@ -16,32 +16,33 @@ Ensure content meets SEO best practices based on requirements.md configuration.
 
 ## Configuration-Driven Approach
 
-**Before optimizing, read requirements.md to understand the project:**
+**Before optimizing, load configuration using requirements-extractor:**
 
-```bash
-!cat project/requirements.md
+```markdown
+Please use the requirements-extractor skill to load validated configuration from project/requirements.md.
 ```
 
-**Extract the following configuration:**
+**Extract the following from the structured output:**
 
 1. **Topic & Platform**:
-   - Look for: `**Industry/Niche**:` → [Extract target domain]
-   - Look for: `**Specific Platform/Product**:` → [Extract platform]
+   - From `project.industry` → Target domain
+   - From `project.platform` → Specific platform
 
 2. **Audience**:
-   - Look for: `**Primary Roles**:` → [Extract target audience]
-   - Look for: `**Skill Level**:` → [Extract level]
+   - From `audience.primary_roles` → Target audience
+   - From `audience.skill_level` → Audience level
 
 3. **Official Sources** (for external linking):
-   - Look for: `**Primary Documentation**:` → [Extract URLs]
-   - Look for: `**Official Blogs**:` → [Extract URLs]
-   - Look for: `**Other Authoritative Sources**:` → [Extract sources]
+   - From `project.official_docs` → Primary documentation URLs
+   - From `project.official_blogs` → Official blog URLs
+   - From `project.authoritative_sources` → Other authoritative sources
 
 4. **SEO Strategy**:
-   - Look for: `**SEO Intent**:` → [Extract strategy]
-   - Look for: `**Primary CTA**:` → [Extract CTA]
+   - From `seo.intent` → SEO strategy and target queries
+   - From `seo.internal_linking` → Internal linking patterns
+   - From `seo.primary_cta` → Primary call-to-action
 
-**Use these extracted values throughout the optimization process.**
+**Use these extracted values throughout the optimization process. The requirements-extractor provides validated, structured configuration.**
 
 ---
 
@@ -100,15 +101,12 @@ Provide:
 
 ### When to Link Externally
 
-**Read requirements.md first to identify official sources:**
-```bash
-!cat project/requirements.md
-```
+**Use previously loaded configuration from requirements-extractor:**
 
-Extract:
-- **Primary Documentation**: Official docs URLs
-- **Official Blogs**: Official news/blog URLs
-- **Other Authoritative Sources**: Standards, community resources
+Extract from structured output:
+- **Primary Documentation** from `project.official_docs`: Official docs URLs
+- **Official Blogs** from `project.official_blogs`: Official news/blog URLs
+- **Other Authoritative Sources** from `project.authoritative_sources`: Standards, community resources
 
 Link to:
 - Official documentation (from requirements.md: Primary Documentation)

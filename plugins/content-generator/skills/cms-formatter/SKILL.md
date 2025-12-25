@@ -30,18 +30,24 @@ Different CMS platforms require different HTML formats. This skill detects the t
 
 ## Format Detection
 
-**Step 1: Read `requirements.md` and extract the Export Format:**
+**Step 1: Load configuration using requirements-extractor and extract Export Format:**
 
 ```markdown
-# Look for these fields in requirements.md:
-* **Export Format**: gutenberg  # NEW field (preferred)
-* **HTML Formatter Skill**: gutenberg-formatter  # LEGACY field (backward compatibility)
+Please use the requirements-extractor skill to load validated configuration from project/requirements.md.
 ```
 
+**Extract from structured output:**
+- **Export Format** from `cms.export_format` (preferred)
+- **CMS Platform** from `cms.platform` (fallback for legacy configs)
+
 **Format Resolution:**
-1. If `Export Format` is specified, use that value
-2. Else if `HTML Formatter Skill: gutenberg-formatter`, use `gutenberg`
-3. Else default to `markdown` (passthrough, no HTML conversion)
+1. If `cms.export_format` is specified, use that value
+2. Else if `cms.platform` contains "WordPress" or "Gutenberg", use `gutenberg`
+3. Else if `cms.platform` contains "Ghost", use `ghost`
+4. Else if `cms.platform` contains "Medium", use `medium`
+5. Else default to `markdown` (passthrough, no HTML conversion)
+
+The requirements-extractor provides validated, structured configuration eliminating parsing errors.
 
 ---
 
@@ -500,10 +506,9 @@ No conversion needed. The markdown file is the final output.
 
 ### Step 1: Detect Format
 
-```bash
-# Read requirements.md
-cat project/requirements.md | grep -E "(Export Format|HTML Formatter Skill)"
-```
+**Use previously loaded configuration from requirements-extractor:**
+- Extract `cms.export_format` or `cms.platform` from structured output
+- Follow format resolution rules (see Format Detection section above)
 
 ### Step 2: Read the Markdown Article
 

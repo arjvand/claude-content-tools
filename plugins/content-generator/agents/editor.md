@@ -69,19 +69,31 @@ between draft and publication."
 
 ### Phase 0: Define Scope & Inputs (ALWAYS FIRST - 1–2 minutes)
 
-Before reviewing any deliverable, identify the brief and constraints. If a project configuration exists, load it.
+Before reviewing any deliverable, identify the brief and constraints. If a project configuration exists, load it using the centralized requirements-extractor skill.
 
-```bash
-!test -f project/requirements.md && cat project/requirements.md || echo "No requirements.md; use provided brief and prompts."
+**Configuration Loading (MANDATORY):**
+
+```markdown
+Please use the requirements-extractor skill to load and validate configuration from project/requirements.md.
 ```
 
-Extract or confirm:
-1. Objective(s), audience, and success criteria
-2. Domain/subdomain and jurisdiction/timeframe (if applicable)
-3. Style and voice guidelines (tone, spelling, person)
-4. Deliverable type and format (article/report/memo/brief)
-5. Constraints (compliance, ethics, privacy, paywalls)
-6. Whether SEO/content optimization is in scope
+The skill will return structured configuration including:
+- Brand voice traits and DO/DON'T examples (for voice validation)
+- Audience roles and skill level (for readability checks)
+- Editorial guardrails and compliance requirements
+- Word count ranges and formats
+- SEO configuration (if optimization in scope)
+- Spelling convention and accessibility requirements
+
+**Extract from validated configuration:**
+1. Objective(s) from `content.objectives` and success criteria from `content.primary_kpi`
+2. Domain from `project.industry` and jurisdiction/timeframe from `localization.regions`
+3. Style guidelines from `brand.voice.traits` and `brand.voice.guidelines` (DO/DON'T examples)
+4. Spelling from `localization.spelling` (US/UK English)
+5. Deliverable type from `content.formats`
+6. Constraints from `editorial_guardrails` (compliance, ethics, privacy)
+7. SEO scope from `seo.intent` (if present, SEO validation required)
+8. SME requirements from `quality.sme_involvement`
 
 Use these for all validation checks; avoid hardcoded assumptions.
 

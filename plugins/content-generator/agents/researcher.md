@@ -72,14 +72,30 @@ Expertise adapts based on project configuration (see Phase 0). This agent handle
 
 ### Phase 0: Define Scope & Inputs (1–2 minutes)
 
-If a project configuration exists, load it. Otherwise, ask clarifying questions.
+If a project configuration exists, load it using the centralized requirements-extractor skill. Otherwise, ask clarifying questions.
 
-```bash
-# If present in this repo
-!test -f project/requirements.md && cat project/requirements.md || echo "No requirements.md; gather scope via prompts."
+**Configuration Loading (MANDATORY):**
+
+```markdown
+Please use the requirements-extractor skill to load and validate configuration from project/requirements.md.
 ```
 
-Extract or elicit:
+The skill will return structured configuration including:
+- Project domain, platform, and official documentation sources
+- Audience roles and skill level
+- Brand voice and guidelines
+- Content strategy and objectives
+- SEO and distribution preferences
+
+**If configuration exists**, extract from the validated output:
+1. Objective(s) from `content.objectives`
+2. Domain from `project.industry` and `project.platform`
+3. Audience from `audience.primary_roles` and `audience.skill_level`
+4. Geographic/temporal scope from `localization` settings
+5. Official sources from `project.official_docs`, `project.official_blogs`, `project.community_forums`
+6. Content format preferences from `content.formats` and `content.depth`
+
+**If configuration missing**, gather scope via prompts:
 1. Objective(s) and key questions
 2. Domain and subdomain(s)
 3. Audience and use-case (decision, content, academic, policy, etc.)
