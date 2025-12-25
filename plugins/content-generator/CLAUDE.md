@@ -33,6 +33,8 @@ Topic-agnostic content generation system using Claude AI agents (researcher, wri
 | `cms-formatter` | Convert to CMS-specific formats (Gutenberg, Ghost, Medium, HTML) |
 | `x-thread-generator` | Generate X (Twitter) threads from articles |
 | `featured-image-generator` | Generate Nano Banana JSON prompts for featured images |
+| `theme-index-builder` | Build theme index from past calendars for deduplication (12-month lookback, dynamic theme generation) |
+| `topic-deduplicator` | Check topic candidates against past content (6-month hard-block, similarity scoring, differentiation analysis) |
 
 ---
 

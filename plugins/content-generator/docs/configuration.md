@@ -98,9 +98,9 @@ cp examples/requirements-finance.md project/requirements.md
 
 These adapt to any topic via configuration:
 
-- **Agents**: researcher, writer, editor
+- **Agents**: researcher, writer, editor, signal-researcher
 - **Commands**: content-calendar, write-article
-- **Skills**: competitive-gap-analyzer, content-research, seo-optimization, requirements-validator
+- **Skills**: competitive-gap-analyzer, content-research, seo-optimization, requirements-validator, theme-index-builder, topic-deduplicator
 
 ### Platform-Specific
 
@@ -250,6 +250,240 @@ grep -r "cat.*requirements\.md" plugins/content-generator/agents/ plugins/conten
 - ✅ `commands/content-calendar.md` - Uses requirements-extractor
 - ✅ `skills/sme-complexity-assessor/` - Uses requirements-extractor
 - ✅ `skills/requirements-validator/` - Uses requirements-extractor (self-referential)
+- ✅ `skills/theme-index-builder/` - Does not use requirements-extractor (analyzes past calendars directly)
+- ✅ `skills/topic-deduplicator/` - Does not use requirements-extractor (uses theme index input)
+
+---
+
+## Modular Deduplication Architecture (Priority 3)
+
+### Overview
+
+The signal-researcher agent has been refactored from a monolithic 67KB file to a lightweight 44KB orchestration layer by extracting complex theme indexing and deduplication logic into two reusable skills.
+
+### Architecture Transformation
+
+**Before:** Monolithic (67KB)
+```
+┌──────────────────────────────────────┐
+│   @signal-researcher                 │
+│   - Config loading (5KB)             │
+│   - Theme indexing (15KB)            │
+│   - Signal discovery (15KB)          │
+│   - Topic generation (10KB)          │
+│   - Deduplication logic (20KB)       │
+│   - Output generation (7KB)          │
+└──────────────────────────────────────┘
+```
+
+**After:** Modular (60KB total, separated)
+```
+┌────────────────────┐
+│ @signal-researcher │ (44KB)
+│ - Orchestration    │
+│ - Config loading   │
+│ - Signal discovery │
+│ - Topic generation │
+│ - Output           │
+└─────────┬──────────┘
+          │ delegates to
+          ├──→ theme-index-builder (30KB skill)
+          └──→ topic-deduplicator (35KB skill)
+```
+
+### Benefits
+
+- **Maintainability:** Complex logic isolated and testable independently
+- **Reusability:** Skills can be invoked standalone for diagnostics
+- **Consistency:** Centralized deduplication ensures uniform behavior
+- **Performance:** Theme index can be cached and reused across calendar runs
+
+### New Skills
+
+#### theme-index-builder
+
+**Purpose:** Build comprehensive theme index from past calendars
+
+**Inputs:**
+- `target_month`: Calendar month (e.g., "November 2025")
+- `lookback_months`: How far back to index (default: 12)
+- `calendar_directory`: Path to calendars (default: `project/Calendar/`)
+- `include_requirements_themes`: Load seed themes from requirements.md (default: true)
+
+**Process:**
+1. Identify past calendars within lookback window
+2. Parse calendar tables and extract topic metadata
+3. Generate dynamic theme tags from actual project content (NOT hardcoded)
+4. Build core theme registry for strict 6-month deduplication
+5. Calculate core theme saturation status
+6. Output structured theme index JSON + validation report
+
+**Outputs:**
+- `theme-index.json` — Structured index with topics, theme tags, core themes, saturation data
+- `theme-index-validation.md` — Human-readable validation report
+
+**Key Features:**
+- **Dynamic theme generation:** Derives tags from actual content, not hardcoded patterns
+- **6-month saturation tracking:** Enforces theme spacing for content variety
+- **Synonym detection:** Learns project-specific terminology variations
+- **Validation required:** MUST output confirmation before proceeding
+
+**Invoked by:**
+- `@signal-researcher` agent during Phase 1, Step 1.2 (calendar generation)
+- Manual invocation for index rebuilding/diagnostics
+
+**Example:**
+```
+Please use the theme-index-builder skill to build the theme index.
+
+Parameters:
+  target_month: "November 2025"
+  lookback_months: 12
+  calendar_directory: "project/Calendar/"
+  include_requirements_themes: true
+```
+
+#### topic-deduplicator
+
+**Purpose:** Perform theme-level deduplication for topic candidates
+
+**Inputs:**
+- `topic_candidate`: Object with title, keyword, differentiation_angle, primary_gap, format
+- `theme_index`: Theme index JSON from theme-index-builder
+
+**Process:**
+1. Extract candidate's core themes
+2. **CRITICAL:** Check for 6-month core theme hard-block (no exceptions)
+3. Calculate similarity score against all past topics using multi-factor algorithm:
+   - Keyword overlap (30%, with synonym expansion)
+   - Theme tag overlap (25%)
+   - Title semantic similarity (25%, with paraphrase detection)
+   - Core theme match (20%)
+4. Apply threshold classification:
+   - Same core theme within 6 months → **HARD_BLOCKED**
+   - Similarity ≥ 0.60 within 6 months → **BLOCKED**
+   - Similarity ≥ 0.80 (any age) → **BLOCKED**
+   - Similarity 0.40-0.79 (7+ months) → Check differentiation
+   - Similarity < 0.40 → **NOVEL**
+5. For 7+ month old similar themes: Calculate differentiation score
+6. Apply time-decayed threshold (stricter for recent content)
+7. Return deduplication status with detailed reasoning
+
+**Outputs:**
+```json
+{
+  "dedup_status": "NOVEL|DIFFERENTIATED|BLOCKED|HARD_BLOCKED",
+  "comparison": {
+    "most_similar_id": "ART-YYYYMM-NNN",
+    "theme_similarity_score": 0.XX,
+    "months_ago": N
+  },
+  "decision": {
+    "block_type": "core_theme|near_duplicate|recent_similar|insufficient_differentiation|null",
+    "block_reason": "[explanation if blocked]",
+    "pass_reason": "[explanation if passed]"
+  }
+}
+```
+
+**Key Features:**
+- **6-month hard-block:** Same core theme can only appear twice/year
+- **Synonym expansion:** Universal patterns + project-specific synonyms
+- **Paraphrase detection:** Identifies semantic duplicates ("how to X" = "X tutorial")
+- **Time decay:** Graduated thresholds based on recency
+- **Differentiation analysis:** Evaluates angle novelty for similar themes
+
+**Invoked by:**
+- `@signal-researcher` agent during Phase 4, Step 4.3 (for each topic candidate)
+- Manual invocation for deduplication diagnostics
+
+**Example:**
+```
+Please use the topic-deduplicator skill to check this candidate.
+
+Topic Candidate:
+  title: "Migrating WooCommerce Data to REST API Endpoints"
+  keyword: "woocommerce data migration api"
+  differentiation_angle: "Custom endpoint approach using WP REST API extensions"
+  primary_gap: "Depth"
+  format: "Tutorial"
+
+Theme Index: [loaded theme-index.json]
+```
+
+### Deduplication Decision Flow
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    FOR EACH CANDIDATE                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Step 1: Core theme match within 6 months?           │   │
+│  │         YES → HARD_BLOCKED (no exceptions)          │   │
+│  │         NO  → Continue                              │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                           ↓                                 │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Step 2: Any similar topics (≥0.40)?                 │   │
+│  │         NO  → NOVEL ✅                              │   │
+│  │         YES → Continue                              │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                           ↓                                 │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Step 3: Similarity ≥0.80 (any age)?                 │   │
+│  │         YES → BLOCKED (near duplicate)              │   │
+│  │         NO  → Continue                              │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                           ↓                                 │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Step 4: Similarity ≥0.60 AND within 6 months?       │   │
+│  │         YES → BLOCKED (too recent)                  │   │
+│  │         NO  → Continue                              │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                           ↓                                 │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Step 5: Check differentiation (7+ months only)      │   │
+│  │         diff_score < threshold → BLOCKED            │   │
+│  │         diff_score ≥ threshold → DIFFERENTIATED ✅  │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Usage Example
+
+**Full workflow during calendar generation:**
+
+```
+1. @signal-researcher invokes theme-index-builder
+   → Outputs: theme-index.json, theme-index-validation.md
+
+2. @signal-researcher generates 12 topic candidates
+
+3. For each candidate, @signal-researcher invokes topic-deduplicator
+   → Input: candidate + theme-index.json
+   → Output: dedup_status + reasoning
+
+4. @signal-researcher filters candidates:
+   - ✅ NOVEL / DIFFERENTIATED → Include
+   - ❌ BLOCKED / HARD_BLOCKED → Exclude
+
+5. Final output: topic-candidates.md with dedup status for each
+```
+
+### Impact
+
+**Before Refactor:**
+- signal-researcher.md: 67KB, 1748 lines
+- All logic embedded, difficult to maintain
+- Deduplication logic not reusable
+
+**After Refactor:**
+- signal-researcher.md: 44KB, 1145 lines (34% reduction)
+- theme-index-builder: Reusable, testable, cacheable
+- topic-deduplicator: Consistent deduplication across all invocations
+- Total: Better separation of concerns, easier maintenance
 
 ---
 
