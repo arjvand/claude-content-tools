@@ -40,9 +40,10 @@ If `requirements.md` is not available, the skill derives all themes from past ca
 - `calendar_directory`: Path to calendar directory (default: `project/Calendar/`)
 
 ### Optional
-- `lookback_months`: How many months to index (default: 12)
+- `lookback_months`: How many months to index (default: 24, configurable for Phase 3 trend analysis)
 - `output_path`: Where to save index JSON (default: same directory as target calendar)
 - `include_requirements_themes`: Load seed themes from requirements.md (default: true)
+- `include_time_series`: Build monthly time series data for trend analysis (default: true)
 
 ---
 
@@ -52,12 +53,14 @@ If `requirements.md` is not available, the skill derives all themes from past ca
 
 **Step 1.1: Calculate Lookback Window**
 
-From the target month, calculate the 12-month (or configured) lookback window:
+From the target month, calculate the 24-month (or configured) lookback window:
 
 ```
 Target: November 2025
-Lookback: 12 months
-Window: November 2024 → October 2025 (inclusive)
+Lookback: 24 months (default for Phase 3 trend analysis)
+Window: November 2023 → October 2025 (inclusive)
+
+Note: 12-month lookback still supported for backward compatibility
 ```
 
 **Step 1.2: Find Calendar Files**
@@ -85,7 +88,9 @@ Include only calendars that fall within the lookback window. Calculate months ag
 Calendar: 2025/October → 1 month ago (from November 2025 target)
 Calendar: 2025/September → 2 months ago
 Calendar: 2024/November → 12 months ago
-Calendar: 2024/October → 13 months ago (EXCLUDED - beyond 12-month window)
+Calendar: 2023/December → 23 months ago
+Calendar: 2023/November → 24 months ago
+Calendar: 2023/October → 25 months ago (EXCLUDED - beyond 24-month window)
 ```
 
 **Output:** List of calendar file paths within window, sorted by recency
@@ -297,9 +302,64 @@ Core Theme Registry:
 
 ---
 
-### Phase 5: Build Theme Index Structure (1 minute)
+### Phase 5: Build Theme Index Structure (2-3 minutes)
 
-**Step 5.1: Assemble Index**
+**Step 5.1: Build Time Series Data (Phase 3 Enhancement)**
+
+If `include_time_series = true`, build monthly time series for trend analysis:
+
+**Step 5.1.1: Group Topics by Month**
+
+For each month in the lookback window, count topics by core theme:
+
+```
+Month: 2025-10 (1 month ago)
+Topics: 8 total
+  - data-migration: 1
+  - security: 2
+  - performance: 1
+  - woocommerce-api: 1
+  - other themes: 3
+
+Month: 2025-09 (2 months ago)
+Topics: 9 total
+  - data-migration: 1
+  - security: 0
+  - performance: 2
+  - ...
+```
+
+**Step 5.1.2: Build Time Series Arrays**
+
+For each core theme, create a 24-element array with monthly counts (index 0 = most recent):
+
+```json
+{
+  "theme": "data-migration",
+  "time_series": [1, 1, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  "labels": ["2025-10", "2025-09", "2025-08", ..., "2023-11"]
+}
+```
+
+**Step 5.1.3: Calculate Trend Metrics**
+
+For momentum analysis:
+- **Recent average** (months 0-5): Average count over past 6 months
+- **Previous average** (months 6-11): Average count for 6 months before that
+- **Historical average** (months 12-23): Average count for 12 months before that
+
+```
+Example for "data-migration":
+time_series: [1, 1, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+Recent avg (0-5):    sum([1,1,0,0,0,0]) / 6 = 0.33
+Previous avg (6-11): sum([2,0,1,0,0,0]) / 6 = 0.50
+Historical avg (12-23): sum([1,0,0,0,0,0,0,0,0,0,0,0]) / 12 = 0.08
+```
+
+These metrics enable the trend-momentum-analyzer skill to classify momentum (ACCELERATING, STABLE, DECLINING, etc.).
+
+**Step 5.2: Assemble Index**
 
 Create structured JSON index:
 
@@ -307,10 +367,11 @@ Create structured JSON index:
 {
   "metadata": {
     "target_month": "2025-11",
-    "lookback_months": 12,
-    "calendars_analyzed": 12,
-    "topics_indexed": 87,
-    "generated_at": "2025-10-15T14:32:00Z"
+    "lookback_months": 24,
+    "calendars_analyzed": 24,
+    "topics_indexed": 187,
+    "generated_at": "2025-10-15T14:32:00Z",
+    "includes_time_series": true
   },
   "theme_tags": [
     "data-integration",
@@ -325,12 +386,26 @@ Create structured JSON index:
     {
       "theme": "data-migration",
       "source": "past_calendar+pillar",
-      "pattern_matches": ["migration", "import", "sync", "data transfer"]
+      "pattern_matches": ["migration", "import", "sync", "data transfer"],
+      "time_series": [1, 1, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "time_series_labels": ["2025-10", "2025-09", "2025-08", "2025-07", "2025-06", "2025-05", "2025-04", "2025-03", "2025-02", "2025-01", "2024-12", "2024-11", "2024-10", "2024-09", "2024-08", "2024-07", "2024-06", "2024-05", "2024-04", "2024-03", "2024-02", "2024-01", "2023-12", "2023-11"],
+      "trend_metrics": {
+        "recent_avg": 0.33,
+        "previous_avg": 0.50,
+        "historical_avg": 0.08
+      }
     },
     {
       "theme": "security",
       "source": "past_calendar+pillar",
-      "pattern_matches": ["authentication", "vulnerability", "encryption"]
+      "pattern_matches": ["authentication", "vulnerability", "encryption"],
+      "time_series": [2, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "time_series_labels": ["2025-10", "2025-09", "2025-08", "2025-07", "2025-06", "2025-05", "2025-04", "2025-03", "2025-02", "2025-01", "2024-12", "2024-11", "2024-10", "2024-09", "2024-08", "2024-07", "2024-06", "2024-05", "2024-04", "2024-03", "2024-02", "2024-01", "2023-12", "2023-11"],
+      "trend_metrics": {
+        "recent_avg": 0.50,
+        "previous_avg": 0.17,
+        "historical_avg": 0.00
+      }
     },
     ...
   ],
@@ -354,9 +429,9 @@ Create structured JSON index:
 }
 ```
 
-**Step 5.2: Calculate Core Theme Saturation (6-Month Window)**
+**Step 5.3: Calculate Core Theme Saturation (6-Month Window)**
 
-For each core theme, count occurrences in the past 6 months:
+For each core theme, count occurrences in the past 6 months (uses time_series[0:6] for efficiency):
 
 ```json
 {
@@ -403,9 +478,9 @@ Output confirmation block:
 ```markdown
 ## Theme Index Loaded ✅
 
-**Lookback Window:** 12 months (November 2024 → October 2025)
-**Calendars Found:** 12
-**Topics Indexed:** 87
+**Lookback Window:** 24 months (November 2023 → October 2025)
+**Calendars Found:** 24
+**Topics Indexed:** 187
 
 **Calendar Details:**
 | Month | Topics | Example Title |
@@ -453,18 +528,26 @@ mkdir -p "project/Calendar/2025/November"
 {
   "metadata": {
     "target_month": "YYYY-MM",
-    "lookback_months": 12,
-    "calendars_analyzed": 12,
-    "topics_indexed": 87,
+    "lookback_months": 24,
+    "calendars_analyzed": 24,
+    "topics_indexed": 187,
     "generated_at": "ISO-8601 timestamp",
-    "skill_version": "theme-index-builder v1.0"
+    "skill_version": "theme-index-builder v2.0",
+    "includes_time_series": true
   },
   "theme_tags": ["tag1", "tag2", "tag3", ...],
   "core_themes": [
     {
       "theme": "theme-name",
       "source": "past_calendar+pillar|past_calendar|pillar|focus_area",
-      "pattern_matches": ["keyword1", "keyword2", ...]
+      "pattern_matches": ["keyword1", "keyword2", ...],
+      "time_series": [N, N, N, ..., N],
+      "time_series_labels": ["YYYY-MM", "YYYY-MM", ..., "YYYY-MM"],
+      "trend_metrics": {
+        "recent_avg": 0.00,
+        "previous_avg": 0.00,
+        "historical_avg": 0.00
+      }
     },
     ...
   ],
@@ -577,9 +660,10 @@ Human-readable report documenting:
 - **Saturation Accuracy:** Core theme saturation correctly calculated for 6-month window
 
 ### Performance
-- **Indexing Speed:** ≤2 minutes for 12 calendars with ~100 topics
+- **Indexing Speed:** ≤3 minutes for 24 calendars with ~200 topics (includes time series)
 - **Parsing Success:** ≥95% of calendars successfully parsed
 - **Validation:** 100% of indexes validated before output
+- **Time Series:** ≤30 seconds to build 24-month arrays for all core themes
 
 ---
 
@@ -618,19 +702,21 @@ Parameters:
 **Input:**
 ```
 target_month: "November 2025"
-lookback_months: 12
+lookback_months: 24
 calendar_directory: "project/Calendar/"
 include_requirements_themes: true
+include_time_series: true
 ```
 
 **Process:**
-1. Identify calendars: November 2024 → October 2025 (12 months)
-2. Parse 12 calendar files, extract 87 topics
-3. Generate 24 theme tags from content + requirements.md
-4. Build 12 core themes from recurring patterns
-5. Assign theme tags and core themes to all 87 topics
-6. Calculate saturation: 5 core themes SATURATED, 7 AVAILABLE
-7. Save `theme-index.json` and `theme-index-validation.md`
+1. Identify calendars: November 2023 → October 2025 (24 months)
+2. Parse 24 calendar files, extract 187 topics
+3. Generate 32 theme tags from content + requirements.md
+4. Build 15 core themes from recurring patterns
+5. Assign theme tags and core themes to all 187 topics
+6. Build time series arrays (24 months) with trend metrics for each core theme
+7. Calculate saturation: 7 core themes SATURATED, 8 AVAILABLE
+8. Save `theme-index.json` and `theme-index-validation.md`
 
 **Output Files:**
 - `project/Calendar/2025/November/theme-index.json`
@@ -640,9 +726,9 @@ include_requirements_themes: true
 ```markdown
 ## Theme Index Loaded ✅
 
-**Lookback Window:** 12 months (November 2024 → October 2025)
-**Calendars Found:** 12
-**Topics Indexed:** 87
+**Lookback Window:** 24 months (November 2023 → October 2025)
+**Calendars Found:** 24
+**Topics Indexed:** 187
 
 **Core Theme Saturation (Past 6 Months):**
 | Core Theme | Count | Most Recent | Status |
@@ -663,3 +749,6 @@ include_requirements_themes: true
 - Theme tags and core themes are **derived from actual content**, not hardcoded patterns
 - Index is **versioned** (skill_version in metadata) for future compatibility
 - Validation report is **mandatory** — no index is complete without it
+- **Phase 3 Enhancement:** 24-month lookback with time series data for trend momentum analysis
+- **Backward Compatible:** 12-month lookback still supported (set `lookback_months: 12`)
+- Time series enables ACCELERATING/DECLINING momentum classification via trend-momentum-analyzer skill

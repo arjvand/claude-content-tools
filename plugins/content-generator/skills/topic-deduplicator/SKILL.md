@@ -1,6 +1,6 @@
 ---
 name: topic-deduplicator
-description: Perform theme-level deduplication for topic candidates against past content. Uses similarity scoring, core theme matching, differentiation analysis, and 6-month hard-block enforcement.
+description: Perform theme-level deduplication for topic candidates against past content. Uses similarity scoring, core theme matching, differentiation analysis, 6-month hard-block enforcement, and momentum-adjusted scoring (Phase 3 enhancement).
 ---
 
 # Topic Deduplicator Skill
@@ -10,12 +10,13 @@ description: Perform theme-level deduplication for topic candidates against past
 Automate theme-level deduplication by comparing topic candidates against a theme index of past content. Prevents publishing duplicate or overly similar content through:
 
 - **Similarity Scoring:** Multi-factor algorithm with keyword overlap, theme tags, title semantics, and core theme matching
+- **Momentum Analysis (Phase 3):** Adjusts similarity scores based on trend momentum (avoid accelerating themes, favor dormant opportunities)
 - **Synonym Expansion:** Dynamic synonym detection for accurate paraphrase identification
 - **6-Month Hard-Block:** Strict enforcement preventing same core theme within 6-month window
 - **Differentiation Analysis:** Evaluates angle novelty for similar themes (7+ months old)
 - **Time Decay:** Graduated thresholds based on topic recency
 
-Replaces manual duplicate checking with systematic, repeatable deduplication that scales across all industries and content types.
+Replaces manual duplicate checking with systematic, repeatable deduplication that scales across all industries and content types. Phase 3 enhancement uses time series analysis to provide strategic guidance on theme timing.
 
 ## When to Use
 
@@ -43,12 +44,46 @@ Replaces manual duplicate checking with systematic, repeatable deduplication tha
   - `core_theme_saturation[]`: Saturation status per theme
 
 ### Optional
+- `quick_check_mode`: Fast saturation check without full similarity calculation (default: false)
+  - `true`: Returns BLOCKED/AVAILABLE/BORDERLINE in <5 seconds (core theme check only)
+  - `false`: Full analysis with similarity scores (standard behavior)
 - `external_check`: Perform external novelty check via web search (default: true)
 - `lookback_months`: Override theme index lookback (default: use index metadata)
 
 ---
 
 ## Process
+
+### Quick-Check Mode (When `quick_check_mode: true`)
+
+**Purpose:** Enable real-time saturation feedback during signal discovery without full similarity calculation.
+
+**Process (< 5 seconds):**
+
+1. **Load theme index** and extract `core_theme_saturation[]`
+2. **Extract candidate core theme** using pattern matching (Step 1.1 logic)
+3. **Check saturation status:**
+   - If `status == "SATURATED"` (count ≥ 1 in past 6 months) → Return `BLOCKED`
+   - If no similar topics found (no core theme match) → Return `AVAILABLE`
+   - If similar topics exist but 7+ months old (0.50-0.59 similarity range) → Return `BORDERLINE`
+   - Otherwise → Return `AVAILABLE`
+
+**Quick-Check Output:**
+```json
+{
+  "quick_check": true,
+  "quick_status": "BLOCKED|AVAILABLE|BORDERLINE",
+  "core_theme_match": "theme-name (if BLOCKED)",
+  "months_ago": N,
+  "reason": "Brief explanation"
+}
+```
+
+**Usage:** Invoke topic-deduplicator with `quick_check_mode: true` during signal research Phase 3 (topic clustering) to get instant saturation feedback. Use standard mode (quick_check_mode: false) for final deduplication before calendar finalization.
+
+**Note:** Quick-check mode **skips** Phases 3-7 (similarity scoring, differentiation analysis, external check). Only core theme hard-block is checked. Use for early pivots, not final validation.
+
+---
 
 ### Phase 1: Pre-Processing (1 minute)
 
@@ -309,9 +344,90 @@ Most Similar: ART-202509-004
 
 ---
 
+### Phase 3.5: Momentum Analysis (Phase 3 Enhancement - 30 seconds)
+
+**Purpose:** Adjust similarity scores based on theme momentum to avoid accelerating trends and favor dormant opportunities.
+
+**Step 3.5.1: Load Time Series Data**
+
+If theme index includes `includes_time_series: true`, load time series for the candidate's primary core theme:
+
+```json
+From theme_index.core_themes[]:
+{
+  "theme": "data-migration",
+  "time_series": [1, 1, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  "time_series_labels": ["2025-10", "2025-09", ..., "2023-11"],
+  "trend_metrics": {
+    "recent_avg": 0.33,
+    "previous_avg": 0.50,
+    "historical_avg": 0.08
+  }
+}
+```
+
+**Step 3.5.2: Invoke Trend Momentum Analyzer**
+
+Pass time series data to `trend-momentum-analyzer` skill:
+
+```
+Input:
+  core_theme: "data-migration"
+  time_series: [1, 1, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  time_series_labels: ["2025-10", "2025-09", ..., "2023-11"]
+  lookback_months: 24
+
+Output:
+  momentum_classification: "DECLINING"
+  momentum_ratio: 0.66
+  momentum_score: -0.05
+  recommendation: "FAVORABLE - Declining themes are good revival opportunities"
+```
+
+**Step 3.5.3: Apply Momentum Adjustment**
+
+Adjust the base similarity score from Phase 3 using momentum scoring:
+
+```
+Base Similarity (from Step 3.2): 0.71
+Momentum Score (from momentum analyzer): -0.05
+Effective Similarity = 0.71 + (-0.05) = 0.66
+```
+
+**Momentum Scoring Reference:**
+
+| Momentum Classification | Adjustment | Rationale |
+|-------------------------|-----------|-----------|
+| **ACCELERATING** | +0.20 | Avoid saturating hot trends (penalize selection) |
+| **STABLE** | +0.10 | Moderate caution for steady themes |
+| **DECLINING** | -0.05 | Slight preference for revival opportunities |
+| **DORMANT** | -0.15 | Strong preference for neglected themes |
+| **EMERGING** | 0.00 | Neutral (too new for pattern) |
+| **INACTIVE** | -0.10 | Moderate preference for reactivation |
+
+**If time series not available:** Skip momentum adjustment, use base similarity as effective similarity.
+
+**Output Enhancement:**
+```json
+{
+  "momentum_analysis": {
+    "classification": "DECLINING",
+    "momentum_ratio": 0.66,
+    "momentum_score": -0.05,
+    "base_similarity": 0.71,
+    "effective_similarity": 0.66,
+    "recommendation": "FAVORABLE - Declining themes are good revival opportunities"
+  }
+}
+```
+
+---
+
 ### Phase 4: Threshold Classification (1 minute)
 
 **Step 4.1: Apply Similarity Thresholds**
+
+**IMPORTANT:** Use **effective similarity** (momentum-adjusted) from Phase 3.5 if available, otherwise use base similarity from Phase 3.
 
 Based on similarity score and recency, classify the candidate:
 
@@ -323,30 +439,41 @@ Based on similarity score and recency, classify the candidate:
 | Similarity 0.40-0.79 | 7+ months | **Similar Theme** | Check differentiation |
 | Similarity < 0.40 | Any age | **Low Similarity** | **PASS** (NOVEL) |
 
-**Example Classification:**
+**Example Classification (with momentum adjustment):**
 ```
 Most Similar Topic:
-  Similarity: 0.71
+  Base Similarity: 0.71
+  Momentum Score: -0.05 (DECLINING theme)
+  Effective Similarity: 0.66
   Months Ago: 2
 
 Condition Check:
   - Core theme hard-block? NO (passed Phase 2)
-  - Similarity ≥ 0.80? NO (0.71 < 0.80)
-  - Similarity ≥ 0.60 AND within 6 months? YES (0.71 ≥ 0.60, 2 months ≤ 6)
+  - Effective similarity ≥ 0.80? NO (0.66 < 0.80)
+  - Effective similarity ≥ 0.60 AND within 6 months? YES (0.66 ≥ 0.60, 2 months ≤ 6)
 
 Classification: SIMILAR RECENT → BLOCK
+
+Note: Without momentum adjustment, this would have been 0.71 similarity (still BLOCKED)
+but momentum analysis provides strategic context for marginal cases.
 ```
 
-**Block Output:**
+**Block Output (with momentum analysis):**
 ```json
 {
   "dedup_status": "BLOCKED",
   "block_type": "recent_similar",
   "most_similar_id": "ART-202509-004",
   "most_similar_title": "Complete WooCommerce Data Import Guide",
-  "theme_similarity_score": 0.71,
+  "base_similarity_score": 0.71,
+  "effective_similarity_score": 0.66,
   "months_ago": 2,
-  "block_reason": "Similar theme too recent. ART-202509-004 was published 2 month(s) ago with similarity 0.71. Wait until month 7+ or find significantly different angle."
+  "block_reason": "Similar theme too recent. ART-202509-004 was published 2 month(s) ago with effective similarity 0.66 (base: 0.71, momentum: -0.05). Wait until month 7+ or find significantly different angle.",
+  "momentum_analysis": {
+    "classification": "DECLINING",
+    "momentum_score": -0.05,
+    "recommendation": "FAVORABLE - Declining themes are good revival opportunities, but still too recent"
+  }
 }
 ```
 

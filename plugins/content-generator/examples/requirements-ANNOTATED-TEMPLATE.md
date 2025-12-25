@@ -291,6 +291,102 @@ Provide 4-6 examples of sentences/phrases that violate your brand voice:
 
 ---
 
+### Novelty Controls
+
+**[OPTIONAL]** - **Impact: HIGH** - Used by: `@signal-researcher`, `topic-deduplicator`
+
+This section controls real-time saturation feedback during topic generation. Enables early pivots when topics are blocked.
+
+#### Saturation Sensitivity
+
+**What it controls**: How aggressively to avoid similar topics
+
+* **Level**: balanced
+  - **Options**: `lenient`, `balanced`, `strict`
+  - **lenient**: Only hard-block core themes (6-month rule), allow borderline candidates
+  - **balanced**: Hard-block core themes + pivot on borderline (default, recommended)
+  - **strict**: Hard-block + pivot on borderline + avoid 0.40-0.59 similarity range
+  - **Impact**: Affects how many topic candidates get pivoted to alternative angles
+  - **Recommended**: `balanced` for most projects
+
+#### Alternative Angle Preference
+
+**What it controls**: When a topic is blocked, which alternative angle type to prefer
+
+* **Depth angles**: 60%
+  - **What it means**: Favor technical depth differentiation (e.g., "Performance Benchmarking" vs "Migration Guide")
+  - **Impact**: 60% of pivots will try depth angle first, 40% will try use-case angle first
+  - **Recommended**: 60/40 split for technical content; adjust to 40/60 for business content
+
+* **Use-case angles**: 40%
+  - **What it means**: Favor niche application differentiation (e.g., "for High-Volume Stores" vs general guide)
+  - **Impact**: 40% of pivots will try use-case angle first
+  - **Recommended**: Increase to 60% for broad audience content
+
+**Example Pivot Flow:**
+```
+Primary: "WooCommerce HPOS Migration Guide"
+→ Quick-check: BLOCKED (core theme "data-migration" saturated)
+→ Generate depth angle: "HPOS Performance Benchmarking: Query Optimization"
+→ Quick-check depth: AVAILABLE
+→ Use depth angle as final candidate
+```
+
+#### Multi-Angle Generation
+
+**[OPTIONAL but RECOMMENDED]** - **Impact: VERY HIGH** - Used by: `@signal-researcher`, `angle-generator`
+
+This section enables multi-variant topic generation with composite scoring. **Highly recommended** for Phase 2 novelty improvements (88-92% novelty vs 80-85% with Phase 1).
+
+**What it controls**: Generate 3 angle variants per signal and select the best via data-driven scoring
+
+* **Enabled**: true
+  - **Options**: `true` | `false`
+  - **true**: Use multi-variant workflow (Phase 2, recommended)
+  - **false**: Use single-angle with pivot workflow (Phase 1, fallback)
+  - **Impact**: Determines topic generation strategy
+  - **Recommended**: `true` for maximum novelty and differentiation
+
+* **Variant types**: [coverage, depth, use-case]
+  - **What it means**: Which angle templates to use when generating variants
+  - **coverage**: Breadth-focused comprehensive guides
+  - **depth**: Technical deep-dives on specific aspects
+  - **use-case**: Niche application for specific audience segments
+  - **Impact**: All 3 types maximize differentiation opportunities
+  - **Recommended**: Keep all 3 types enabled
+
+* **Selection criteria**: Composite scoring weights
+  - **What it controls**: How variants are scored and selected
+  - **Novelty weight**: 0.40 (default)
+    - Higher = prioritize unique topics
+    - Lower = allow more similar topics if they score well on other dimensions
+  - **Opportunity weight**: 0.35 (default)
+    - Higher = prioritize topics with high competitive gaps
+    - Lower = care less about gap size
+  - **Feasibility weight**: 0.25 (default)
+    - Higher = prioritize topics easy to create (resources available)
+    - Lower = willing to tackle difficult topics
+  - **Impact**: Weights must sum to 1.0; affects which variant is selected
+  - **Recommended**: Default weights (0.40/0.35/0.25) work well for most projects
+
+**Example Multi-Variant Selection:**
+```
+Signal: "WooCommerce 8.5 HPOS 2.0 Release"
+
+Variants Generated:
+  1. Coverage: "Complete HPOS 2.0 Guide" → AVAILABLE (novelty: 0.60, feasibility: 1.0)
+  2. Depth: "HPOS Performance Benchmarking" → BLOCKED (saturated)
+  3. Use-Case: "HPOS for High-Volume Stores" → AVAILABLE (novelty: 0.75, feasibility: 0.94)
+
+Composite Scores:
+  Variant 1: (0.60 × 0.40) + (0.50 × 0.35) + (1.0 × 0.25) = 0.665
+  Variant 3: (0.75 × 0.40) + (0.50 × 0.35) + (0.94 × 0.25) = 0.710 ← SELECTED
+
+Result: Use-case variant selected (highest composite score)
+```
+
+---
+
 ### Competitive Analysis Preferences
 
 **[OPTIONAL but RECOMMENDED]** - **Impact: HIGH** - Used by: `competitive-gap-analyzer`

@@ -97,6 +97,61 @@ This file configures the content generation system. Agents read this file at run
 * **Cadence**: 2 posts/week
 * **Product Announcements Scope**: Cover major technology announcements affecting business users; maintain vendor-neutral perspective
 
+### Novelty Controls
+
+#### Saturation Sensitivity
+* **Level**: balanced
+  * Options: `lenient`, `balanced`, `strict`
+  * **lenient**: Only hard-block core themes, allow borderline candidates
+  * **balanced**: Hard-block core themes, pivot on borderline (default)
+  * **strict**: Hard-block + pivot on borderline + avoid 0.40-0.59 similarity
+
+#### Alternative Angle Preference
+* **Depth angles**: 60% — Favor technical depth differentiation
+* **Use-case angles**: 40% — Favor niche application differentiation
+
+#### Multi-Angle Generation
+* **Enabled**: true
+  * Generate 3 angle variants per signal (coverage, depth, use-case)
+  * Select best variant via composite scoring
+  * Set to `false` to use Phase 1 single-angle workflow
+
+* **Variant types**: [coverage, depth, use-case]
+  * Which angle types to generate
+  * All 3 types recommended for maximum differentiation
+
+* **Selection criteria**:
+  * **Novelty weight**: 0.40 — Prioritize unique topics
+  * **Opportunity weight**: 0.35 — Favor high-gap topics
+  * **Feasibility weight**: 0.25 — Ensure resource availability
+  * Total weights must sum to 1.0
+
+#### Trend Analysis (Phase 3)
+* **Enabled**: true
+  * Use 24-month time series for momentum detection
+  * Avoid accelerating themes (prevent saturation)
+  * Favor dormant themes (revival opportunities)
+  * Set to `false` to disable momentum-adjusted scoring
+
+* **Lookback months**: 24
+  * Extended lookback for trend classification
+  * Enables ACCELERATING/STABLE/DECLINING/DORMANT detection
+  * Requires 24+ months of historical calendar data
+
+#### Convergence Detection (Phase 3)
+* **Enabled**: true
+  * Detect cross-signal convergence patterns
+  * Generate synthesis topics combining multiple signals
+  * Set to `false` to disable convergence analysis
+
+* **Min cluster size**: 3
+  * Minimum signals required for convergence cluster
+  * Higher values = stricter convergence criteria
+
+* **Similarity threshold**: 0.40
+  * Semantic similarity threshold for clustering
+  * Range: 0.0-1.0 (higher = more similar signals required)
+
 ### Competitive Analysis Preferences
 
 #### Pre-Analysis Settings (Calendar Generation)
