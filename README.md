@@ -37,12 +37,20 @@ Install the content-generator plugin:
    # cp plugins/content-generator/examples/requirements-wordpress.md project/requirements.md
    ```
 
-3. **Generate a content calendar**:
+3. **Set up featured image configuration** (required for image generation):
+   ```bash
+   # Copy the graphic style template and customize with your brand colors:
+   cp plugins/content-generator/examples/graphic-template.json project/graphic.json
+
+   # Edit project/graphic.json to add your brand colors and visual style
+   ```
+
+4. **Generate a content calendar**:
    ```bash
    /content-generator:content-calendar October 2025
    ```
 
-4. **Write an article**:
+5. **Write an article**:
    ```bash
    /content-generator:write-article Calendar/2025/October/content-calendar.md ART-202510-001
    ```
@@ -88,6 +96,12 @@ All behavior is driven by `project/requirements.md`. Configure:
 - **Target Audience**: Roles, skill level
 - **Content Strategy**: Formats, word counts, topic pillars
 - **SEO Strategy**: Keywords, CTA patterns
+
+**New to configuration?** See `examples/requirements-ANNOTATED-TEMPLATE.md` for comprehensive field-by-field documentation with:
+- `[REQUIRED]` vs `[OPTIONAL]` tags
+- Impact levels (HIGH/MEDIUM/LOW)
+- Which agents/skills use each field
+- Troubleshooting guide for common issues
 
 ### Example Templates
 

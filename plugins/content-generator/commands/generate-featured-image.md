@@ -47,7 +47,17 @@ ls -la "project/graphic.json"
 
 ```
 ERROR: Style configuration not found at project/graphic.json
-ACTION: Create graphic.json from template or restore from repository
+
+REQUIRED SETUP:
+1. Copy the template to your project:
+   cp plugins/content-generator/examples/graphic-template.json project/graphic.json
+
+2. Customize the template with your brand colors and visual style
+   Edit: project/graphic.json
+
+3. Then retry this command
+
+TEMPLATE LOCATION: plugins/content-generator/examples/graphic-template.json
 ```
 
 ---
@@ -149,7 +159,17 @@ ACTION: Ensure article is complete with both article.md and meta.yml
 
 ```
 ERROR: Style configuration not found at project/graphic.json
-ACTION: Create graphic.json with default TBM style settings
+
+REQUIRED SETUP:
+1. Copy the template to your project:
+   cp plugins/content-generator/examples/graphic-template.json project/graphic.json
+
+2. Customize the template with your brand colors and visual style
+   Edit: project/graphic.json
+
+3. Then retry this command
+
+TEMPLATE LOCATION: plugins/content-generator/examples/graphic-template.json
 ```
 
 ### No Theme Mapping

@@ -1,0 +1,244 @@
+{
+  "_comment": "Featured Image Style Configuration - Copy this file to project/graphic.json and customize for your brand",
+  "_usage": "This file controls how the featured-image-generator skill creates image prompts for your articles",
+
+  "theme_mappings": {
+    "_description": "Maps article topics/keywords to visual concepts. Add mappings for common themes in your content.",
+
+    "pricing": {
+      "visual_concepts": [
+        "balanced scales with transparency",
+        "clear containers showing value",
+        "transparent layers of components"
+      ],
+      "color_emphasis": "primary with accent highlights",
+      "symbolism": "fairness, clarity, value demonstration"
+    },
+    "collaboration": {
+      "visual_concepts": [
+        "connected geometric nodes",
+        "interlocking puzzle pieces",
+        "bridges linking elements",
+        "hands passing objects cleanly"
+      ],
+      "color_emphasis": "warm tones, connected flow",
+      "symbolism": "teamwork, partnership, communication"
+    },
+    "ai": {
+      "visual_concepts": [
+        "neural network patterns",
+        "human hand + geometric helper shapes",
+        "parallel paths merging",
+        "abstract intelligence symbols"
+      ],
+      "color_emphasis": "tech blues with energy accents",
+      "symbolism": "intelligence, assistance, augmentation"
+    },
+    "automation": {
+      "visual_concepts": [
+        "flowing gears or mechanisms",
+        "smooth workflow paths",
+        "sequential process steps",
+        "efficiency symbols"
+      ],
+      "color_emphasis": "dynamic flow, movement",
+      "symbolism": "efficiency, streamlined processes"
+    },
+    "growth": {
+      "visual_concepts": [
+        "ascending stairs or steps",
+        "sprouting seeds or plants",
+        "expanding circles or waves",
+        "upward trajectories"
+      ],
+      "color_emphasis": "energetic, optimistic tones",
+      "symbolism": "progress, development, scaling"
+    },
+    "trust": {
+      "visual_concepts": [
+        "open hands offering",
+        "transparent containers",
+        "secure foundations",
+        "clear sightlines"
+      ],
+      "color_emphasis": "stable, reassuring colors",
+      "symbolism": "reliability, transparency, safety"
+    },
+    "process": {
+      "visual_concepts": [
+        "connected sequential steps",
+        "flowchart-inspired elements",
+        "journey path visualization",
+        "modular building blocks"
+      ],
+      "color_emphasis": "structured, organized palette",
+      "symbolism": "methodology, systematic approach"
+    },
+    "performance": {
+      "visual_concepts": [
+        "speed lines or momentum",
+        "optimized shapes",
+        "refined mechanisms",
+        "streamlined forms"
+      ],
+      "color_emphasis": "dynamic, energetic",
+      "symbolism": "optimization, speed, efficiency"
+    }
+  },
+
+  "category_overrides": {
+    "_description": "Category-specific settings that override defaults. Customize these for your blog categories.",
+
+    "for-clients": {
+      "mood": "professional, trustworthy, clear",
+      "motifs": [
+        "business clarity symbols",
+        "value demonstration",
+        "partnership concepts",
+        "solution visualization"
+      ],
+      "atmosphere": "confident and reassuring"
+    },
+    "for-creators": {
+      "mood": "creative, empowering, energetic",
+      "motifs": [
+        "creation tools",
+        "building blocks",
+        "growth metaphors",
+        "innovation symbols"
+      ],
+      "atmosphere": "inspiring and enabling"
+    },
+    "future-of-work": {
+      "mood": "forward-looking, transformative, optimistic",
+      "motifs": [
+        "technology fusion",
+        "evolution symbols",
+        "possibility concepts",
+        "paradigm shifts"
+      ],
+      "atmosphere": "visionary and thought-provoking"
+    },
+    "tutorial": {
+      "mood": "helpful, clear, accessible",
+      "motifs": [
+        "step-by-step elements",
+        "learning paths",
+        "building concepts",
+        "hands-on symbols"
+      ],
+      "atmosphere": "educational and supportive"
+    },
+    "analysis": {
+      "mood": "insightful, balanced, thoughtful",
+      "motifs": [
+        "comparison frameworks",
+        "perspective shifts",
+        "analytical elements",
+        "pattern recognition"
+      ],
+      "atmosphere": "intellectual and exploratory"
+    }
+  },
+
+  "defaults": {
+    "_description": "Default settings applied to all images unless overridden by category or theme",
+
+    "style": "minimalist abstract",
+    "rendering": "clean geometric shapes with subtle depth",
+    "photography": {
+      "lighting": "soft diffused studio lighting",
+      "angle": "straight-on, centered",
+      "texture": "clean with minimal grain",
+      "depth_of_field": "shallow, subject in sharp focus"
+    },
+    "composition": {
+      "framing": "centered focal point with generous negative space",
+      "aspect_ratio": "16:9",
+      "visual_weight": "balanced, not crowded",
+      "breathing_room": "40% minimum empty space"
+    },
+    "recommended_size": "1200x675",
+    "platform_target": "Gemini 2.5 Flash (Nano Banana Pro)"
+  },
+
+  "color_palette": {
+    "_description": "Your brand color palette. Replace these with your actual brand colors.",
+    "_instruction": "Use exact hex codes. Limit to 4-5 colors maximum for visual coherence.",
+
+    "primary": {
+      "hex": "#1A73E8",
+      "name": "Professional Blue",
+      "usage": "Main brand color, primary elements"
+    },
+    "secondary": {
+      "hex": "#34A853",
+      "name": "Growth Green",
+      "usage": "Secondary brand color, accents"
+    },
+    "accent": {
+      "hex": "#FBBC04",
+      "name": "Energy Yellow",
+      "usage": "Highlights, call-outs, energy"
+    },
+    "neutral": {
+      "hex": "#5F6368",
+      "name": "Slate Gray",
+      "usage": "Supporting elements, shadows"
+    },
+    "background": {
+      "hex": "#FFFFFF",
+      "name": "White",
+      "usage": "Backgrounds, negative space"
+    },
+    "max_colors_per_image": 4
+  },
+
+  "exclusions": {
+    "_description": "Visual elements to avoid in all images",
+
+    "never_include": [
+      "text or typography of any kind",
+      "logos, watermarks, or brand marks",
+      "photorealistic human faces",
+      "stock photo clichés (handshakes, generic office scenes)",
+      "crowded or cluttered compositions",
+      "overused tech symbols (gears alone, lightbulbs, puzzle pieces as sole element)",
+      "literal representations (prefer abstract/conceptual)",
+      "gradients as main subject (only as background)",
+      "more than 4 colors total"
+    ],
+    "avoid_when_possible": [
+      "overly complex subjects",
+      "multiple competing focal points",
+      "busy backgrounds",
+      "excessive texture or noise",
+      "dark or moody lighting (prefer bright, optimistic)"
+    ]
+  },
+
+  "customization_guide": {
+    "_description": "Instructions for adapting this template to your brand",
+
+    "steps": [
+      "1. Update color_palette with your exact brand hex codes",
+      "2. Modify category_overrides to match your blog categories",
+      "3. Add theme_mappings for topics you frequently cover",
+      "4. Adjust defaults.style to match your brand aesthetic",
+      "5. Update exclusions based on your brand guidelines",
+      "6. Test with /generate-featured-image on a sample article",
+      "7. Refine based on image output quality"
+    ],
+
+    "common_customizations": {
+      "corporate_brand": "Use conservative colors, professional motifs, trust-focused themes",
+      "creative_brand": "Use vibrant colors, playful motifs, innovation-focused themes",
+      "technical_brand": "Use tech colors (blues, grays), precision motifs, process-focused themes",
+      "lifestyle_brand": "Use warm colors, human-centered motifs, growth-focused themes"
+    }
+  },
+
+  "version": "1.0",
+  "last_updated": "2025-01-20",
+  "schema_version": "featured-image-generator-v1"
+}

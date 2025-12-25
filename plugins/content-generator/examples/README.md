@@ -15,8 +15,13 @@ This directory contains working example configurations demonstrating how the con
    # Or choose a specialized template:
    cp examples/requirements-react.md requirements.md
    ```
-3. **Customize** the configuration for your specific needs
-4. **Generate content** using the commands:
+3. **Set up featured image configuration** (required for `/generate-featured-image`):
+   ```bash
+   cp examples/graphic-template.json project/graphic.json
+   # Then edit project/graphic.json to add your brand colors and visual style
+   ```
+4. **Customize** the requirements.md configuration for your specific needs
+5. **Generate content** using the commands:
    ```bash
    /content-calendar November 2025
    /write-article Calendar/2025/November/content-calendar.md ART-202511-001
@@ -255,7 +260,7 @@ The examples demonstrate the system's versatility across:
 
 ## Testing Your Configuration
 
-After creating/customizing your requirements.md:
+After creating/customizing your requirements.md and graphic.json:
 
 1. **Generate a test calendar**:
    ```bash

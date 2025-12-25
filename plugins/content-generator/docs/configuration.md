@@ -114,6 +114,82 @@ For non-WordPress projects, set `HTML Formatter Skill: none`
 
 ---
 
+## Parallel Execution Pattern
+
+The system uses **parallel agent execution** for performance optimization while maintaining quality.
+
+### Research Phase Parallelization
+
+**Pattern:** `/write-article` runs 2x `@researcher` agents concurrently, then merges results
+
+```
+┌─────────────────────────────┐
+│   /write-article command    │
+└──────────┬──────────────────┘
+           │
+           ├─────────────────┬─────────────────┐
+           │                 │                 │
+           v                 v                 v
+    ┌────────────┐    ┌────────────┐    Wait for both
+    │ Agent 1:   │    │ Agent 2:   │    to complete
+    │ Primary    │    │ Landscape  │
+    │ Sources    │    │ Analysis   │
+    └─────┬──────┘    └─────┬──────┘
+          │                 │
+          │                 │
+          └────────┬────────┘
+                   │
+                   v
+           ┌──────────────┐
+           │  Agent 3:    │
+           │  Merge       │
+           │  Coordinator │
+           └──────────────┘
+```
+
+**Agent 1 - Primary Sources** (5-7 min):
+- Official documentation research
+- Fact verification and technical accuracy
+- Code examples and technical requirements
+- SME requirement assessment
+- Output: `research-primary.md`
+
+**Agent 2 - Competitive Landscape** (5-7 min):
+- Competitive gap analysis (8-10 competitors)
+- Differentiation opportunity identification
+- Media embed discovery
+- Market positioning insights
+- Output: `research-landscape.md`, `gap-analysis-report.md`, `media-discovery.md`
+
+**Agent 3 - Merge Coordinator** (2-3 min):
+- Merge research-primary.md + research-landscape.md
+- Conflict resolution (technical accuracy vs. market positioning)
+- Verification checklist validation
+- Output: `research-brief.md`
+
+### Benefits
+
+- **Speed**: ~10-12 minutes total vs. ~15-20 minutes sequential (40-45% faster)
+- **Quality**: Separate agents focus on different expertise areas
+- **Validation**: Merge step cross-validates findings
+
+### Merge Strategy
+
+1. **Source Verification**: Agent 1's official sources authoritative, Agent 2's competitive findings validate
+2. **Differentiation**: Agent 2's gap analysis primary, Agent 1's depth enhances
+3. **Media Embeds**: Agent 2's discovery validated by Agent 1's credibility checks
+4. **Conflicts**: Technical accuracy → Agent 1 precedence; Market positioning → Agent 2 precedence
+
+### Failure Modes
+
+- **Agent failure**: Fall back to single-agent research
+- **Merge conflicts**: Escalate to @editor with conflict log
+- **Verification failure**: Manual review by @editor
+
+See `docs/workflow.md` Phase 2 for complete documentation.
+
+---
+
 ## Adding Platform-Specific Skills
 
 1. Create skill in `.claude/skills/[platform]-[feature]/`

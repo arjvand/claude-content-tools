@@ -73,6 +73,12 @@ All agents read `requirements.md` at runtime for:
 - Brand Voice, Target Audience, Content Mix
 - Word Count Range, CTA, CMS Platform
 
+**New to configuration?** See `examples/requirements-ANNOTATED-TEMPLATE.md` for comprehensive documentation:
+- Field-by-field explanations with `[REQUIRED]` vs `[OPTIONAL]` tags
+- Impact levels and which agents use each field
+- Troubleshooting guide for common configuration issues
+- Configuration validation checklist
+
 **Switch topics:**
 ```bash
 cp examples/requirements-react.md project/requirements.md
@@ -86,9 +92,16 @@ Available examples: `generic` (recommended), `wordpress`, `react`, `python`, `fi
 
 | Agent | Role |
 |-------|------|
-| `@researcher` | Verify originality, gather sources, run gap analysis, produce research brief |
+| `@researcher` | Verify originality, gather sources, run gap analysis, produce research brief (supports parallel execution for faster research) |
 | `@writer` | Create draft following brand voice and differentiation strategy |
 | `@editor` | Review for accuracy, SEO, compliance; generate HTML export; final approval |
+
+**Parallel Research Pattern**: The `/write-article` workflow runs 2x `@researcher` agents in parallel:
+- **Agent 1**: Primary sources and official documentation research
+- **Agent 2**: Competitive landscape and gap analysis
+- **Merge**: Third @researcher invocation merges outputs with conflict resolution
+
+See `docs/workflow.md` Phase 2 for complete parallel execution documentation.
 
 ---
 

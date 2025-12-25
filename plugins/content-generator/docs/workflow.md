@@ -39,29 +39,89 @@ Planning → Research → Writing → SEO → Review → Publish
 
 ---
 
-## Phase 2: Research
+## Phase 2: Research (Parallel Execution)
 
-**Agent:** `@researcher`
+**Agents:** 2x `@researcher` (parallel for speed)
 
-**Process:**
-1. Check for pre-analysis from calendar phase
-2. Verify topic originality via web search
-3. Run full competitive gap analysis (8-10 competitors)
-4. Gather information from official documentation sources
-5. Identify unique content angles
-6. Search for relevant media embeds (3-5 candidates)
-7. Produce research brief with:
-   - Sources and confidence levels
-   - Differentiation strategy (Priority 1-3 tactics)
-   - Unique value proposition
-   - Recommended media embeds
-   - SME flags if needed
+This phase uses **parallel research execution** to optimize research time while ensuring comprehensive coverage.
+
+### Phase 2.1: Parallel Research (5-7 minutes each, concurrent)
+
+**Agent 1: Primary Sources Research**
+- Gather information from official documentation sources
+- Verify facts and technical accuracy
+- Identify code examples and technical depth requirements
+- Assess SME requirements
+- Output: `project/Articles/{ARTICLE-ID}/research-primary.md`
+
+**Agent 2: Competitive Landscape Analysis**
+- Run full competitive gap analysis (8-10 competitors)
+- Identify differentiation opportunities and unique angles
+- Calculate gap scores: Coverage, Depth, Format, Recency
+- Search for relevant media embeds (3-5 candidates)
+- Output: `project/Articles/{ARTICLE-ID}/research-landscape.md`
+
+**Why Parallel**: Running both agents simultaneously reduces total research time from ~15 minutes to ~7 minutes.
+
+### Phase 2.2: Research Merge (2-3 minutes, sequential after parallel completion)
+
+**Performed by:** `@researcher` agent (third invocation - merge coordinator)
+
+**Merge Strategy:**
+
+1. **Source Verification Section:**
+   - Use Agent 1's official sources as authoritative base
+   - Cross-reference Agent 2's competitive findings for validation
+   - Flag any contradictions for manual SME review
+   - Priority: Agent 1's sources take precedence for technical accuracy
+
+2. **Differentiation Strategy:**
+   - Use Agent 2's gap analysis as primary input for differentiation tactics
+   - Enhance with Agent 1's technical depth findings
+   - Prioritize tactics: P1 (must implement), P2 (should implement), P3 (nice-to-have)
+
+3. **Media Embeds:**
+   - Use Agent 2's media discovery results
+   - Validate against Agent 1's credibility and relevance standards
+   - Keep only embeds that pass both quality and technical accuracy checks
+
+4. **Conflict Resolution:**
+   - **Technical accuracy conflicts**: Agent 1 (official sources) takes precedence
+   - **Market positioning conflicts**: Agent 2 (competitive analysis) takes precedence
+   - **Unresolvable conflicts**: Flag for SME review in research brief with both perspectives noted
+
+**Verification Checklist:**
+- [ ] All Agent 1 official sources included in final brief
+- [ ] All Agent 2 gap tactics addressed in differentiation strategy
+- [ ] No unresolved contradictions (conflicts noted if present)
+- [ ] Media embeds validated for both quality and accuracy
+- [ ] SME flags consolidated (no duplicate flags)
+
+**Failure Modes & Recovery:**
+- **Agent 1 or 2 fails**: Fall back to single-agent research (traditional workflow)
+- **Merge produces conflicts**: Include conflict log in brief; escalate to @editor for manual merge
+- **Verification fails**: Escalate to @editor with both research files for manual review
+
+### Phase 2.3: Quick Fact-Check (1-2 minutes)
+
+**Skill:** `fact-checker` (quick mode)
+
+- Source audit of claims in merged research brief
+- Validate confidence levels: HIGH/MODERATE/LOW/UNVERIFIED
+- Flag any claims requiring deeper verification
 
 **Output:**
-- `project/Articles/{ARTICLE-ID}/research-brief.md`
-- `project/Articles/{ARTICLE-ID}/gap-analysis-report.md`
+- `project/Articles/{ARTICLE-ID}/claim-audit-quick.md`
 
-**Time:** 5-10 minutes
+### Final Output:
+- `project/Articles/{ARTICLE-ID}/research-primary.md` (Agent 1)
+- `project/Articles/{ARTICLE-ID}/research-landscape.md` (Agent 2)
+- `project/Articles/{ARTICLE-ID}/research-brief.md` (merged)
+- `project/Articles/{ARTICLE-ID}/gap-analysis-report.md` (from Agent 2)
+- `project/Articles/{ARTICLE-ID}/media-discovery.md` (from Agent 2)
+- `project/Articles/{ARTICLE-ID}/claim-audit-quick.md` (post-merge validation)
+
+**Total Time:** ~10-12 minutes (vs ~15-20 minutes sequential)
 
 ---
 
