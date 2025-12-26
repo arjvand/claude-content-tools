@@ -408,6 +408,21 @@ If embeds add unique value (1-3 maximum):
 * Convert embeds to platform-specific code for HTML export
 * Update meta.yml with embed metadata
 
+**YAML Frontmatter (MANDATORY):**
+The final `article.md` MUST include YAML frontmatter at the top with these fields:
+```yaml
+---
+title: "[Article Title]"
+description: "[Meta description - 150-160 chars]"
+slug: "[url-slug]"
+author: "[Author Name]"
+pubDate: "YYYY-MM-DD"
+category: "[Theme/Pillar]"
+tags: ["tag1", "tag2", "tag3"]
+---
+```
+See `@editor` agent documentation for complete frontmatter requirements.
+
 Save final to: `project/Articles/[ARTICLE-ID]/article.md`
 If needed, export HTML to: `project/Articles/[ARTICLE-ID]/article.html`
 

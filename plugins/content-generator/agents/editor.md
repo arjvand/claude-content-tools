@@ -1142,7 +1142,7 @@ All article files are organized in a single folder: `project/Articles/[ARTICLE-I
 project/Articles/[ARTICLE-ID]/
 ├── research-brief.md    # Created by @researcher
 ├── draft.md             # Created by @writer
-├── article.md           # Final version (you create this)
+├── article.md           # Final version (you create this) - MUST include YAML frontmatter
 ├── article.html         # CMS-specific HTML export (you create this, if configured)
 └── meta.yml             # Metadata (you create this)
 
@@ -1168,3 +1168,64 @@ cat project/Articles/[ARTICLE-ID]/draft.md
 
 # Note: Existing articles (like ART-202510-006) remain in their current locations.
 ```
+
+## YAML Frontmatter Requirements (MANDATORY)
+
+**Every `article.md` MUST include YAML frontmatter at the top of the file.**
+
+This frontmatter provides essential metadata for CMS platforms, static site generators, and content management systems.
+
+### Required Frontmatter Format
+
+```yaml
+---
+title: "[Article Title]"
+description: "[Meta description or excerpt - 150-160 chars]"
+slug: "[url-slug]"
+author: "[Author Name]"
+pubDate: "YYYY-MM-DD"
+category: "[Theme/Pillar]"
+tags: ["tag1", "tag2", "tag3"]
+---
+```
+
+### Field Mapping
+
+| Frontmatter Field | Source | Notes |
+|-------------------|--------|-------|
+| `title` | Article H1 / meta.yml `title` | The main article title |
+| `description` | meta.yml `excerpt` or `meta_description` | 150-160 characters for SEO |
+| `slug` | meta.yml `slug` | URL-friendly identifier |
+| `author` | meta.yml `author` or config default | Author name |
+| `pubDate` | meta.yml `publish_date` | Format: YYYY-MM-DD |
+| `category` | meta.yml `category` | Primary content pillar/theme |
+| `tags` | Combined from meta.yml tags sections | Array format: ["tag1", "tag2"] |
+
+### Example article.md Structure
+
+```markdown
+---
+title: "Complete Guide to WooCommerce HPOS Migration"
+description: "Step-by-step migration guide for WooCommerce High-Performance Order Storage with compatibility testing and rollback procedures."
+slug: "woocommerce-hpos-migration-guide"
+author: "Content Team"
+pubDate: "2025-10-15"
+category: "WooCommerce"
+tags: ["WooCommerce", "HPOS", "Migration", "eCommerce", "Performance"]
+---
+
+# Complete Guide to WooCommerce HPOS Migration
+
+[Article content continues here...]
+```
+
+### Validation Checklist
+
+Before saving `article.md`, verify:
+- [ ] Frontmatter starts with `---` on line 1
+- [ ] Frontmatter ends with `---` before the H1 title
+- [ ] All 7 fields are present (title, description, slug, author, pubDate, category, tags)
+- [ ] `pubDate` is in YYYY-MM-DD format
+- [ ] `tags` is an array (square brackets with quoted strings)
+- [ ] `description` is 150-160 characters
+- [ ] No empty fields (all must have values)
