@@ -80,6 +80,7 @@ Install the content-generator plugin:
 | `competitive-gap-analyzer` | Analyze competitors, identify differentiation opportunities |
 | `content-research` | Research topics with official documentation sources |
 | `fact-checker` | Verify claims via source audit or web search |
+| `keyword-researcher` | Validate keyword viability, difficulty, search intent |
 | `media-discovery` | Discover embeddable media (videos, social posts) |
 | `seo-optimization` | Keywords, meta descriptions, internal linking |
 | `requirements-validator` | Validate against requirements.md |
@@ -123,6 +124,9 @@ Pre-built templates in `examples/`:
 /content-calendar October 2025
     |
     v
+Keyword pre-validation (batch)
+    |
+    v
 Gap pre-analysis (batch parallel)
     |
     v
@@ -156,9 +160,12 @@ Final article + X thread + featured image
 project/
 ├── requirements.md                    # Your configuration
 ├── Calendar/{Year}/{Month}/
-│   └── content-calendar.md            # Monthly calendar
+│   ├── content-calendar.md            # Monthly calendar
+│   ├── keyword-pre-validation/        # Keyword analysis per topic
+│   └── gap-pre-analysis/              # Competitive gap analysis
 └── Articles/{ARTICLE-ID}/
     ├── research-brief.md              # Research output
+    ├── keyword-research.md            # Full keyword analysis
     ├── draft.md                       # Writer output
     ├── article.md                     # Final article
     ├── x-thread.md                    # X thread

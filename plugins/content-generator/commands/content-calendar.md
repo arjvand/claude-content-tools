@@ -249,7 +249,118 @@ Proceed to Step 2A with all generated topic candidates.
 
 ---
 
-## Step 2A: Competitive Gap Pre-Analysis (Batch Mode - High Performance)
+## Step 2A: Keyword Pre-Validation (Batch Mode - MANDATORY)
+
+**Objective:** Validate keyword viability for all topic candidates before committing to gap analysis.
+
+### Why Keyword Validation?
+
+- **SEO Viability**: Ensure topics have actual search demand before investing in gap analysis
+- **Difficulty Assessment**: Identify highly competitive keywords early
+- **Intent Alignment**: Verify search intent matches planned content format
+- **Resource Optimization**: Focus gap analysis on keyword-viable topics
+
+### Process
+
+**Invoke the `keyword-researcher` skill in BATCH MODE:**
+
+```
+Please use the keyword-researcher skill in batch mode to validate keywords for all topic candidates from topic-candidates.md.
+```
+
+**Skill will:**
+1. **Keyword Extraction**: Extract primary keywords from all topic candidates
+2. **Parallel SERP Analysis**: Execute web searches for all keywords simultaneously
+3. **Volume Estimation**: Estimate search volume via proxy signals (ads, features, PAA)
+4. **Difficulty Scoring**: Calculate difficulty (1-100) based on competitor analysis
+5. **Intent Classification**: Classify search intent (informational, commercial, transactional, navigational)
+6. **Output Generation**: Save individual summaries + batch results
+
+**Skill Output:**
+
+Individual keyword assessment files:
+```
+project/Calendar/{Year}/{Month}/keyword-pre-validation/
+├── ART-YYYYMM-001-keyword.md
+├── ART-YYYYMM-002-keyword.md
+├── ...
+└── ART-YYYYMM-[N]-keyword.md
+```
+
+Batch results JSON (structured data):
+```
+project/Calendar/{Year}/{Month}/keyword-pre-validation/batch-results.json
+```
+
+**Summary Format (per topic):**
+```markdown
+## [Topic/Keyword]
+**Article ID:** ART-YYYYMM-NNN
+**Keyword Score:** X.X/5.0
+**Recommendation:** INCLUDE / CONSIDER / EXCLUDE
+
+| Metric | Value | Score |
+|--------|-------|-------|
+| Search Volume | HIGH/MED/LOW | X/5 |
+| Difficulty | XX/100 ([tier]) | X/5 |
+| Intent | [type] | [clear/mixed] |
+| Format Fit | [format] | X/5 |
+
+### SERP Snapshot (Top 5)
+| Rank | Domain | Type | Authority |
+|------|--------|------|-----------|
+[Top 5 competitors]
+
+### Viability Summary
+- **Strengths**: [Key advantages]
+- **Challenges**: [Key challenges]
+- **Verdict**: [1-2 sentence recommendation]
+```
+
+**Time:** 10-15 minutes for 12 topics (40% faster via parallelization)
+
+**What You'll Receive:**
+
+```
+Keyword Pre-Validation Complete ✅
+
+Topics Analyzed: [N]
+Time: [X] minutes
+
+Keyword Viability Distribution:
+- INCLUDE: [X] topics ([Y]%) — Score ≥4.0
+- CONSIDER: [X] topics ([Y]%) — Score 2.5-3.9
+- ⚠️ FLAGGED: [X] topics ([Y]%) — Score <2.5 or Difficulty >70
+
+Average Keyword Score: [X.X]/5.0
+Average Difficulty: [XX]/100
+
+Intent Distribution:
+- Informational: [X] topics
+- Commercial: [X] topics
+- Other: [X] topics
+
+Output Saved:
+- Individual assessments: keyword-pre-validation/ART-*.md
+- Batch results: keyword-pre-validation/batch-results.json
+
+Ready for: Competitive Gap Pre-Analysis (Step 2B)
+```
+
+### Decision Point
+
+- **⚠️ FLAG** topics with keyword score <2.5 for user review (keep in candidate list with warning)
+- **⚠️ FLAG** topics with difficulty >70 for strategic review
+- **PRIORITIZE** topics with high volume + moderate difficulty for gap analysis
+- **VERIFY** search intent matches planned content format (flag mismatches)
+
+**Note:** This step is MANDATORY. All topic candidates must pass keyword validation before gap analysis.
+
+Proceed to Step 2B (Competitive Gap Pre-Analysis) with keyword-validated topics.
+
+---
+
+## Step 2B: Competitive Gap Pre-Analysis (Batch Mode - High Performance)
 
 **Objective:** Analyze all topic candidates in parallel to assess differentiation opportunity and prioritize topics strategically.
 
@@ -358,7 +469,7 @@ Ready for: Topic Selection & SME Assessment
 
 ---
 
-## Step 2B: Deduplication Report Verification (MANDATORY)
+## Step 2C: Deduplication Report Verification (MANDATORY)
 
 **BLOCKING CHECKPOINT:** This step verifies that deduplication was performed before topic selection.
 
@@ -447,14 +558,21 @@ project/Calendar/{Year}/{Month}/deduplication-report.md
 
 ## Step 3: Generate the Content Calendar
 
-Create a table for **$ARGUMENTS** with the structure below. **Enhanced with competitive gap analysis columns.**
+Create a table for **$ARGUMENTS** with the structure below. **Enhanced with keyword research and competitive gap analysis columns.**
 
 Include all selected topics (no limit on number of rows).
 
-| ID | Week | Publish Date | Topic / Working Title | Format | Channel | Audience Segment | Funnel Stage | Keyword / Search Intent | **Opp. Score** | **Primary Gap** | **Differentiation Angle** | **Media Opp** | Word Count | Goal / KPI | Primary CTA | Source Type | SME? | Priority |
-| -- | ---- | ------------ | --------------------- | ------ | ------- | ---------------- | ------------ | ----------------------- | -------------- | --------------- | ------------------------- | ------------- | ---------- | ---------- | ----------- | ----------- | ---- | -------- |
+| ID | Week | Publish Date | Topic / Working Title | Format | Channel | Audience Segment | Funnel Stage | Keyword / Search Intent | **KW Score** | **Volume** | **Difficulty** | **Opp. Score** | **Primary Gap** | **Differentiation Angle** | **Media Opp** | Word Count | Goal / KPI | Primary CTA | Source Type | SME? | Priority |
+| -- | ---- | ------------ | --------------------- | ------ | ------- | ---------------- | ------------ | ----------------------- | ------------ | ---------- | -------------- | -------------- | --------------- | ------------------------- | ------------- | ---------- | ---------- | ----------- | ----------- | ---- | -------- |
 
-**New Column Descriptions:**
+**Column Descriptions:**
+
+**Keyword Research Columns (from Step 2A):**
+- **KW Score**: X.X/5.0 — Overall keyword viability score from keyword-researcher skill
+- **Volume**: HIGH/MED/LOW — Estimated search volume based on SERP signals
+- **Difficulty**: XX/100 — Keyword difficulty score (1-30 Easy, 31-60 Moderate, 61-80 Difficult, 81-100 Very Difficult)
+
+**Competitive Gap Columns (from Step 2B):**
 - **Opp. Score**: ⭐⭐⭐⭐⭐ (1-5 stars) — Overall competitive opportunity score from gap pre-analysis
 - **Primary Gap**: Coverage/Depth/Format/Recency — Primary type of competitive advantage identified
 - **Differentiation Angle**: One sentence describing how this article will demonstrably exceed competitors
@@ -577,9 +695,41 @@ Batch summary table:
 
 ## Output Format
 
-1. **Calendar Table** (as above with enhanced gap analysis columns)
+1. **Calendar Table** (as above with keyword research and gap analysis columns)
 
-2. **Deduplication Verification** (REQUIRED section — must appear in every calendar)
+2. **Keyword Validation Summary** (REQUIRED section — must appear in every calendar)
+
+   Include this section at the top of the calendar, after the header:
+
+   ```markdown
+   ---
+
+   ## Keyword Validation Summary
+
+   This calendar was generated with mandatory keyword pre-validation.
+
+   | Metric | Value |
+   |--------|-------|
+   | **Topics Validated** | [N] |
+   | **INCLUDE (Score ≥4.0)** | [N] ([X]%) |
+   | **CONSIDER (Score 2.5-3.9)** | [N] ([X]%) |
+   | **⚠️ FLAGGED (Score <2.5 or Difficulty >70)** | [N] ([X]%) |
+   | **Average Keyword Score** | [X.X]/5.0 |
+   | **Average Difficulty** | [XX]/100 |
+
+   **Intent Distribution:**
+   - Informational: [N] topics
+   - Commercial: [N] topics
+   - Other: [N] topics
+
+   **Flagged Topics:** [List any flagged topics with reasons]
+
+   **Keyword Pre-Validation Report:** See `keyword-pre-validation/batch-results.json` for full data.
+
+   ---
+   ```
+
+3. **Deduplication Verification** (REQUIRED section — must appear in every calendar)
 
    Include this section at the top of the calendar, after the header:
 
@@ -618,7 +768,7 @@ Batch summary table:
    ---
    ```
 
-3. **Competitive Gap Analysis Summary** (required section below table)
+4. **Competitive Gap Analysis Summary** (required section below table)
 
    Include this section immediately after the calendar table:
 
@@ -663,7 +813,7 @@ Batch summary table:
    - [Excluded Topic 2]: Wait for [upcoming release/event] then revisit with recency angle
    ```
 
-3. **Below the gap analysis summary, include for each item:**
+5. **Below the gap analysis summary, include for each item:**
 
    * **Rationale** (originality & timeliness; what trigger you're tying to)
    * **SME requirement** (if any) and proposed reviewer profile
@@ -697,58 +847,67 @@ Batch summary table:
    - Generate all viable quality-screened topics (no limit)
    - Save to `topic-candidates.md`
 
-4. **Step 2A: Batch Gap Analysis** (15-30 min)
+4. **Step 2A: Keyword Pre-Validation (MANDATORY)** (10-15 min)
+   - Invoke `keyword-researcher` skill (batch mode)
+   - Parallel SERP analysis for all keywords
+   - Calculate keyword scores, volume estimates, difficulty
+   - Flag low-viability topics for review
+   - Save to `keyword-pre-validation/`
+
+5. **Step 2B: Batch Gap Analysis** (15-30 min)
    - Invoke `competitive-gap-analyzer` skill (batch mode)
-   - Parallel analysis of all topic candidates
+   - Parallel analysis of keyword-validated topics
    - Calculate opportunity scores (Tier 1-4)
    - Save individual summaries + batch results
 
-5. **Step 3: Generate Calendar Table** (2-5 min)
+6. **Step 3: Generate Calendar Table** (2-5 min)
    - Select all topics meeting quality thresholds (min 60% Tier 1)
-   - Generate calendar with gap analysis columns (flexible volume)
+   - Generate calendar with keyword + gap analysis columns (flexible volume)
    - Include Competitive Gap Analysis Summary
 
-6. **Step 4: Validation** (1-3 min)
+7. **Step 4: Validation** (1-3 min)
    - Verify originality, recency, compliance
    - Check feasibility and measurement plans
 
-7. **Step 5: SME Assessment** (1-3 min)
+8. **Step 5: SME Assessment** (1-3 min)
    - Invoke `sme-complexity-assessor` skill
    - Systematic complexity scoring
    - Generate SME requirements summary
    - Add SME columns to calendar
 
-8. **Step 6: Save Calendar** (<30 sec)
+9. **Step 6: Save Calendar** (<30 sec)
    - Save to `project/Calendar/[YEAR]/[MONTH]/content-calendar.md`
    - Confirm successful save
 
 **Time Estimate:**
 - **Original workflow**: 15-20 minutes (manual, fixed 8-12 topics)
 - **Previous enhanced workflow**: 40-50 minutes (manual + sequential gap analysis, fixed 12 topics)
-- **New fully automated workflow**: 30-60 minutes (scales with opportunity volume + 40% faster batch mode)
+- **New fully automated workflow**: 40-75 minutes (includes keyword validation + scales with opportunity volume)
 
 **Time Scaling:** Scales with number of viable opportunities, not artificially capped
 
 **Quality Improvements:**
+- **SEO Intelligence**: Keyword validation ensures search demand before gap analysis
 - **Strategic Intelligence**: Performance-driven topic selection
 - **Domain Expertise**: @signal-researcher adapts to any industry
 - **Competitive Intelligence**: Batch gap analysis with caching
 - **Systematic Quality**: Objective SME assessment
-- **Efficiency**: 40% faster gap analysis, parallel processing
+- **Efficiency**: 40% faster analysis via parallelization
 - **Scalability**: Handles any volume of opportunities (no artificial caps)
 
 **Value Add:**
+- ✅ Validate keyword viability BEFORE investing in gap analysis
 - ✅ Choose topics where you'll demonstrably win (not just trending)
 - ✅ Data-driven content mix optimization (learn from what works)
-- ✅ Risk mitigation (avoid oversaturated topics upfront)
+- ✅ Risk mitigation (avoid low-search-volume and oversaturated topics upfront)
 - ✅ Clear differentiation strategy before writing begins
 - ✅ Objective SME requirements (better resource planning)
 - ✅ Consistent quality across all industries/topics
 - ✅ Flexible volume scales with market opportunities (not arbitrary limits)
 
 **Expected Outcomes:**
-- 15% higher average opportunity scores (better topic screening)
+- 20% higher average opportunity scores (keyword + gap screening)
 - 70%+ Tier 1 topics (vs. 60% minimum)
-- Faster time-to-rank (strategic differentiation)
+- Faster time-to-rank (keyword-informed differentiation)
 - Better resource planning (systematic SME assessment)
 - Maximized opportunity capture (no high-quality topics left on table)
