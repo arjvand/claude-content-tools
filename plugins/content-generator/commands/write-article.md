@@ -175,6 +175,85 @@ Do NOT wait for Agent 1 to complete before launching Agent 2.
 
 ---
 
+## Phase 2.3: Keyword Research (Full Mode)
+
+**After parallel research agents complete, invoke keyword research:**
+
+```
+Please use the keyword-researcher skill to perform full keyword analysis for article [ARTICLE-ID].
+Primary Keyword: "[primary keyword from calendar entry]"
+```
+
+**Skill will:**
+1. Validate primary keyword from calendar entry
+2. Estimate search volume and difficulty
+3. Classify search intent
+4. Generate long-tail keyword expansion (10-15)
+5. Create semantic keyword clusters (3-5)
+6. Produce placement recommendations
+
+**Output:** `project/Articles/[ARTICLE-ID]/keyword-research.md`
+
+**Time:** 6-10 minutes
+
+---
+
+## Phase 2.4: Article Keyword Strategy (RECOMMENDED)
+
+**After keyword-researcher completes, create strategic keyword plan:**
+
+```
+Please use the keyword-strategist skill in article-level mode for [ARTICLE-ID].
+Primary Keyword: "[primary keyword from calendar entry]"
+Keyword Research: project/Articles/[ARTICLE-ID]/keyword-research.md
+```
+
+**Skill will:**
+1. Load keyword-research.md data (from keyword-researcher)
+2. Map primary to secondary keyword relationships
+3. Identify funnel position and intent alignment
+4. Generate internal linking keyword map
+5. Identify SERP feature targeting tactics
+6. Create article-level keyword strategy
+
+**Output:** `project/Articles/[ARTICLE-ID]/keyword-strategy.md`
+
+**Time:** 3-5 minutes
+
+**If keyword strategy generated, pass to research-brief.md:**
+
+```markdown
+## Keyword Strategy Summary
+
+### Primary Keyword
+- Keyword: "[primary keyword]"
+- Placement: Title (H1), first 100 words, at least one H2
+
+### Secondary Keywords
+| Keyword | Placement | Section |
+|---------|-----------|---------|
+| "[secondary 1]" | H2 heading | [Section] |
+| "[secondary 2]" | Body text | [Section] |
+
+### SERP Feature Targeting
+- Format for snippet: [target format]
+- PAA questions to answer: [list questions]
+
+### Internal Linking
+- Link TO this article from: [existing articles]
+- Link FROM this article to: [target articles]
+
+### Funnel Alignment
+- Stage: [Awareness | Consideration | Decision]
+- CTA: [how CTA connects to funnel position]
+```
+
+**If skipped (time-constrained):**
+- Proceed with keyword-research.md only
+- @writer uses basic placement recommendations from keyword-researcher
+
+---
+
 ## Phase 2.5: Research Synthesis
 
 **After BOTH research agents complete**, merge their outputs:

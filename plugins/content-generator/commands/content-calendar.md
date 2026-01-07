@@ -174,6 +174,82 @@ Use insights to inform topic selection and content mix in subsequent steps.
 
 ---
 
+## Step 1C: Strategic Keyword Planning (MANDATORY)
+
+**BLOCKING CHECKPOINT:** This step ensures topic generation is guided by strategic keyword data.
+
+**Use the `keyword-strategist` skill** to create strategic keyword foundation before topic generation:
+
+```
+Please use the keyword-strategist skill in strategic planning mode for [Month Year].
+
+Target Period: $TARGET_MONTH $TARGET_YEAR
+Reference Date: $REFERENCE_DATE
+Historical Mode: $HISTORICAL_MODE
+```
+
+**Note:** For historical calendars (`$HISTORICAL_MODE = true`), keyword trends and seasonal analysis will reflect conditions as of `$REFERENCE_DATE`.
+
+**Skill will provide:**
+- Topic cluster architecture (pillar → cluster keyword mapping)
+- Funnel-stage distribution (awareness/consideration/decision balance)
+- Competitive positioning (winnable vs. achievable vs. aspirational keywords)
+- SERP feature opportunities (featured snippets, PAA, video)
+- Seasonal and trend timing analysis
+- Prioritized keyword roadmap (Tier 1-4)
+
+**Output Files:**
+- `project/Calendar/{Year}/{Month}/keyword-strategy.md` — Comprehensive strategy document
+- `project/Calendar/{Year}/{Month}/keyword-strategy.json` — Structured data for programmatic use
+
+**Time:** 15-20 minutes
+
+### Validation Gate
+
+| Condition | Result |
+|-----------|--------|
+| **Keyword strategy generated successfully** | Proceed to Step 2 with strategy context |
+| **Skill fails or times out** | Retry once, then BLOCK if still failing |
+| **Missing topic_pillars in config** | BLOCK — fix requirements.md first |
+
+### Required Confirmation
+
+After keyword-strategist completes, verify this output:
+
+```markdown
+## Keyword Strategy Complete ✅
+
+**Target Period:** [Month Year]
+**Pillars Mapped:** [N]
+**Keywords Identified:** [N]
+**Tier 1 Keywords:** [N]
+
+**Funnel Distribution:**
+- Awareness: [X]%
+- Consideration: [X]%
+- Decision: [X]%
+
+**Strategy Status:** ✅ READY
+```
+
+**If this confirmation is NOT present:** STOP and resolve keyword-strategist issues before proceeding.
+
+**Pass to Signal Research (Step 2):**
+
+When invoking @signal-researcher, MUST include:
+
+```markdown
+**Keyword Strategy Context (REQUIRED):**
+- Tier 1 Keywords: [list from keyword-strategy.json]
+- Funnel Gap Keywords: [consideration + decision stage]
+- Seasonal Keywords: [timing advantage]
+- Topic Clusters: [pillar names to focus on]
+```
+
+**CRITICAL:** Calendar generation MUST NOT proceed to Step 2 without keyword strategy completion.
+
+---
+
 ## Step 2: Generate Topic Candidates (Automated)
 
 **Delegate to the `@signal-researcher` agent** for domain-aware signal discovery and topic generation:

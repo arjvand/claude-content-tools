@@ -28,6 +28,7 @@ Topic-agnostic content generation system using Claude AI agents (researcher, wri
 | `content-research` | Research topic with official documentation sources |
 | `fact-checker` | Verify claims via source audit (quick) or web search (comprehensive) |
 | `keyword-researcher` | Research keywords for volume, difficulty, intent, and long-tail expansion |
+| `keyword-strategist` | Strategic keyword planning (clusters, funnel mapping, competitive positioning) |
 | `media-discovery` | Discover embeddable media (videos, social posts) with quality filtering |
 | `seo-optimization` | Keywords, meta descriptions, internal linking |
 | `requirements-validator` | Validate against requirements.md |
@@ -48,6 +49,7 @@ project/
 ├── requirements.md                           # Configuration (source of truth)
 ├── Calendar/{Year}/{Month}/
 │   ├── content-calendar.md                   # Monthly calendar
+│   ├── keyword-strategy.md                   # Strategic keyword plan (monthly)
 │   ├── gap-pre-analysis/{ID}-summary.md      # Pre-analysis summaries
 │   └── keyword-pre-validation/{ID}-keyword.md # Keyword pre-validation
 └── Articles/{ARTICLE-ID}/
@@ -55,6 +57,7 @@ project/
     ├── research-landscape.md                 # Agent 2: Landscape analysis (parallel)
     ├── research-brief.md                     # Merged research output
     ├── keyword-research.md                   # Keyword analysis (full mode)
+    ├── keyword-strategy.md                   # Article keyword strategy
     ├── media-discovery.md                    # Embed candidates (post-research)
     ├── gap-analysis-report.md                # Competitive analysis
     ├── claim-audit-quick.md                  # Quick fact-check (post-research)
@@ -223,6 +226,7 @@ skills/competitive-gap-analyzer/
 skills/content-research/
 skills/fact-checker/
 skills/keyword-researcher/
+skills/keyword-strategist/
 skills/media-discovery/
 skills/seo-optimization/
 skills/requirements-validator/
