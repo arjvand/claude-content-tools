@@ -25,10 +25,10 @@ Content-generator/                         # Repository root (plugin marketplace
 │       ├── .claude-plugin/
 │       │   └── plugin.json                # Plugin manifest
 │       ├── CLAUDE.md                      # Content generation guide
-│       ├── agents/                        # 4 AI agent definitions
-│       ├── commands/                      # 5 slash commands
+│       ├── agents/                        # 15 agents (4 persona + 11 skill-specific)
+│       ├── commands/                      # 5 slash commands (orchestrators)
 │       ├── docs/                          # Architecture documentation
-│       ├── skills/                        # 14 specialized skills
+│       ├── skills/                        # 14+ specialized skills
 │       └── examples/                      # 7 pre-configured templates
 ├── project/                               # User content (git-ignored)
 │   ├── requirements.md                    # Active configuration
@@ -90,13 +90,28 @@ All agents, commands, and skills read `requirements.md` at runtime for:
 
 ### Plugin Component Architecture
 
-**4 Agents** (AI personalities):
+**15 Agents** (4 persona + 11 skill-specific):
+
+*Persona Agents* (who does the work):
 - `@researcher` - Multi-domain research, source verification, gap analysis
 - `@writer` - Draft creation with brand voice compliance
 - `@editor` - Fact-checking, compliance review, final approval
 - `@signal-researcher` - Trend detection and topic discovery
 
-**14 Skills** (specialized tools):
+*Skill-Specific Agents* (isolated execution, wrap skills):
+- `requirements-loader` - Load and validate config
+- `keyword-planner` - Strategic keyword planning
+- `keyword-analyst` - Keyword research and validation
+- `gap-analyst` - Competitive gap analysis
+- `topic-deduplicator` - Check for duplicate topics
+- `theme-indexer` - Build theme index
+- `fact-checker` - Claim verification
+- `media-discoverer` - Find embeddable media
+- `seo-optimizer` - SEO recommendations
+- `cms-exporter` - CMS-specific export
+- `sme-assessor` - SME requirement assessment
+
+**14+ Skills** (specialized tools):
 - `competitive-gap-analyzer` - 3 modes: Full, Pre-Analysis, Batch
 - `content-research` - Domain-aware source prioritization
 - `fact-checker` - Quick (post-research) + Comprehensive (post-writing)
@@ -104,14 +119,16 @@ All agents, commands, and skills read `requirements.md` at runtime for:
 - `seo-optimization` - Keywords, meta descriptions, internal linking
 - `requirements-validator` - Validate against requirements.md
 - `cms-formatter` - Export to Gutenberg/Ghost/Medium/HTML
-- Plus 7 more specialized skills
+- Plus more specialized skills
 
-**5 Commands** (user-facing):
+**5 Commands** (user-facing orchestrators):
 - `/content-generator:content-calendar` - Generate monthly calendar (8-12 articles)
 - `/content-generator:write-article` - Full article production pipeline
 - `/content-generator:update-article` - Update existing articles
 - `/content-generator:generate-x-post` - Twitter/X thread generation
 - `/content-generator:generate-featured-image` - Image prompt generation
+
+**Architecture Pattern**: Commands orchestrate skill-specific agents in sequence. Each skill-specific agent wraps one skill with isolated context for modularity.
 
 ---
 

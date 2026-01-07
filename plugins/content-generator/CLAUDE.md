@@ -98,16 +98,39 @@ Available examples: `generic` (recommended), `wordpress`, `react`, `python`, `fi
 
 ## Agents
 
+### Persona Agents (Who does the work)
+
 | Agent | Role |
 |-------|------|
-| `@researcher` | Verify originality, gather sources, run gap analysis, produce research brief (supports parallel execution for faster research) |
+| `@researcher` | Verify originality, gather sources, run gap analysis, produce research brief |
 | `@writer` | Create draft following brand voice and differentiation strategy |
 | `@editor` | Review for accuracy, SEO, compliance; generate HTML export; final approval |
+| `@signal-researcher` | Trend detection, topic discovery, signal analysis |
+
+### Skill-Specific Agents (Isolated execution)
+
+| Agent | Wraps Skill | Purpose |
+|-------|-------------|---------|
+| `requirements-loader` | requirements-extractor | Load and validate config |
+| `keyword-planner` | keyword-strategist | Strategic keyword planning |
+| `keyword-analyst` | keyword-researcher | Keyword research and validation |
+| `gap-analyst` | competitive-gap-analyzer | Competitive gap analysis |
+| `topic-deduplicator` | topic-deduplicator | Check for duplicate topics |
+| `theme-indexer` | theme-index-builder | Build theme index |
+| `fact-checker` | fact-checker | Claim verification |
+| `media-discoverer` | media-discovery | Find embeddable media |
+| `seo-optimizer` | seo-optimization | SEO recommendations |
+| `cms-exporter` | cms-formatter | CMS-specific export |
+| `sme-assessor` | sme-complexity-assessor | SME requirement assessment |
+
+**Architecture:** Commands orchestrate by invoking skill-specific agents in sequence. Each agent:
+- Wraps a specific skill
+- Operates in isolated context
+- Returns structured output
 
 **Parallel Research Pattern**: The `/write-article` workflow runs 2x `@researcher` agents in parallel:
 - **Agent 1**: Primary sources and official documentation research
 - **Agent 2**: Competitive landscape and gap analysis
-- **Merge**: Third @researcher invocation merges outputs with conflict resolution
 
 See `docs/workflow.md` Phase 2 for complete parallel execution documentation.
 
@@ -213,24 +236,43 @@ cat project/requirements.md
 ## Agents Directory
 
 ```
-agents/researcher.md       # Research and fact-checking
-agents/writer.md          # Content creation
-agents/editor.md          # Editorial review
-agents/signal-researcher.md  # Trend analysis
+agents/
+├── # Persona Agents (who does the work)
+├── researcher.md           # Research and fact-checking
+├── writer.md               # Content creation
+├── editor.md               # Editorial review
+├── signal-researcher.md    # Trend analysis
+│
+├── # Skill-Specific Agents (isolated execution)
+├── requirements-loader.md  # Wraps requirements-extractor
+├── keyword-planner.md      # Wraps keyword-strategist
+├── keyword-analyst.md      # Wraps keyword-researcher
+├── gap-analyst.md          # Wraps competitive-gap-analyzer
+├── topic-deduplicator.md   # Wraps topic-deduplicator
+├── theme-indexer.md        # Wraps theme-index-builder
+├── fact-checker.md         # Wraps fact-checker skill
+├── media-discoverer.md     # Wraps media-discovery
+├── seo-optimizer.md        # Wraps seo-optimization
+├── cms-exporter.md         # Wraps cms-formatter
+└── sme-assessor.md         # Wraps sme-complexity-assessor
 ```
 
 ## Skills Directory
 
 ```
-skills/competitive-gap-analyzer/
-skills/content-research/
-skills/fact-checker/
-skills/keyword-researcher/
-skills/keyword-strategist/
-skills/media-discovery/
-skills/seo-optimization/
-skills/requirements-validator/
-skills/cms-formatter/
-skills/x-thread-generator/
-skills/featured-image-generator/
+skills/
+├── competitive-gap-analyzer/
+├── content-research/
+├── fact-checker/
+├── keyword-researcher/
+├── keyword-strategist/
+├── media-discovery/
+├── seo-optimization/
+├── requirements-validator/
+├── cms-formatter/
+├── x-thread-generator/
+├── featured-image-generator/
+├── theme-index-builder/
+├── topic-deduplicator/
+└── sme-complexity-assessor/
 ```
