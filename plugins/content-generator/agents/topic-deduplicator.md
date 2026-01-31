@@ -1,7 +1,7 @@
 ---
 name: topic-deduplicator
 description: Check topic candidates against past content for duplicates and similar coverage. Use during content calendar generation to ensure topic freshness and avoid redundancy.
-model: haiku
+model: sonnet
 tools:
   - Read
   - Glob

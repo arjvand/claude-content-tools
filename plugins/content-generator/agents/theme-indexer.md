@@ -1,7 +1,7 @@
 ---
 name: theme-indexer
 description: Build theme index from past calendars and articles for deduplication. Use at the start of content calendar generation to enable topic freshness checking.
-model: haiku
+model: sonnet
 tools:
   - Read
   - Glob

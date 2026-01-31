@@ -1,7 +1,7 @@
 ---
 name: keyword-analyst
 description: Research keywords for volume, difficulty, intent classification, and long-tail expansion. Use when analyzing keywords for articles or validating keyword opportunities during calendar planning.
-model: haiku
+model: opus
 tools:
   - Read
   - Write

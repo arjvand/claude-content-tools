@@ -1,7 +1,7 @@
 ---
 name: gap-analyst
 description: Analyze competitive landscape to identify differentiation opportunities (coverage, depth, format, recency gaps). Use during article research or calendar planning for topic prioritization.
-model: haiku
+model: sonnet
 tools:
   - Read
   - Write

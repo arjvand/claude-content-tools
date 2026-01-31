@@ -1,7 +1,7 @@
 ---
 name: keyword-planner
 description: Create strategic keyword plans with topic cluster architecture, funnel mapping, and prioritized roadmaps. Use during content calendar planning or when building keyword strategy for a specific period.
-model: sonnet
+model: opus
 tools:
   - Read
   - Write

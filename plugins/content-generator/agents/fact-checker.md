@@ -1,7 +1,7 @@
 ---
 name: fact-checker
 description: Verify factual claims with confidence grading. Use in quick mode after research (2-5 min) or comprehensive mode after writing (10-15 min).
-model: sonnet
+model: opus
 tools:
   - Read
   - Write

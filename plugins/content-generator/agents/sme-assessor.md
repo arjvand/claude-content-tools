@@ -1,7 +1,7 @@
 ---
 name: sme-assessor
 description: Assess topic complexity to determine SME (Subject Matter Expert) requirements. Use during content calendar planning to flag articles needing expert review.
-model: haiku
+model: sonnet
 tools:
   - Read
   - Glob

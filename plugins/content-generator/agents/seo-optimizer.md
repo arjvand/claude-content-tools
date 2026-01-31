@@ -1,7 +1,7 @@
 ---
 name: seo-optimizer
 description: Optimize articles for SEO with keyword placement, meta descriptions, and internal linking recommendations. Use during editorial phase before publication.
-model: haiku
+model: sonnet
 tools:
   - Read
   - Write
