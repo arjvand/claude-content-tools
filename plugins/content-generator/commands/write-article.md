@@ -310,6 +310,7 @@ Focus: Authoritative sources, evidence verification
 Reference Date: $REFERENCE_DATE
 Historical Mode: $HISTORICAL_MODE
 Calendar Context: [Pass calendar-context.json if available]
+Funnel Stage: [Awareness|Consideration|Decision] (from calendar entry)
 Research Depth: [Full for T1, Standard for T2]
 Output: project/Articles/[ARTICLE-ID]/research-primary.md
 ```
@@ -322,6 +323,7 @@ Focus: Competitive landscape, gap analysis, media discovery
 Reference Date: $REFERENCE_DATE
 Historical Mode: $HISTORICAL_MODE
 Calendar Context: [Pass calendar-context.json if available]
+Funnel Stage: [Awareness|Consideration|Decision] (from calendar entry)
 Skip Gap Analysis: [true if pre-analysis exists, false otherwise]
 Research Depth: [Full for T1, Standard for T2]
 Output: project/Articles/[ARTICLE-ID]/research-landscape.md
@@ -341,6 +343,7 @@ Focus: Core authoritative sources, essential evidence
 Reference Date: $REFERENCE_DATE
 Historical Mode: $HISTORICAL_MODE
 Calendar Context: [Pass calendar-context.json if available]
+Funnel Stage: [Awareness|Consideration|Decision] (from calendar entry)
 Research Depth: Focused (streamlined mode)
 Output: project/Articles/[ARTICLE-ID]/research-primary.md
 ```
@@ -438,13 +441,44 @@ Article ID: [ARTICLE-ID]
 Research Brief: project/Articles/[ARTICLE-ID]/research-brief.md
 Keyword Research: project/Articles/[ARTICLE-ID]/keyword-research.md
 Format: [format from calendar]
+Tier: [T1|T2|T3|T4] (from calendar-context.json)
+Opportunity Score: [score] (from calendar-context.json)
 ```
+
+**Tier-Adaptive Depth Guidelines (NEW):**
+
+Pass tier classification to writer with specific depth expectations:
+
+- **T1 (Score ≥4.0):** Comprehensive, detailed content
+  - Word count: 1,800-2,200 words
+  - Depth: Expert-level tutorial or in-depth analysis
+  - Examples: Multiple detailed code examples, comprehensive troubleshooting sections
+  - Expected sections: 8-10 H2 sections with substantial depth
+
+- **T2 (Score 3.0-3.9):** Standard, well-developed content
+  - Word count: 1,400-1,800 words
+  - Depth: Intermediate-level analysis or standard guide
+  - Examples: 2-3 practical examples with explanations
+  - Expected sections: 6-8 H2 sections
+
+- **T3 (Score 2.0-2.9):** Focused, concise content
+  - Word count: 1,000-1,400 words
+  - Depth: Targeted guide or focused analysis
+  - Examples: 1-2 key examples
+  - Expected sections: 4-6 H2 sections
+
+- **T4 (Score <2.0):** Quick overview or introduction
+  - Word count: 800-1,200 words
+  - Depth: Overview or basic introduction
+  - Examples: Single illustrative example
+  - Expected sections: 4-5 H2 sections
 
 **@writer responsibilities:**
 - Match voice & reading level from config
 - Use plain language; include disclaimers where required
 - Add alt text for images; ensure table headers
-- Maintain word count targets
+- **Apply tier-specific word count targets** (see above)
+- Document tier classification in draft metadata
 
 **Output:** `project/Articles/[ARTICLE-ID]/draft.md`
 
@@ -472,6 +506,87 @@ Article ID: [ARTICLE-ID]
 
 ---
 
+### Step 3B.5: Media Embed Pre-Validation (NEW)
+
+**Objective:** Validate embeddability BEFORE Phase 4 to prevent late-stage rework
+
+**For articles with media recommendations only.** Skip if media-discovery.md shows 0 candidates.
+
+**Process:**
+
+1. **Read discovered media candidates:**
+   ```bash
+   # Extract candidate URLs from media-discovery.md
+   CANDIDATES=$(grep "url:" project/Articles/[ARTICLE-ID]/media-discovery.md)
+   ```
+
+2. **Quick embeddability check for each candidate:**
+   ```markdown
+   For each media URL:
+   - ✅ URL accessible (not 404, not private)
+   - ✅ Platform supports embedding (YouTube, Twitter, LinkedIn, Instagram)
+   - ✅ Content is public (not requires login)
+   - ✅ Not geo-blocked (accessible from target regions)
+   - ⚠️ Flag if any validation fails
+   ```
+
+3. **Validation methods:**
+   - **YouTube:** Check video is public, not deleted
+   - **Twitter/X:** Check tweet is public, account not private
+   - **LinkedIn:** Check post is public, not requires login
+   - **Instagram:** Check post is public, account not private
+
+4. **Update media-discovery.md with validation status:**
+   ```markdown
+   ## Media Embed Pre-Validation Results
+
+   **Candidates (3):**
+
+   1. ✅ YouTube: https://youtube.com/watch?v=abc123
+      - Status: VALIDATED
+      - Embeddable: Yes
+      - Public: Yes
+      - Notes: Active, official WooCommerce channel
+
+   2. ❌ Twitter: https://twitter.com/user/status/xyz789
+      - Status: FAILED
+      - Embeddable: No
+      - Issue: Account is private
+      - Action: Request alternative from writer
+
+   3. ⚠️ LinkedIn: https://linkedin.com/posts/...
+      - Status: WARNING
+      - Embeddable: Yes (with caveats)
+      - Issue: Requires LinkedIn login to view full content
+      - Action: Consider alternative or use with disclaimer
+
+   **Summary:**
+   - Validated: 1/3
+   - Failed: 1/3
+   - Warnings: 1/3
+   - Recommendation: Replace private Twitter embed before Phase 4
+   ```
+
+5. **If validation failures exist:**
+   - Request writer to find alternative embeds (brief note in draft)
+   - Update media-discovery.md with replacement candidates
+   - Mark failed embeds for removal
+
+**Benefits:**
+- Prevents editor discovering broken embeds 10+ minutes later
+- Writer can find replacements while context is fresh
+- Reduces rework in Phase 4
+- Ensures all embeds work before editorial review
+
+**Decision Tree:**
+- **All candidates validated:** Proceed to Step 3C
+- **1-2 failures:** Note in draft, proceed (editor will verify)
+- **All candidates failed:** Skip media embeds, proceed
+
+**Time:** 2-3 minutes (saves 5-10 minutes in Phase 4 if issues found)
+
+---
+
 ### Step 3C: SEO Optimization
 
 **Invoke `seo-optimizer` agent:**
@@ -480,12 +595,45 @@ Article ID: [ARTICLE-ID]
 Invoke seo-optimizer agent.
 Article: project/Articles/[ARTICLE-ID]/draft.md
 Primary Keyword: "[primary keyword]"
+Tier: [T1|T2|T3|T4] (from calendar-context.json)
 ```
+
+**Tier-Adaptive SEO Targets (NEW):**
+
+Pass tier classification to SEO optimizer for appropriate expectations:
+
+- **T1 (Score ≥4.0):** Comprehensive SEO optimization
+  - Target word count: 2,000+ words
+  - Expected H2 sections: 8-10
+  - Internal links: 5-7
+  - Keyword density: 1.5-2%
+  - Long-tail variations: 5+
+
+- **T2 (Score 3.0-3.9):** Standard SEO optimization
+  - Target word count: 1,600+ words
+  - Expected H2 sections: 6-8
+  - Internal links: 4-6
+  - Keyword density: 1.2-1.8%
+  - Long-tail variations: 3-5
+
+- **T3 (Score 2.0-2.9):** Focused SEO optimization
+  - Target word count: 1,200+ words
+  - Expected H2 sections: 4-6
+  - Internal links: 3-5
+  - Keyword density: 1-1.5%
+  - Long-tail variations: 2-3
+
+- **T4 (Score <2.0):** Basic SEO optimization
+  - Target word count: 1,000+ words
+  - Expected H2 sections: 4-5
+  - Internal links: 2-4
+  - Keyword density: 1-1.2%
+  - Long-tail variations: 1-2
 
 **Expected Output:**
 - Meta title (≤60 chars), meta description (150-160 chars)
-- Keyword placement audit
-- Internal linking recommendations (3-5)
+- Keyword placement audit (tier-adjusted targets)
+- Internal linking recommendations (tier-adjusted count)
 - E-E-A-T cues
 - `project/Articles/[ARTICLE-ID]/seo-audit.md`
 
@@ -505,18 +653,53 @@ Article ID: [ARTICLE-ID]
 Draft: project/Articles/[ARTICLE-ID]/draft.md
 SEO Audit: project/Articles/[ARTICLE-ID]/seo-audit.md
 Media Discovery: project/Articles/[ARTICLE-ID]/media-discovery.md
+Tier: [T1|T2|T3|T4] (from calendar-context.json)
+Opportunity Score: [score]
 ```
 
+**Tier-Adaptive Review Stringency (NEW):**
+
+Editor applies review rigor based on tier:
+
+- **T1 (Score ≥4.0):** Comprehensive review
+  - Full fact-check with comprehensive mode (15+ min)
+  - Thorough claim verification across all sources
+  - Detailed compliance review
+  - Complete media embed validation
+  - Full gap analysis mandate checklist validation
+
+- **T2 (Score 3.0-3.9):** Standard review
+  - Standard fact-check with comprehensive mode (10-12 min)
+  - Verify key claims and statistics
+  - Standard compliance checks
+  - Media embed validation
+  - Spot-check gap analysis tactics
+
+- **T3 (Score 2.0-2.9):** Focused review
+  - Targeted fact-check (8-10 min)
+  - Verify statistics and legal/compliance claims only
+  - Basic compliance checks
+  - Quick media validation
+  - Review only P1 gap tactics
+
+- **T4 (Score <2.0):** Basic review
+  - Light fact-check (5-8 min)
+  - Verify only legal/compliance claims
+  - Basic brand voice check
+  - Skip media validation (low visual need)
+  - Minimal gap validation
+
 **@editor responsibilities:**
-- Source verification, date-check facts
+- Source verification, date-check facts (tier-adjusted depth)
 - Compliance: claims policy, privacy, accessibility
 - Brand voice consistency
-- Media embed validation (if present)
+- Media embed validation (if present, tier-adjusted)
 - Add YAML frontmatter
+- **Validate gap analysis mandate checklist** (tier-adjusted)
 
 **Output:** `project/Articles/[ARTICLE-ID]/article.md`
 
-**Time:** 10-15 minutes
+**Time:** 10-15 minutes (T1-T2), 8-12 minutes (T3), 5-10 minutes (T4)
 
 ---
 
@@ -575,7 +758,7 @@ Create `project/Articles/[ARTICLE-ID]/meta.yml` with 20 sections:
 9. Code Examples (language, status)
 10. Embeds & Media (count, metadata)
 11. Social & Distribution (LinkedIn, X, newsletter)
-12. Competitive Analysis (scores, differentiation)
+12. Competitive Analysis (scores, differentiation) **[ENHANCED - see below]**
 13. SEO Performance Expectations (SERP, traffic)
 14. Fact-Checking Status (quick, comprehensive)
 15. Editorial Review (status, blockers)
@@ -584,6 +767,43 @@ Create `project/Articles/[ARTICLE-ID]/meta.yml` with 20 sections:
 18. File Inventory (all generated files)
 19. Workflow Metadata (agents, timing)
 20. Production Notes
+
+---
+
+### Section 12: Competitive Analysis (ENHANCED)
+
+**Link calendar context for traceability:**
+
+```yaml
+12. competitive_analysis:
+    gap_analysis_performed: true
+
+    # NEW: Link to calendar pre-analysis
+    calendar_context:
+      source_file: "Calendar/2025/October/gap-pre-analysis/ART-202510-001-summary.md"
+      opportunity_score: 4.2
+      tier_classification: "T1"
+      primary_angle: "First comprehensive guide covering HPOS edge cases"
+      prediction_date: "2025-09-15"
+
+    # Existing fields
+    unique_value_proposition: "[UVP from gap analysis]"
+    primary_differentiation_angle: "[angle from gap-analysis-report.md]"
+    p1_tactics_implemented: ["Tactic 1", "Tactic 2"]
+    p2_tactics_implemented: ["Tactic 1"]
+    competitive_landscape: "[summary]"
+
+    # Optional: Performance tracking
+    opportunity_score_accuracy: null  # To be filled post-publication (compare prediction vs actual)
+    serp_position_actual: null  # Actual ranking achieved
+    traffic_actual: null  # Actual traffic received
+```
+
+**Benefits:**
+- Traceability from calendar prediction to article performance
+- Enables retrospective analysis of opportunity scoring accuracy
+- Documents tier classification used for resource allocation
+- Links pre-analysis for context on strategic decisions
 
 **Time:** 2-3 minutes
 

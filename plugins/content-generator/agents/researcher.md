@@ -94,6 +94,7 @@ The skill will return structured configuration including:
 4. Geographic/temporal scope from `localization` settings
 5. Official sources from `project.official_docs`, `project.official_blogs`, `project.community_forums`
 6. Content format preferences from `content.formats` and `content.depth`
+7. **Funnel stage from calendar entry** (if available) — determines research prioritization
 
 **If configuration missing**, gather scope via prompts:
 1. Objective(s) and key questions
@@ -104,6 +105,97 @@ The skill will return structured configuration including:
 6. Desired outputs and format(s) (brief, memo, deck)
 
 Use these throughout the process; avoid hardcoded assumptions.
+
+---
+
+### Phase 0A: Load Funnel Stage Context (NEW - for Content Deliverables)
+
+**Objective:** Categorize research insights by funnel relevance for pre-sorted handoff to writer
+
+**For content/SEO deliverables only.** Skip this for academic/policy/business deliverables.
+
+**Extract funnel stage from calendar entry:**
+
+```bash
+# Read from calendar entry or article brief
+FUNNEL_STAGE="Awareness|Consideration|Decision"
+```
+
+**Apply funnel-specific research prioritization:**
+
+**Awareness Stage** (Top of funnel - educational focus):
+```markdown
+Research Priorities:
+- Focus: Problem education, landscape overview, concept explanations
+- Evidence Type: Educational, foundational, authoritative
+- Sources: Academic, official documentation, industry reports
+- Avoid: Product comparisons, decision frameworks, implementation details
+
+Evidence Categorization:
+When extracting insights, categorize as:
+- ✅ AWARENESS-STAGE: Problem identification, symptom recognition, "what/why" explanations
+- ⚠️ CONSIDERATION-STAGE (deprioritize): Solution comparisons, trade-off analysis
+- ❌ DECISION-STAGE (skip): Specific product recommendations, implementation guides
+```
+
+**Consideration Stage** (Middle of funnel - comparison focus):
+```markdown
+Research Priorities:
+- Focus: Solution comparisons, trade-off analysis, evaluation criteria
+- Evidence Type: Comparative, analytical, pros/cons frameworks
+- Sources: Product comparisons, benchmarks, expert analyses
+- Avoid: Basic "what is" content, overly promotional material
+
+Evidence Categorization:
+- ⚠️ AWARENESS-STAGE (minimal): Brief background only if needed for context
+- ✅ CONSIDERATION-STAGE: Comparison data, trade-offs, decision criteria
+- ✅ DECISION-STAGE (secondary): Implementation considerations, next steps
+```
+
+**Decision Stage** (Bottom of funnel - action focus):
+```markdown
+Research Priorities:
+- Focus: Implementation guidance, step-by-step procedures, validation methods
+- Evidence Type: Practical, actionable, detailed how-to
+- Sources: Official documentation, implementation guides, troubleshooting resources
+- Avoid: Basic explanations, general overviews
+
+Evidence Categorization:
+- ❌ AWARENESS-STAGE (skip): General education (assume reader already knows)
+- ⚠️ CONSIDERATION-STAGE (minimal): Brief comparison only if choice required
+- ✅ DECISION-STAGE: Implementation steps, code examples, troubleshooting
+```
+
+**Output in Research Brief:**
+
+Add funnel-categorized insights section:
+
+```markdown
+## Funnel-Categorized Insights
+
+**Funnel Stage:** Awareness
+
+**Awareness-Stage Insights (PRIMARY):**
+- 💡 Insight 1: [Problem education evidence]
+  - Source: [URL]
+  - Why relevant: Helps reader identify problem symptoms
+- 💡 Insight 2: [Landscape overview]
+  - Source: [URL]
+  - Why relevant: Establishes context for problem
+
+**Consideration-Stage Insights (DEPRIORITIZE):**
+- 💡 Insight 1: [Comparison data - use sparingly]
+  - Source: [URL]
+  - Note: Include only if essential for context
+
+**Implementation Note:** Writer should focus on awareness-stage insights and avoid decision-making frameworks.
+```
+
+This ensures:
+- Writer receives pre-sorted research aligned with funnel stage
+- No manual categorization needed during writing
+- Funnel-appropriate evidence prioritization
+- Clear guidance on what to emphasize vs. deprioritize
 
 ---
 
@@ -441,10 +533,50 @@ Otherwise, save under an appropriate project folder.
 
 If Content/SEO deliverable (optional module)
 - Summarize differentiation strategy; reference `gap-analysis-report.md` if generated
+- **Include explicit implementation mandate section** (see below)
 
 If Decision/Policy/Business deliverable
 - Prioritized recommendations with rationale, risks, and dependencies
 - Implementation notes (timeline, stakeholders, resources)
+
+---
+
+### Differentiation Implementation Mandate (Content/SEO only)
+
+**If gap-analysis-report.md was generated**, extract P1/P2/P3 tactics and create implementation checklist for @writer:
+
+```markdown
+## Differentiation Implementation Mandate
+
+**Source:** project/Articles/[ARTICLE-ID]/gap-analysis-report.md
+
+**P1 Tactics (MUST implement):**
+- [ ] Tactic 1: [specific requirement from gap analysis]
+  - Why: [competitive advantage this delivers]
+  - How: [implementation guidance]
+- [ ] Tactic 2: [specific requirement]
+  - Why: [competitive advantage]
+  - How: [implementation guidance]
+
+**P2 Tactics (SHOULD implement):**
+- [ ] Tactic 1: [specific requirement from gap analysis]
+  - Why: [competitive advantage this delivers]
+  - How: [implementation guidance]
+
+**P3 Tactics (NICE to have):**
+- [ ] Tactic 1: [specific requirement from gap analysis]
+  - Why: [competitive advantage this delivers]
+  - How: [implementation guidance]
+
+**Writer Note:** Confirm each P1 tactic implementation with inline comment in draft.md.
+Editor will validate against this checklist during review.
+```
+
+This ensures:
+- Writer receives explicit implementation mandates (not just summary)
+- P1/P2/P3 prioritization is clear
+- Editor can validate tactic implementation against checklist
+- No differentiation opportunities missed in translation
 
 ### Source Library
 1. [Primary Source Title](URL) - [Date] - [Why relevant]

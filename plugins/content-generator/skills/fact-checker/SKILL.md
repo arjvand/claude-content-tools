@@ -178,6 +178,24 @@ For each claim:
 
 #### Comprehensive Mode (10-15 minutes total)
 
+**IMPORTANT: Import Quick Audit Results First (if available)**
+
+Before starting comprehensive audit:
+1. Check if `project/Articles/[ARTICLE-ID]/claim-audit-quick.md` exists
+2. If exists:
+   - Load flagged claims and their line numbers
+   - Check if writer addressed MODERATE/LOW confidence claims
+   - For claims that were fixed: Mark as RESOLVED, skip re-verification
+   - For claims still present: Continue verification from quick audit baseline
+3. Focus verification effort on:
+   - New claims added during writing (not in research brief)
+   - Flagged claims that weren't addressed
+   - High-risk categories (LEGAL, COMP) regardless of quick audit status
+
+**Benefit:** Reduces redundant checking by ~30-40% when quick audit was thorough
+
+---
+
 All Quick Mode steps PLUS:
 
 1. **Source content verification (REQUIRED - do this FIRST):**
@@ -267,6 +285,47 @@ project/Articles/[ARTICLE-ID]/claim-audit-quick.md
 **Comprehensive Mode:**
 ```
 project/Articles/[ARTICLE-ID]/claim-audit-full.md
+```
+
+---
+
+### Enhanced Quick Mode Output (Line-by-Line Mapping)
+
+**Quick mode now includes specific line references for flagged claims:**
+
+This enhancement helps writers:
+- Know WHICH specific lines need attention (not just general warnings)
+- Get pre-written hedging language suggestions
+- Address concerns before comprehensive audit
+
+**Add to quick mode report (before "Recommendations" section):**
+
+```markdown
+## Flagged Claims for Writer Attention
+
+**MODERATE confidence claims (add hedging language):**
+
+- **Line 47** in research-brief.md: "AI will replace 50% of jobs by 2030"
+  - Source: Single secondary source (McKinsey estimate)
+  - Recommendation: Add hedging - "some estimates suggest" or cite specific study with context
+  - Suggested rewrite: "According to a 2024 McKinsey analysis, AI could potentially impact up to 50% of job categories by 2030"
+
+- **Line 92**: "Python is 3x faster than Java for ML workloads"
+  - Source: Benchmark from 2021, may be outdated
+  - Recommendation: Add benchmark citation or update with current data
+  - Suggested rewrite: "In 2021 benchmarks, Python demonstrated 3x speed advantage for certain ML workloads [cite benchmark]"
+
+**LOW confidence claims (requires additional sourcing):**
+
+- **Line 134**: "Most developers prefer React over Vue"
+  - Source: None cited
+  - Recommendation: Either add authoritative source (Stack Overflow survey) or remove claim
+  - Alternative: "React remains the most widely used framework according to the 2025 Stack Overflow Developer Survey"
+
+**Implementation Notes:**
+- Writer can directly reference line numbers when reviewing claims
+- Suggested rewrites provide actionable guidance
+- Comprehensive audit will import quick audit results to avoid re-checking fixed claims
 ```
 
 ---

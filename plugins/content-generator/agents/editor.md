@@ -95,8 +95,125 @@ The skill will return structured configuration including:
 6. Constraints from `editorial_guardrails` (compliance, ethics, privacy)
 7. SEO scope from `seo.intent` (if present, SEO validation required)
 8. SME requirements from `quality.sme_involvement`
+9. **Tier classification from `calendar-context.json` (if available) — determines review stringency**
 
 Use these for all validation checks; avoid hardcoded assumptions.
+
+---
+
+### Phase 0A: Load Tier Classification (NEW - 1 minute)
+
+**Objective:** Apply tier-specific review stringency to allocate effort proportionally to opportunity
+
+**Check for calendar context:**
+
+```bash
+# Check if tier classification available
+if [ -f "project/Articles/[ARTICLE-ID]/calendar-context.json" ]; then
+  TIER=$(grep "tier" calendar-context.json | cut -d'"' -f4)
+  OPPORTUNITY_SCORE=$(grep "opportunity_score" calendar-context.json | cut -d':' -f2 | tr -d ' ,')
+fi
+```
+
+**If tier available, apply review stringency:**
+
+**T1 (Score ≥4.0) - Comprehensive Review:**
+```markdown
+Review Approach:
+- Fact-checking: Comprehensive mode (15+ min)
+  - Verify ALL claims against authoritative sources
+  - Cross-reference statistics from multiple sources
+  - Validate dates, versions, jurisdictions
+  - Full claim-audit-full.md generation
+- Compliance: Thorough review
+  - Deep check of legal/regulatory claims
+  - Verify all benchmark/comparison claims
+  - Review privacy/accessibility compliance
+- Gap Analysis: Full P1/P2/P3 mandate validation
+  - Verify ALL P1 tactics implemented
+  - Check P2 tactics implementation
+  - Note any missed opportunities
+- Media: Complete validation
+  - Verify all embeds are accessible and relevant
+  - Check embed quality and authority
+  - Validate placement appropriateness
+- Polish: Extensive editing
+  - Detailed structure optimization
+  - Comprehensive brand voice alignment
+  - Full SEO audit validation
+```
+
+**T2 (Score 3.0-3.9) - Standard Review:**
+```markdown
+Review Approach:
+- Fact-checking: Standard comprehensive mode (10-12 min)
+  - Verify key claims and all statistics
+  - Validate legal/compliance claims
+  - Check critical dates and versions
+- Compliance: Standard checks
+  - Review legal/regulatory claims
+  - Spot-check comparison claims
+  - Basic compliance validation
+- Gap Analysis: P1 + selective P2 validation
+  - Verify all P1 tactics implemented
+  - Spot-check 1-2 P2 tactics
+- Media: Standard validation
+  - Verify embeds work and are relevant
+  - Check source credibility
+- Polish: Standard editing
+  - Structure review
+  - Brand voice consistency check
+  - SEO validation
+```
+
+**T3 (Score 2.0-2.9) - Focused Review:**
+```markdown
+Review Approach:
+- Fact-checking: Targeted mode (8-10 min)
+  - Verify statistics and legal/compliance claims only
+  - Check critical dates
+  - Skip general informational claims
+- Compliance: Basic checks
+  - Review legal/compliance claims only
+  - Basic disclaimer validation
+- Gap Analysis: P1 validation only
+  - Verify P1 tactics implemented
+  - Skip P2/P3 validation
+- Media: Quick validation
+  - Verify embeds work
+  - Skip detailed quality checks
+- Polish: Light editing
+  - Quick structure check
+  - Basic brand voice validation
+```
+
+**T4 (Score <2.0) - Basic Review:**
+```markdown
+Review Approach:
+- Fact-checking: Light mode (5-8 min)
+  - Verify legal/compliance claims only
+  - Skip general fact-checking
+  - Import quick audit results if available
+- Compliance: Minimal checks
+  - Legal claims only
+  - Basic disclaimer presence
+- Gap Analysis: Skip (low opportunity)
+  - No gap mandate validation required
+- Media: Skip
+  - T4 articles typically have low visual need
+- Polish: Minimal editing
+  - Quick grammar/spelling check
+  - Brand voice spot-check
+```
+
+**Document tier in review notes:**
+Add to editorial notes:
+```markdown
+<!-- Editorial Review -->
+<!-- Tier: T1 (Score: 4.2) -->
+<!-- Review Level: Comprehensive -->
+<!-- Fact-check Mode: Comprehensive (15 min) -->
+```
 
 ---
 
@@ -848,10 +965,11 @@ Suggest adding links to:
 
 **If Approved** ✅
 1. Apply final edits (listed above)
-2. Save to: `project/Articles/[ARTICLE-ID]/article.md`
-3. Generate metadata file: `project/Articles/[ARTICLE-ID]/meta.yml`
-4. Send for legal review (if applicable)
-5. Target publish date: [date from calendar]
+2. **Generate Sources Consulted appendix** (NEW - see below)
+3. Save to: `project/Articles/[ARTICLE-ID]/article.md`
+4. Generate metadata file: `project/Articles/[ARTICLE-ID]/meta.yml`
+5. Send for legal review (if applicable)
+6. Target publish date: [date from calendar]
 
 **If Revisions Needed** ⚠️ / 🔴
 1. @writer to address [critical/important] issues
@@ -863,6 +981,89 @@ Suggest adding links to:
 
 **Editor Notes**: [Any additional context, concerns, or praise]
 ```
+
+---
+
+### Generate Sources Consulted Appendix (NEW)
+
+**Objective:** Auto-generate "Sources & References" section to enhance E-E-A-T signals and transparency
+
+**For content deliverables only.** Skip for internal reports/memos.
+
+**Process:**
+
+1. **Read research files:**
+   ```bash
+   # Extract source lists from research files
+   RESEARCH_PRIMARY="project/Articles/[ARTICLE-ID]/research-primary.md"
+   RESEARCH_LANDSCAPE="project/Articles/[ARTICLE-ID]/research-landscape.md"
+   RESEARCH_BRIEF="project/Articles/[ARTICLE-ID]/research-brief.md"
+   ```
+
+2. **Extract authoritative sources used:**
+   - From `research-primary.md`: Primary sources and official documentation
+   - From `research-landscape.md`: Competitive analyses and industry reports
+   - From `research-brief.md`: Consolidated source library
+
+3. **Categorize sources:**
+   - **Official Documentation:** Official docs, standards, RFCs
+   - **Research Studies:** Peer-reviewed articles, systematic reviews, meta-analyses
+   - **Industry Reports:** Company filings, analyst reports, trade publications
+   - **Expert Commentary:** Recognized expert analysis, thought leadership
+   - **Community Resources:** Forums, issue trackers (if cited in article)
+
+4. **Generate appendix:**
+   ```markdown
+   ---
+
+   ## Sources & References
+
+   This article draws from authoritative sources including:
+
+   **Official Documentation:**
+   - [React Official Docs (2025)](https://react.dev) - Component lifecycle patterns
+   - [Python Enhancement Proposals](https://peps.python.org) - PEP 484: Type Hints
+
+   **Research Studies:**
+   - [Stanford ML Research (2024)](https://url) - Neural network optimization benchmarks
+   - [MIT Computer Science (2025)](https://url) - Distributed systems fault tolerance
+
+   **Industry Reports:**
+   - [Stack Overflow Developer Survey 2025](https://url) - Framework adoption trends
+   - [GitHub Octoverse 2025](https://url) - Open source community insights
+
+   **Expert Commentary:**
+   - [Dan Abramov on React Patterns](https://url) - State management best practices
+   - [Martin Fowler on Architecture](https://url) - Microservices trade-offs
+
+   For complete research documentation, see:
+   - [Primary Research Report](research-primary.md)
+   - [Competitive Landscape Analysis](research-landscape.md)
+   - [Research Brief](research-brief.md)
+
+   ---
+   ```
+
+5. **Append to article.md:**
+   - Add after conclusion, before any existing appendices
+   - Use consistent markdown formatting
+   - Ensure links are functional
+
+**Benefits:**
+- Enhanced E-E-A-T signals (Expertise, Experience, Authoritativeness, Trustworthiness)
+- Transparency about research process
+- Provides readers additional resources
+- Demonstrates thorough research methodology
+- SEO value from linking to authoritative sources
+
+**Skip if:**
+- Article is opinion/editorial (no research required)
+- Article is news/announcement (sources in body text sufficient)
+- Research files don't exist (standalone article)
+
+**Time:** 2-3 minutes
+
+---
 
 ## Collaboration Style
 

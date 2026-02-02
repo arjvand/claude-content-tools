@@ -108,6 +108,51 @@ For each selected embed:
 - Explain value add
 - Provide embed syntax
 
+---
+
+### Step 6: Pre-Validation (NEW - Optional)
+
+**If invoked with validation mode, perform quick embeddability check:**
+
+**Process:**
+1. For each recommended URL:
+   - Check URL is accessible (not 404)
+   - Verify platform supports embedding
+   - Check content is public (not requires login)
+   - Test for geo-blocking (if applicable)
+
+2. **Validation checks by platform:**
+   - **YouTube:** Video exists, not private, embeds enabled
+   - **Twitter/X:** Tweet exists, account public, not protected
+   - **LinkedIn:** Post exists, public access available
+   - **Instagram:** Post exists, account public
+
+3. **Mark validation status:**
+   ```
+   ✅ VALIDATED: Fully embeddable
+   ⚠️ WARNING: Embeddable with caveats (e.g., requires login)
+   ❌ FAILED: Not embeddable (private, deleted, blocked)
+   ```
+
+4. **Update recommendations with status:**
+   - Remove FAILED candidates
+   - Flag WARNING candidates with notes
+   - Prioritize VALIDATED candidates
+
+**Benefits:**
+- Catches broken/private embeds early
+- Prevents editor wasting time on invalid URLs
+- Writer can find replacements while context is fresh
+
+**Invocation:**
+```
+Invoke media-discoverer agent with validation.
+Topic: "[topic]"
+Content Type: [type]
+Article ID: [ARTICLE-ID]
+Validate Embeds: true
+```
+
 ## Outputs
 
 ```json

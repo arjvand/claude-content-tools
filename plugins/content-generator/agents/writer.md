@@ -122,15 +122,90 @@ The skill will return structured configuration including:
 **Extract from validated configuration:**
 1. Objective(s) from `content.objectives` and success criteria from `content.primary_kpi`
 2. Deliverable type from `content.formats` and depth from `content.depth`
-3. **Length target from `content.length` — CRITICAL: Target per format; max +10% with justification; >10% requires user approval**
-4. Spelling/style from `localization.spelling` and `brand.voice.traits`
-5. Brand voice DO/DON'T examples from `brand.voice.guidelines`
-6. Constraints from `editorial_guardrails` (compliance, privacy, ethics)
-7. SEO scope from `seo.intent` (if present, SEO is in scope)
+3. **Tier classification from `calendar-context.json` (if available) — determines depth expectations**
+4. **Length target:**
+   - If tier available: Use tier-specific word count (see Phase 0B below)
+   - Otherwise: Use `content.length` from config
+   - **CRITICAL: Max +10% with justification; >10% requires user approval**
+5. Spelling/style from `localization.spelling` and `brand.voice.traits`
+6. Brand voice DO/DON'T examples from `brand.voice.guidelines`
+7. Constraints from `editorial_guardrails` (compliance, privacy, ethics)
+8. SEO scope from `seo.intent` (if present, SEO is in scope)
 
 **Research inputs to read first if present:**
 - `project/Articles/[ARTICLE-ID]/research-brief.md`
 - `project/Articles/[ARTICLE-ID]/gap-analysis-report.md` (content/SEO only)
+- `project/Articles/[ARTICLE-ID]/calendar-context.json` (for tier classification)
+
+---
+
+### Phase 0B: Load Tier Classification (NEW - 1 minute)
+
+**Objective:** Apply tier-specific depth expectations to align effort with opportunity
+
+**Check for calendar context:**
+
+```bash
+# Check if tier classification available
+if [ -f "project/Articles/[ARTICLE-ID]/calendar-context.json" ]; then
+  TIER=$(grep "tier" calendar-context.json | cut -d'"' -f4)
+  OPPORTUNITY_SCORE=$(grep "opportunity_score" calendar-context.json | cut -d':' -f2 | tr -d ' ,')
+fi
+```
+
+**If tier available, apply depth guidelines:**
+
+**T1 (Score ≥4.0) - Comprehensive Tutorial/Analysis:**
+```markdown
+Depth Expectations:
+- Word count: 1,800-2,200 words
+- Sections: 8-10 H2 sections with substantial depth
+- Examples: Multiple detailed examples (3-5) with thorough explanations
+- Detail level: Expert-level coverage, anticipate edge cases
+- Code samples: 5-8 code blocks with comprehensive comments
+- Troubleshooting: Dedicated troubleshooting section with common issues
+```
+
+**T2 (Score 3.0-3.9) - Standard Guide/Analysis:**
+```markdown
+Depth Expectations:
+- Word count: 1,400-1,800 words
+- Sections: 6-8 H2 sections
+- Examples: 2-3 practical examples with clear explanations
+- Detail level: Intermediate coverage, address common scenarios
+- Code samples: 3-5 code blocks with inline comments
+- Troubleshooting: FAQ section covering top issues
+```
+
+**T3 (Score 2.0-2.9) - Focused Guide:**
+```markdown
+Depth Expectations:
+- Word count: 1,000-1,400 words
+- Sections: 4-6 H2 sections
+- Examples: 1-2 key examples with concise explanations
+- Detail level: Targeted coverage of core concepts
+- Code samples: 2-3 essential code blocks
+- Troubleshooting: Brief tips section
+```
+
+**T4 (Score <2.0) - Quick Overview:**
+```markdown
+Depth Expectations:
+- Word count: 800-1,200 words
+- Sections: 4-5 H2 sections
+- Examples: Single illustrative example
+- Detail level: Overview coverage, focus on key takeaways
+- Code samples: 1-2 basic code blocks
+- Troubleshooting: Minimal or none (link to resources)
+```
+
+**Document tier in draft metadata:**
+Add comment at top of draft:
+```markdown
+<!-- Tier: T1 (Score: 4.2) -->
+<!-- Depth: Comprehensive tutorial -->
+<!-- Target: 1,800-2,200 words -->
+```
 
 ---
 

@@ -28,6 +28,7 @@ Ensure articles are optimized for search engine visibility through proper keywor
 Invoke seo-optimizer agent.
 Article: project/Articles/[ARTICLE-ID]/article.md
 Primary Keyword: "[primary keyword]"
+Tier: [T1|T2|T3|T4] (from calendar-context.json, if available)
 ```
 
 ## Inputs
@@ -36,7 +37,64 @@ Primary Keyword: "[primary keyword]"
 |-------|----------|-------------|
 | article_path | Yes | Path to article markdown file |
 | primary_keyword | Yes | Target keyword for optimization |
+| tier | No | Tier classification (T1-T4) for adaptive targets |
 | keyword_strategy | No | Path to keyword-strategy.md (if available) |
+
+---
+
+## Tier-Adaptive SEO Targets (NEW)
+
+**If tier classification provided**, adjust SEO expectations based on opportunity score:
+
+### T1 (Score ≥4.0) - Comprehensive Optimization
+```markdown
+Targets:
+- Word count: 2,000+ words (validate actual vs target)
+- H2 sections: 8-10 expected
+- Internal links: 5-7 (high-value opportunities)
+- Keyword density: 1.5-2.0%
+- Long-tail variations: 5+ semantic variations
+- Meta description: Premium CTR optimization
+- Featured snippet: Target featured snippet optimization
+```
+
+### T2 (Score 3.0-3.9) - Standard Optimization
+```markdown
+Targets:
+- Word count: 1,600+ words
+- H2 sections: 6-8 expected
+- Internal links: 4-6
+- Keyword density: 1.2-1.8%
+- Long-tail variations: 3-5 semantic variations
+- Meta description: Standard CTR optimization
+- Featured snippet: Consider snippet optimization if applicable
+```
+
+### T3 (Score 2.0-2.9) - Focused Optimization
+```markdown
+Targets:
+- Word count: 1,200+ words
+- H2 sections: 4-6 expected
+- Internal links: 3-5
+- Keyword density: 1.0-1.5%
+- Long-tail variations: 2-3 variations
+- Meta description: Basic CTR optimization
+- Featured snippet: Optional
+```
+
+### T4 (Score <2.0) - Basic Optimization
+```markdown
+Targets:
+- Word count: 1,000+ words
+- H2 sections: 4-5 expected
+- Internal links: 2-4
+- Keyword density: 1.0-1.2%
+- Long-tail variations: 1-2 variations
+- Meta description: Basic description only
+- Featured snippet: Skip
+```
+
+**Default (no tier):** Use T2 (Standard) targets as balanced baseline
 
 ## Workflow
 
@@ -67,10 +125,49 @@ Validate/generate title tag:
 - Primary keyword near beginning
 - Compelling for CTR
 
-### Step 5: Internal Linking
-Analyze internal linking opportunities:
+### Step 5: Internal Linking (Enhanced)
+
+**PRIORITY: Use semantic cluster opportunities from keyword research**
+
+1. **Load keyword research (if available):**
+   ```bash
+   # Check for semantic cluster recommendations
+   if [ -f "project/Articles/[ARTICLE-ID]/keyword-research.md" ]; then
+     # Extract internal linking opportunities section
+     # Prioritize these semantically-optimized suggestions
+   fi
+   ```
+
+2. **Validate cluster-based recommendations:**
+   - Verify related article exists and is published
+   - Check anchor text fits contextually in target section
+   - Confirm placement suggestion aligns with actual article structure
+   - Validate relevance score is ≥0.7 (strong semantic connection)
+
+3. **Implement validated recommendations:**
+   ```markdown
+   Internal Links (from semantic clusters):
+   - ✅ Cluster 1: "React hooks patterns" → ART-202509-015 (Section: State Management)
+   - ✅ Cluster 2: "testing React components" → ART-202508-022 (Section: QA)
+   - ⚠️ Cluster 3: No related article (content gap identified)
+   ```
+
+4. **Supplement with additional links if needed:**
+   - If cluster recommendations < target count (tier-based)
+   - Identify additional internal linking opportunities
+   - Use descriptive anchor text
+   - Link to related content
+
+**Benefits of cluster-based linking:**
+- Semantically relevant (not generic "read more" links)
+- Keyword-optimized anchor text
+- Placement aligned with article flow
+- Higher SEO value (contextual relevance)
+
+**Fallback (no keyword research):**
+- Analyze internal linking opportunities manually
 - Identify existing internal links
-- Recommend additional links (3-5 per article)
+- Recommend additional links (tier-based count)
 - Suggest descriptive anchor text
 - Link to related content
 
@@ -196,10 +293,51 @@ Check SEO structure:
 - **Typical Duration:** 2-3 minutes
 - **Output:** SEO audit report + recommendations
 
+## SEO Scoring & Quality Gate (NEW)
+
+**Calculate SEO score (0-100) for every article:**
+
+1. **Score breakdown:**
+   - Core elements (70 pts): Keyword placement, meta tags, internal links
+   - Structure & quality (30 pts): Hierarchy, readability, external links
+
+2. **Apply minimum threshold:**
+   - **Score ≥75:** ✅ PASS → Proceed to publication
+   - **Score 65-74:** ⚠️ CONDITIONAL PASS → Editor reviews
+   - **Score <65:** ❌ FAIL → Return to writer
+
+3. **Document in seo-audit.md:**
+   ```markdown
+   ## SEO Score: 87/100 ✅ PASS
+
+   **Score Breakdown:**
+   - Core Elements: 62/70
+   - Structure & Quality: 25/30
+
+   **Publication Recommendation:** PASS (score ≥75)
+   ```
+
+4. **Add to meta.yml Section 13:**
+   ```yaml
+   13. seo_expectations:
+       seo_score: 87
+       seo_status: "PASS"
+       minimum_threshold: 75
+   ```
+
+**Benefits:**
+- Quantified SEO readiness (not subjective)
+- Clear quality gate before publication
+- Trackable metric for performance analysis
+- Prevents under-optimized content from publishing
+
+---
+
 ## Success Criteria
 
 - All high-priority checks pass
 - Meta description generated
 - Title tag optimized
 - Internal linking recommendations provided
-- Overall SEO score 80+
+- **SEO score calculated (0-100)**
+- **SEO score ≥75 for publication approval**
