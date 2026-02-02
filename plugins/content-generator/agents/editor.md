@@ -124,6 +124,7 @@ Validate against checklist:
 - [ ] Tone matches brief (e.g., neutral, executive, instructional)
 - [ ] Person/tense consistent; no hype unless requested
 - [ ] Spelling style matches brief (US/UK)
+- [ ] **NEW: Funnel stage tone alignment (see Phase 2.1 below)**
 
 **Audience Fit** ✅ / ⚠️ / ❌
 - [ ] Appropriate for skill/knowledge level
@@ -140,6 +141,7 @@ Validate against checklist:
     - If justification missing or invalid: REJECT and request trim to 1,200 words
   - **>1,320 words:** ❌ REJECT — Must request user approval via AskUserQuestion OR trim to fit
 - [ ] CTA or next steps present if required
+- [ ] **NEW: CTA matches funnel stage (see Phase 2.1 below)**
 
 **SEO (Optional — content deliverables)** ✅ / ⚠️ / ❌
 - [ ] Keyword/intent coverage
@@ -150,6 +152,183 @@ Validate against checklist:
 - [ ] Clear structure for scanning
 - [ ] Export/format requirements satisfied (CMS/HTML/Doc/PDF)
 ```
+
+---
+
+### Phase 2.1: Funnel Stage Validation (NEW - 3–5 minutes)
+
+**Objective:** Ensure tone and CTA align with reader intent and funnel position
+
+**Step 1: Identify Funnel Stage**
+
+Check for funnel stage context in:
+1. Draft metadata comment: `<!-- Funnel Stage: [stage] -->`
+2. Calendar entry (if available)
+3. Article metadata (meta.yml if exists)
+
+**If no funnel stage found:** Skip this validation (not all articles have funnel context)
+
+---
+
+**Step 2: Validate Tone Alignment**
+
+For each funnel stage, validate tone characteristics:
+
+**Awareness Stage Validation:**
+```markdown
+Expected Tone: Educational, empathetic, objective
+Red Flags:
+- ❌ Sales-oriented language ("Buy now", "Limited time offer")
+- ❌ Strong calls to action in body content
+- ❌ Pressure tactics or urgency language
+- ❌ Product-focused instead of problem-focused
+- ❌ Assuming reader has decided to purchase
+
+Green Flags:
+- ✅ Educational framing ("Learn about...", "Understand...")
+- ✅ Problem identification and explanation
+- ✅ Neutral, balanced presentation
+- ✅ Focus on concepts and fundamentals
+- ✅ Questions that help reader self-identify needs
+
+Assessment: ✅ Aligned / ⚠️ Partially aligned / ❌ Misaligned
+If misaligned: Flag as 🔴 IMPORTANT - Tone too sales-oriented for awareness stage
+```
+
+**Consideration Stage Validation:**
+```markdown
+Expected Tone: Comparative, analytical, balanced
+Red Flags:
+- ❌ Too educational (no actionable comparisons)
+- ❌ Too sales-focused (pushing one solution without trade-offs)
+- ❌ Missing pros/cons or trade-off discussions
+- ❌ One-sided analysis without alternatives
+- ❌ Avoiding legitimate drawbacks or limitations
+
+Green Flags:
+- ✅ Comparative analysis of options
+- ✅ Balanced pros/cons presentation
+- ✅ Trade-off discussions ("X is better when..., Y excels at...")
+- ✅ Decision criteria and evaluation frameworks
+- ✅ Real-world scenarios and use cases
+
+Assessment: ✅ Aligned / ⚠️ Partially aligned / ❌ Misaligned
+If misaligned: Flag as 🟡 IMPORTANT - Add comparative analysis or balance tone
+```
+
+**Decision Stage Validation:**
+```markdown
+Expected Tone: Action-oriented, confident, implementa implementation-focused
+Red Flags:
+- ❌ Too educational (rehashing basics)
+- ❌ Weak or missing call to action
+- ❌ Leaving reader without clear next steps
+- ❌ Still comparing options (should be past comparison)
+- ❌ Tentative language ("might want to consider")
+
+Green Flags:
+- ✅ Clear recommendations with rationale
+- ✅ Step-by-step implementation guidance
+- ✅ Confident, decisive language
+- ✅ Addresses final objections/concerns
+- ✅ Strong call to action with next steps
+
+Assessment: ✅ Aligned / ⚠️ Partially aligned / ❌ Misaligned
+If misaligned: Flag as 🔴 IMPORTANT - Strengthen recommendations and CTAs
+```
+
+---
+
+**Step 3: Validate CTA Alignment**
+
+For each funnel stage, validate CTA appropriateness:
+
+**Awareness Stage CTA Validation:**
+```markdown
+Appropriate CTAs:
+- ✅ "Learn more about [topic]"
+- ✅ "Explore our guide to [related concept]"
+- ✅ "Subscribe for updates on [topic]"
+- ✅ "Read our introduction to [concept]"
+
+Inappropriate CTAs:
+- ❌ "Get started with [product]" (too strong)
+- ❌ "Try [product] free" (premature)
+- ❌ "Buy now" (way too strong)
+- ❌ "Start your trial" (wrong stage)
+
+Assessment: ✅ Soft CTA (appropriate) / ❌ Strong CTA (inappropriate for awareness)
+If inappropriate: Flag as 🔴 CRITICAL - CTA too aggressive for awareness stage readers
+```
+
+**Consideration Stage CTA Validation:**
+```markdown
+Appropriate CTAs:
+- ✅ "Compare [solution options]"
+- ✅ "Download our [comparison guide/checklist]"
+- ✅ "See how [case study] chose their solution"
+- ✅ "Use our [calculator/tool] to evaluate"
+- ✅ "Talk to an expert about your needs"
+
+Inappropriate CTAs:
+- ❌ "Learn the basics" (too early-stage)
+- ❌ "Buy now" (too late-stage)
+- ❌ Generic educational CTAs without action
+
+Assessment: ✅ Mid-funnel CTA (appropriate) / ⚠️ Weak CTA / ❌ Wrong stage CTA
+If inappropriate: Flag as 🟡 IMPORTANT - Adjust CTA to comparison/evaluation focus
+```
+
+**Decision Stage CTA Validation:**
+```markdown
+Appropriate CTAs:
+- ✅ "Get started with [product]"
+- ✅ "Try [product] free for [timeframe]"
+- ✅ "Follow our [implementation guide]"
+- ✅ "Start your [trial/project] today"
+- ✅ "Talk to sales about your specific needs"
+
+Inappropriate CTAs:
+- ❌ "Learn more" (too weak)
+- ❌ "Explore options" (wrong stage - past comparison)
+- ❌ Educational CTAs without action
+- ❌ Missing CTA entirely
+
+Assessment: ✅ Strong CTA (appropriate) / ⚠️ Weak CTA (needs strengthening) / ❌ Wrong stage
+If inappropriate: Flag as 🔴 IMPORTANT - Strengthen CTA for decision-stage readers
+```
+
+---
+
+**Step 4: Document Validation Results**
+
+Add to editorial review report:
+
+```markdown
+### Funnel Stage Validation
+
+**Funnel Stage:** [Awareness | Consideration | Decision | Not specified]
+
+**Tone Alignment:** ✅ / ⚠️ / ❌
+- Expected tone: [characteristics]
+- Actual tone: [brief assessment]
+- Issues: [if any misalignments]
+
+**CTA Alignment:** ✅ / ⚠️ / ❌
+- CTA type: [Soft | Mid-funnel | Strong]
+- CTA text: "[actual CTA]"
+- Appropriate for stage: Yes / No
+- Recommendation: [if changes needed]
+
+**Overall Funnel Optimization:** ✅ Strong / ⚠️ Needs adjustment / ❌ Significant misalignment
+```
+
+**Priority Levels:**
+- **🔴 CRITICAL**: Complete tone/CTA mismatch (e.g., awareness article with "Buy now" CTA)
+- **🟡 IMPORTANT**: Partial misalignment (e.g., consideration article with weak CTA)
+- **🟢 NICE-TO-HAVE**: Minor improvements possible
+
+---
 
 ### Phase 2A: Optional Content/SEO Differentiation Validation (5–7 minutes)
 

@@ -134,6 +134,87 @@ The skill will return structured configuration including:
 
 ---
 
+### Phase 0A: Load Funnel Stage Context (NEW - 1 minute)
+
+**Objective:** Optimize tone and CTA based on reader intent and funnel position
+
+**Check for calendar entry funnel stage:**
+
+1. Read article entry from calendar (if available)
+2. Extract `funnel_stage` field: `Awareness` | `Consideration` | `Decision`
+
+**If funnel stage available, adapt writing approach:**
+
+**Awareness Stage** (Top of funnel - educational focus):
+```markdown
+Reader Intent: Learning, problem identification, education
+Tone Guidelines:
+- Educational and informative (not salesy)
+- Empathetic to reader's pain points
+- Neutral, objective analysis
+- Focus on "what" and "why" questions
+
+CTA Strategy:
+- Soft CTAs: "Learn more about...", "Explore related topics"
+- Newsletter signup: "Get updates on..."
+- Related content: "Read our guide to..."
+- NO hard sales CTAs (no "Buy now", "Get started", "Try free")
+
+Example Tone:
+"Understanding [problem] helps you identify whether [solution] is right for your situation."
+```
+
+**Consideration Stage** (Middle of funnel - comparison focus):
+```markdown
+Reader Intent: Evaluating options, comparing solutions, understanding trade-offs
+Tone Guidelines:
+- Comparative and analytical
+- Balanced pros/cons presentation
+- Practical trade-off discussions
+- Focus on "how" questions and decision criteria
+
+CTA Strategy:
+- Mid-funnel CTAs: "Compare solutions", "Download our comparison guide"
+- Tool/resource offers: "Use our [calculator/checklist]"
+- Case studies: "See how others chose..."
+- Guided next steps: "Ready to evaluate? Here's what to consider..."
+
+Example Tone:
+"[Option A] works best when [scenario], while [Option B] excels at [different scenario]. Here's how to choose."
+```
+
+**Decision Stage** (Bottom of funnel - action focus):
+```markdown
+Reader Intent: Ready to act, needs final validation, looking for implementation guidance
+Tone Guidelines:
+- Action-oriented and confident
+- Clear recommendations with rationale
+- Step-by-step implementation focus
+- Address final objections/concerns
+
+CTA Strategy:
+- Strong CTAs: "Get started with...", "Try [product] free"
+- Implementation guides: "Follow our setup guide"
+- Support offers: "Talk to an expert", "Get help with..."
+- Time-sensitive: "Start your trial today"
+
+Example Tone:
+"Ready to implement [solution]? Here's your step-by-step plan to get results within [timeframe]."
+```
+
+**Default (no funnel stage data):**
+Use **Consideration stage** guidelines as balanced middle ground.
+
+**Document funnel stage in draft metadata:**
+Add comment at top of draft:
+```markdown
+<!-- Funnel Stage: [Awareness|Consideration|Decision] -->
+<!-- Tone: [Educational|Comparative|Action-oriented] -->
+<!-- CTA Type: [Soft|Mid-funnel|Strong] -->
+```
+
+---
+
 ### Phase 1: Understand Context (2–3 minutes)
 ```markdown
 Using Phase 0 and research inputs, clarify:

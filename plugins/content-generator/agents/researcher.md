@@ -166,8 +166,68 @@ Choose the module appropriate to the domain (one or more):
 
 ---
 
-### Phase 3A: Optional Content/SEO Competitive Gap Analysis (5–10 minutes)
-For content strategy deliverables only. If using this repo’s content pipeline and skill:
+### Phase 3A: Optional Content/SEO Competitive Gap Analysis (5–10 minutes OR SKIP if pre-analysis exists)
+
+**For content strategy deliverables only.** Skip this module for non-content research.
+
+**IMPORTANT: Check for calendar context before running gap analysis**
+
+**Step 1: Check if calendar pre-analysis exists**
+
+```bash
+# Check for calendar context file
+if [ -f "project/Articles/[ARTICLE-ID]/calendar-context.json" ]; then
+  # Read skip_full_gap_analysis flag
+  SKIP_GAP=$(grep "skip_full_gap_analysis" project/Articles/[ARTICLE-ID]/calendar-context.json)
+
+  if [ "$SKIP_GAP" = "true" ]; then
+    echo "✅ Gap pre-analysis available from calendar - SKIPPING full analysis"
+    # Use pre-analysis context instead
+  else
+    echo "⚠️ Calendar context exists but no pre-analysis - running full analysis"
+  fi
+else
+  echo "⚠️ No calendar context - running full analysis"
+fi
+```
+
+---
+
+**If SKIP_FULL_GAP_ANALYSIS = true (pre-analysis exists):**
+
+**DO NOT run competitive-gap-analyzer skill. Instead:**
+
+1. Load `calendar-context.json` to extract:
+   - Primary differentiation angle
+   - Top opportunities (3-5 tactics)
+   - Competitive landscape summary
+   - Opportunity score and tier
+
+2. Create lightweight gap summary in research brief:
+   ```markdown
+   ## Competitive Differentiation Strategy (from calendar pre-analysis)
+
+   **Primary Angle:** [primary_angle from context]
+   **Opportunity Score:** [score] (Tier [tier])
+
+   **Key Differentiation Opportunities:**
+   - [Opportunity 1 from context]
+   - [Opportunity 2 from context]
+   - [Opportunity 3 from context]
+
+   **Competitive Context:** [landscape_summary from context]
+
+   **Implementation Note:** Gap analysis performed during calendar planning.
+   Full pre-analysis available at: project/Calendar/{Year}/{Month}/gap-pre-analysis/[ARTICLE-ID]-summary.md
+   ```
+
+3. **Time Saved:** 5-10 minutes (gap analysis already complete)
+
+---
+
+**If SKIP_FULL_GAP_ANALYSIS = false OR no calendar context:**
+
+**Run full gap analysis using skill:**
 
 ```markdown
 Skill: competitive-gap-analyzer
@@ -182,7 +242,9 @@ Outputs
 - Summary: Differentiation strategy for research brief
 ```
 
-If pre-analysis exists under `project/Calendar/{Year}/{Month}/gap-pre-analysis/`, compare and note changes (landscape shifts, feasibility, implications). Skip this module for non-content research.
+**If pre-analysis exists** under `project/Calendar/{Year}/{Month}/gap-pre-analysis/`, compare and note changes (landscape shifts, feasibility, implications).
+
+**Time:** 5-10 minutes (full analysis)
 
 ---
 
