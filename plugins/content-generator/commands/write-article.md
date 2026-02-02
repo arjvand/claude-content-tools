@@ -147,16 +147,67 @@ fi
     "Format gap: No step-by-step tutorials available"
   ],
   "landscape_summary": "High competition (10+ ranking articles) but significant depth gaps",
-  "skip_full_gap_analysis": true
+  "skip_full_gap_analysis": true,
+
+  "pre_analysis_date": "2025-10-01",
+  "gap_breakdown": {
+    "coverage": 5.0,
+    "depth": 4.5,
+    "format": 3.0,
+    "recency": 4.8
+  },
+  "feasibility": "HIGH",
+  "competitor_count": 8,
+  "recommendation": "INCLUDE",
+  "staleness": "FRESH",
+  "days_old": 3
 }
 ```
 
+**Extraction Instructions:**
+
+When extracting from gap-pre-analysis summary:
+
+1. **Core fields** (already extracted):
+   - opportunity_score, tier, primary_angle, top_opportunities, landscape_summary
+
+2. **NEW: Extract gap breakdown scores** from pre-analysis:
+   - Look for "Coverage Score:", "Depth Score:", "Format Score:", "Recency Score:"
+   - Extract numeric values (0.0-5.0 scale)
+   - If not found, default to null
+
+3. **NEW: Extract metadata fields**:
+   - feasibility: Look for "Feasibility: HIGH|MEDIUM|LOW"
+   - competitor_count: Count competitors analyzed (e.g., "analyzed 8 competitors")
+   - recommendation: Look for "INCLUDE|CONSIDER|EXCLUDE"
+   - pre_analysis_date: Extract date from pre-analysis filename or content
+
+4. **NEW: Calculate staleness**:
+   ```bash
+   # Calculate days between pre-analysis and today
+   DAYS_OLD=$(( ($(date +%s) - $(date -d "$PRE_ANALYSIS_DATE" +%s)) / 86400 ))
+
+   # Determine staleness status
+   if [ $DAYS_OLD -lt 7 ]; then
+     STALENESS="FRESH"
+   elif [ $DAYS_OLD -lt 14 ]; then
+     STALENESS="AGING"
+   else
+     STALENESS="STALE"
+   fi
+   ```
+
+5. **Staleness warning**:
+   - If STALE (>14 days): ⚠️ Warn that competitive landscape may have shifted
+   - Suggest running fresh gap analysis or validating pre-analysis is still relevant
+
 **Pass context flags to research phase:**
 - `CALENDAR_CONTEXT_AVAILABLE = true|false`
-- `SKIP_FULL_GAP_ANALYSIS = true|false` (only if pre-analysis exists)
+- `SKIP_FULL_GAP_ANALYSIS = true|false` (only if pre-analysis exists AND staleness != STALE)
 - `TIER_CLASSIFICATION = T1|T2|T3|T4` (for tier-adaptive research)
+- `STALENESS_STATUS = FRESH|AGING|STALE` (for researcher awareness)
 
-**Time:** 1-2 minutes
+**Time:** 1.5-2.5 minutes (increased from 1-2 min due to additional field extraction)
 
 ---
 
@@ -778,13 +829,51 @@ Create `project/Articles/[ARTICLE-ID]/meta.yml` with 20 sections:
 12. competitive_analysis:
     gap_analysis_performed: true
 
-    # NEW: Link to calendar pre-analysis
+    # ENHANCED: Expanded calendar context with gap breakdown
     calendar_context:
       source_file: "Calendar/2025/October/gap-pre-analysis/ART-202510-001-summary.md"
       opportunity_score: 4.2
       tier_classification: "T1"
       primary_angle: "First comprehensive guide covering HPOS edge cases"
       prediction_date: "2025-09-15"
+
+      # NEW: Pre-analysis metadata
+      pre_analysis_date: "2025-10-01"
+      staleness_status: "FRESH"
+      days_old_at_writing: 5
+
+      # NEW: Gap breakdown scores (enables editor validation)
+      gap_breakdown:
+        coverage: 5.0
+        depth: 4.5
+        format: 3.0
+        recency: 4.8
+
+      # NEW: Strategic context
+      feasibility: "HIGH"
+      competitor_count: 8
+      recommendation: "INCLUDE"
+
+    # NEW: Required tactics validation structure (enables editor checklist)
+    required_tactics:
+      p1:
+        - tactic: "Coverage gap: 0/10 competitors address custom query migration"
+          gap_type: "coverage"
+          gap_score: 5.0
+          implemented: null    # Editor validates during Phase 2A
+          evidence: ""         # Editor fills with section/line numbers
+        - tactic: "Depth gap: Only surface-level explanations elsewhere"
+          gap_type: "depth"
+          gap_score: 4.5
+          implemented: null
+          evidence: ""
+      p2:
+        - tactic: "Format gap: No step-by-step tutorials available"
+          gap_type: "format"
+          gap_score: 3.0
+          implemented: null
+          evidence: ""
+      p3: []  # Optional tactics
 
     # Existing fields
     unique_value_proposition: "[UVP from gap analysis]"
@@ -793,10 +882,15 @@ Create `project/Articles/[ARTICLE-ID]/meta.yml` with 20 sections:
     p2_tactics_implemented: ["Tactic 1"]
     competitive_landscape: "[summary]"
 
-    # Optional: Performance tracking
-    opportunity_score_accuracy: null  # To be filled post-publication (compare prediction vs actual)
-    serp_position_actual: null  # Actual ranking achieved
-    traffic_actual: null  # Actual traffic received
+    # ENHANCED: Post-publication tracking with prediction baseline
+    post_publication:
+      opportunity_score_accuracy: null  # To be filled: (actual / predicted) × 100
+      predicted_score: 4.2
+      actual_score: null  # Calculated post-publication from performance data
+      serp_position_actual: null  # Actual ranking achieved (target: top 3)
+      traffic_actual_30d: null  # Actual traffic in first 30 days
+      conversions_actual_30d: null  # Actual conversions (signups, downloads, etc.)
+      measurement_date: null  # When metrics were collected
 ```
 
 **Benefits:**

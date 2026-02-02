@@ -264,7 +264,7 @@ Choose the module appropriate to the domain (one or more):
 
 **IMPORTANT: Check for calendar context before running gap analysis**
 
-**Step 1: Check if calendar pre-analysis exists**
+**Step 1: Check if calendar pre-analysis exists and validate staleness**
 
 ```bash
 # Check for calendar context file
@@ -272,8 +272,20 @@ if [ -f "project/Articles/[ARTICLE-ID]/calendar-context.json" ]; then
   # Read skip_full_gap_analysis flag
   SKIP_GAP=$(grep "skip_full_gap_analysis" project/Articles/[ARTICLE-ID]/calendar-context.json)
 
-  if [ "$SKIP_GAP" = "true" ]; then
-    echo "✅ Gap pre-analysis available from calendar - SKIPPING full analysis"
+  # NEW: Read staleness status
+  STALENESS=$(grep "staleness" project/Articles/[ARTICLE-ID]/calendar-context.json | cut -d'"' -f4)
+  DAYS_OLD=$(grep "days_old" project/Articles/[ARTICLE-ID]/calendar-context.json | cut -d':' -f2 | tr -d ' ,')
+
+  # NEW: Check staleness before using pre-analysis
+  if [ "$STALENESS" = "STALE" ]; then
+    echo "⚠️ WARNING: Gap pre-analysis is $DAYS_OLD days old (STALE)"
+    echo "⚠️ Competitive landscape may have shifted since calendar planning"
+    echo "⚠️ Recommendation: Run fresh gap analysis or validate pre-analysis is still relevant"
+    # Option: Prompt user whether to use stale pre-analysis or run fresh analysis
+    SKIP_GAP="false"  # Override to run fresh analysis
+  elif [ "$SKIP_GAP" = "true" ]; then
+    echo "✅ Gap pre-analysis available from calendar ($DAYS_OLD days old, status: $STALENESS)"
+    echo "✅ SKIPPING full gap analysis - using pre-analysis context"
     # Use pre-analysis context instead
   else
     echo "⚠️ Calendar context exists but no pre-analysis - running full analysis"
@@ -285,7 +297,7 @@ fi
 
 ---
 
-**If SKIP_FULL_GAP_ANALYSIS = true (pre-analysis exists):**
+**If SKIP_FULL_GAP_ANALYSIS = true (pre-analysis exists and NOT stale):**
 
 **DO NOT run competitive-gap-analyzer skill. Instead:**
 
@@ -294,6 +306,9 @@ fi
    - Top opportunities (3-5 tactics)
    - Competitive landscape summary
    - Opportunity score and tier
+   - **NEW:** Gap breakdown scores (coverage, depth, format, recency)
+   - **NEW:** Feasibility, competitor count, recommendation
+   - **NEW:** Pre-analysis date and staleness status
 
 2. Create lightweight gap summary in research brief:
    ```markdown
@@ -302,18 +317,43 @@ fi
    **Primary Angle:** [primary_angle from context]
    **Opportunity Score:** [score] (Tier [tier])
 
+   **Gap Breakdown:**
+   - Coverage Score: [coverage] (0.0-5.0)
+   - Depth Score: [depth] (0.0-5.0)
+   - Format Score: [format] (0.0-5.0)
+   - Recency Score: [recency] (0.0-5.0)
+
+   **Strategic Context:**
+   - Feasibility: [HIGH|MEDIUM|LOW]
+   - Competitors Analyzed: [count]
+   - Recommendation: [INCLUDE|CONSIDER|EXCLUDE]
+   - Pre-Analysis Date: [date]
+   - Staleness: [FRESH|AGING] ([days_old] days old)
+
    **Key Differentiation Opportunities:**
-   - [Opportunity 1 from context]
-   - [Opportunity 2 from context]
-   - [Opportunity 3 from context]
+   - [Opportunity 1 from context] (Gap type: [coverage|depth|format|recency])
+   - [Opportunity 2 from context] (Gap type: [coverage|depth|format|recency])
+   - [Opportunity 3 from context] (Gap type: [coverage|depth|format|recency])
 
    **Competitive Context:** [landscape_summary from context]
 
-   **Implementation Note:** Gap analysis performed during calendar planning.
+   **Implementation Note:** Gap analysis performed during calendar planning ([days_old] days ago).
+   Status: [FRESH|AGING] - pre-analysis is current and reliable.
    Full pre-analysis available at: project/Calendar/{Year}/{Month}/gap-pre-analysis/[ARTICLE-ID]-summary.md
    ```
 
-3. **Time Saved:** 5-10 minutes (gap analysis already complete)
+3. **NEW: Staleness Warning (if AGING status)**
+
+   If staleness = "AGING" (7-14 days old):
+   ```markdown
+   ⚠️ **Staleness Notice:**
+   Pre-analysis is [days_old] days old (AGING status). While still usable, be aware:
+   - Competitive landscape may have minor shifts
+   - Consider spot-checking if major industry events occurred recently
+   - Validate recency claims if topic is fast-moving
+   ```
+
+4. **Time Saved:** 5-10 minutes (gap analysis already complete)
 
 ---
 

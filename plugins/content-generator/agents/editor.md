@@ -447,26 +447,238 @@ Add to editorial review report:
 
 ---
 
+### Phase 2A.1: Gap Breakdown Validation (NEW - 2–5 minutes, tier-adaptive)
+
+**Objective:** Validate that high-scoring gaps from calendar pre-analysis were actually addressed in the article
+
+**For content deliverables with calendar context only.** Skip if no calendar-context.json exists.
+
+**Step 1: Load Gap Breakdown from meta.yml**
+
+Check if gap breakdown scores are available:
+
+```bash
+# Check for calendar context in meta.yml
+if grep -q "gap_breakdown:" project/Articles/[ARTICLE-ID]/meta.yml; then
+  echo "✅ Gap breakdown available - loading scores"
+else
+  echo "⚠️ No gap breakdown - skipping validation"
+  # Proceed to Phase 2A
+fi
+```
+
+**Step 2: Apply Tier-Aware Validation Depth**
+
+**T1 (Score ≥4.0) - Comprehensive Gap Validation:**
+```markdown
+Validate ALL gap types with scores ≥4.0:
+
+Coverage Gap Validation (if coverage_score ≥4.0):
+- [ ] Identify what was missing from competitors (from pre-analysis)
+- [ ] Search article for topic coverage (≥300 words on missing subtopic)
+- [ ] Verify coverage gap is substantively addressed (not just mentioned)
+- [ ] Example: If "0/10 competitors explain X", article must have dedicated section on X
+- 🔴 If missing: CRITICAL - Send back to writer
+
+Depth Gap Validation (if depth_score ≥4.0):
+- [ ] Identify what depth was lacking (e.g., "only surface explanations")
+- [ ] Verify article provides deeper treatment (e.g., ≥5 code examples if "lacking examples")
+- [ ] Check for working examples, edge cases, troubleshooting (not just theory)
+- [ ] Example: If "shallow tutorials", article must have step-by-step with explanations
+- 🔴 If missing: CRITICAL - Send back to writer
+
+Format Gap Validation (if format_score ≥4.0):
+- [ ] Identify format advantage promised (e.g., "no visual tutorials")
+- [ ] Verify article delivers on format (e.g., video embeds, diagrams, interactive examples)
+- [ ] Check that format enhances understanding (not just decorative)
+- [ ] Example: If "no step-by-step", article must have numbered procedures with screenshots
+- 🟡 If missing: IMPORTANT - Recommend adding format elements
+
+Recency Gap Validation (if recency_score ≥4.0):
+- [ ] Identify what recent updates were missing (e.g., "no WooCommerce 8.3 coverage")
+- [ ] Verify article covers recent developments flagged in pre-analysis
+- [ ] Check dates/versions match current state (not outdated)
+- [ ] Example: If "missing latest features", article must document 2025 updates
+- 🔴 If missing: CRITICAL - Update with recent information
+
+Document validation results in editorial review:
+```markdown
+### Gap Breakdown Validation (T1 - Comprehensive)
+
+**Gap Scores from Pre-Analysis:**
+- Coverage: 5.0 (CRITICAL gap)
+- Depth: 4.5 (CRITICAL gap)
+- Format: 3.0 (moderate gap)
+- Recency: 4.8 (CRITICAL gap)
+
+**Validation Results:**
+- ✅ Coverage gap addressed: Dedicated 800-word section on custom query migration (Section 4)
+- ✅ Depth gap addressed: 7 code examples with explanations (throughout article)
+- ⚠️ Format gap partially addressed: No video tutorial (recommend adding YouTube embed)
+- ✅ Recency gap addressed: WooCommerce 8.3 features documented (Section 2, 5)
+
+**Overall Gap Validation:** ✅ 3/4 critical gaps addressed, 1 format improvement recommended
+```
+```
+
+**T2 (Score 3.0-3.9) - Standard Gap Validation:**
+```markdown
+Validate gaps with scores ≥4.0 (skip scores <4.0):
+
+For each gap ≥4.0:
+- [ ] Identify what was missing
+- [ ] Verify article addresses the gap substantively
+- [ ] Document evidence (section name, word count estimate)
+- 🔴 If critical gap (≥4.5) missing: Send back to writer
+- 🟡 If moderate gap (4.0-4.4) missing: Recommend adding
+
+Document validation results in editorial review:
+```markdown
+### Gap Breakdown Validation (T2 - Standard)
+
+**High-Scoring Gaps (≥4.0):**
+- Coverage: 5.0 → ✅ Addressed (Section 4, ~800 words)
+- Depth: 4.5 → ✅ Addressed (7 examples throughout)
+- Recency: 4.8 → ✅ Addressed (latest features documented)
+
+**Moderate Gaps (<4.0):**
+- Format: 3.0 → ⚠️ Not validated (below threshold)
+
+**Overall:** ✅ All critical gaps addressed
+```
+```
+
+**T3 (Score 2.0-2.9) - Focused Gap Validation:**
+```markdown
+Validate ONLY gaps with scores ≥4.5 (highest priority):
+
+For each gap ≥4.5:
+- [ ] Quick check that gap is addressed in article
+- [ ] Document pass/fail
+- 🔴 If missing: Send back to writer
+
+Document validation results:
+```markdown
+### Gap Breakdown Validation (T3 - Focused)
+
+**Critical Gaps (≥4.5):**
+- Coverage: 5.0 → ✅ Addressed
+- Recency: 4.8 → ✅ Addressed
+
+**Overall:** ✅ Critical gaps addressed
+```
+```
+
+**T4 (Score <2.0) - Skip Gap Validation:**
+```markdown
+Low-opportunity articles - skip gap breakdown validation entirely.
+
+Proceed directly to Phase 2A (Required Tactics Validation).
+```
+
+**Time Investment:**
+- T1: +4-5 min (comprehensive validation of all gaps ≥4.0)
+- T2: +3-4 min (standard validation of gaps ≥4.0)
+- T3: +2-3 min (focused validation of gaps ≥4.5 only)
+- T4: +0 min (skip)
+
+---
+
 ### Phase 2A: Optional Content/SEO Differentiation Validation (5–7 minutes)
 
 Objective: For content strategy deliverables, verify delivery on the differentiation strategy identified during research.
 
 ```markdown
-**Step 1: Load Gap Analysis Report**
+**Step 1: Load Required Tactics from meta.yml**
 
-Check if a content gap analysis was performed:
+Check if required_tactics structure exists in meta.yml:
+
 ```bash
-!ls project/Articles/[ARTICLE-ID]/gap-analysis-report.md
+# Check for required_tactics in meta.yml
+if grep -q "required_tactics:" project/Articles/[ARTICLE-ID]/meta.yml; then
+  echo "✅ Required tactics structure found - loading from meta.yml"
+  # Use structured validation approach (NEW)
+else
+  echo "⚠️ No required_tactics structure - falling back to gap-analysis-report.md"
+  # Use legacy approach (read gap-analysis-report.md directly)
+fi
 ```
 
-If gap-analysis-report.md exists:
-1. Read the report to understand promised differentiation
-2. Extract Priority 1, 2, and 3 tactics from the report
-3. Validate each tactic was implemented in the article
+**NEW APPROACH (if required_tactics exists in meta.yml):**
 
-**Step 2: Differentiation Strategy Verification**
+The required_tactics structure is pre-populated in meta.yml with:
+- P1/P2/P3 tactics from gap analysis
+- Gap type and score for each tactic
+- Empty `implemented` and `evidence` fields for editor to fill
 
-For each priority tactic from the gap analysis:
+**Your job:** Validate implementation and UPDATE meta.yml with evidence.
+
+**Step 2: Required Tactics Validation & Meta.yml Updates (NEW)**
+
+Apply tier-aware validation depth:
+
+**T1 (Score ≥4.0) - Comprehensive Validation:**
+
+For each P1 tactic in meta.yml:
+1. Read tactic description and gap_type
+2. Search article for evidence of implementation:
+   - Coverage gap: Search for subtopic keywords (≥300 words on topic)
+   - Depth gap: Search for examples, code blocks, detailed explanations
+   - Format gap: Look for visual elements, tutorials, step-by-step
+   - Recency gap: Check for dates, versions, recent updates
+3. Determine implementation status:
+   - ✅ IMPLEMENTED: Tactic fully addressed, substantive treatment
+   - ⚠️ PARTIAL: Mentioned but not substantively addressed
+   - ❌ MISSING: Not found in article
+4. Document evidence: Section name, line numbers, word count, specific elements
+5. **UPDATE meta.yml** with validation results:
+   ```yaml
+   required_tactics:
+     p1:
+       - tactic: "Coverage gap: 0/10 competitors address custom query migration"
+         gap_type: "coverage"
+         gap_score: 5.0
+         implemented: true        # EDITOR FILLS THIS
+         evidence: "Section 4 'Custom Query Migration' (lines 145-187, ~850 words), includes 3 code examples and troubleshooting guide"  # EDITOR FILLS THIS
+   ```
+
+**Priority Levels:**
+- 🔴 **P1 tactic MISSING:** CRITICAL - Send back to writer (blocking issue)
+- 🟡 **P1 tactic PARTIAL:** IMPORTANT - Request strengthening or accept with note
+- ✅ **P1 tactic IMPLEMENTED:** Approve, document evidence
+
+For P2 tactics (T1 only):
+- Validate similarly to P1
+- 🟡 If missing: IMPORTANT - Recommend adding (not blocking)
+- Update meta.yml with validation results
+
+For P3 tactics (T1 only):
+- Quick check if implemented
+- Document in meta.yml
+- Not blocking if missing
+
+**T2 (Score 3.0-3.9) - Standard Validation:**
+
+Validate P1 tactics + spot-check 1-2 P2 tactics:
+- Focus on P1 validation (comprehensive)
+- Spot-check highest-scoring P2 tactics
+- Skip P3 validation
+- Update meta.yml for P1 and checked P2 tactics
+
+**T3 (Score 2.0-2.9) - Focused Validation:**
+
+Validate P1 tactics ONLY:
+- Quick verification that P1 tactics are present
+- Document pass/fail in meta.yml
+- Skip P2/P3 validation entirely
+
+**T4 (Score <2.0) - Skip Validation:**
+
+Skip required tactics validation entirely (low-opportunity article).
+
+**LEGACY APPROACH (if no required_tactics in meta.yml):**
+
+Fall back to reading gap-analysis-report.md directly:
 
 **Priority 1 Tactics** (MUST be implemented)
 - [ ] Tactic name: [from gap analysis]
