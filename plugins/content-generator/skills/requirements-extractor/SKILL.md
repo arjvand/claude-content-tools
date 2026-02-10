@@ -61,10 +61,13 @@ I need just the SEO configuration from requirements.md. Please use the requireme
 
 **Supported subsets:**
 - `seo` - SEO strategy, internal linking, CTA, distribution
-- `competitive` - Gap analysis configuration and weights
-- `content` - Formats, mix, word counts, pillars
+- `competitive` - Gap analysis configuration, weights, full analysis settings
+- `content` - Formats, mix, word counts, depth, per-format lengths, pillars
 - `brand` - Brand identity, voice, guidelines
 - `audience` - Roles, skill levels, segments
+- `novelty` - Novelty controls (saturation, angles, multi-angle, trends, convergence)
+- `delivery` - CMS platform, export format, visual standards
+- `additional` - Pain points, editorial guardrails, sample ideas, KPIs, maintenance
 
 **Output:**
 - Subset JSON with only requested sections
@@ -88,7 +91,8 @@ The skill extracts requirements.md into this standardized structure:
     "official_docs": "url",
     "community_forums": ["url"],
     "official_blogs": ["url"],
-    "repository": "url"
+    "repository": "url",
+    "other_authoritative_sources": ["string"]
   },
   "audience": {
     "primary_roles": ["string"],
@@ -116,7 +120,14 @@ The skill extracts requirements.md into this standardized structure:
       "format_name": 0.40
     },
     "word_count_range": [min, max],
-    "topic_pillars": ["string"]
+    "depth": "string",
+    "length_per_format": {
+      "format_name": [min, max]
+    },
+    "topic_pillars": {
+      "primary": "string",
+      "secondary": ["string"]
+    }
   },
   "seo": {
     "strategy": ["string"],
@@ -137,22 +148,73 @@ The skill extracts requirements.md into this standardized structure:
       "format": 0.15,
       "recency": 0.15
     },
-    "differentiation_priorities": ["string"]
+    "differentiation_priorities": ["string"],
+    "full_analysis": {
+      "min_word_count_threshold": 800,
+      "recency_filter": "string"
+    },
+    "depth_scoring_weights": {
+      "technical_details": 0.25,
+      "code_examples": 0.05,
+      "visual_aids": 0.30,
+      "troubleshooting": 0.15,
+      "advanced_sections": 0.10
+    }
   },
   "delivery": {
     "cms_platform": "string",
+    "export_format": "string",
     "html_formatter_skill": "string|none",
-    "image_style": "string"
+    "image_style": "string",
+    "featured_images": "string",
+    "code_snippets": "string",
+    "downloads": "string"
   },
   "localization": {
     "language": "string",
     "regions": ["string"],
-    "spelling": "US|UK"
+    "spelling": "US|UK",
+    "accessibility": "string"
   },
   "quality": {
     "sme_involvement": "string",
     "review_workflow": ["string"],
-    "cadence": "string"
+    "cadence": "string",
+    "product_announcements_scope": "string"
+  },
+  "novelty": {
+    "saturation_sensitivity": {
+      "level": "lenient|balanced|strict"
+    },
+    "alternative_angle_preference": {
+      "depth_angles_pct": 60,
+      "use_case_angles_pct": 40
+    },
+    "multi_angle_generation": {
+      "enabled": true,
+      "variant_types": ["coverage", "depth", "use-case"],
+      "selection_criteria": {
+        "novelty_weight": 0.40,
+        "opportunity_weight": 0.35,
+        "feasibility_weight": 0.25
+      }
+    },
+    "trend_analysis": {
+      "enabled": true,
+      "lookback_months": 24
+    },
+    "convergence_detection": {
+      "enabled": true,
+      "min_cluster_size": 3,
+      "similarity_threshold": 0.40
+    }
+  },
+  "additional": {
+    "pain_points": ["string"],
+    "editorial_guardrails": ["string"],
+    "sample_article_ideas": ["string"],
+    "kpis_measurement": "string",
+    "maintenance": "string"
   }
 }
 ```
@@ -179,6 +241,8 @@ The skill extracts requirements.md into this standardized structure:
 - `formats` - At least 1 format
 - `mix` - Content mix percentages
 - `word_count_range` - [min, max] array
+- `depth` - Content depth description
+- `topic_pillars.primary` - Primary topic pillar
 
 **Localization:**
 - `spelling` - Must be "US" or "UK"
@@ -214,6 +278,36 @@ The skill extracts requirements.md into this standardized structure:
    0.40 ✓ (40%)
    40 ✗ (should be 0.40)
    ```
+
+6. **Multi-Angle Selection Criteria:** Weights must sum to 1.0
+   ```json
+   {"novelty_weight": 0.40, "opportunity_weight": 0.35, "feasibility_weight": 0.25}
+   // Sum = 1.00 ✓
+   ```
+
+7. **Alternative Angle Preference:** Percentages must sum to 100
+   ```json
+   {"depth_angles_pct": 60, "use_case_angles_pct": 40}
+   // Sum = 100 ✓
+   ```
+
+8. **Convergence Detection Similarity Threshold:** Must be in 0.0-1.0 range
+   ```
+   0.40 ✓
+   1.5 ✗ (out of range)
+   ```
+
+9. **Length Per Format:** Each entry must be [min, max] with min < max
+   ```json
+   {"analysis": [1200, 2000], "news": [500, 800]} ✓
+   {"analysis": [2000, 1200]} ✗ (min > max)
+   ```
+
+10. **Depth Scoring Weights:** Should sum to approximately 1.0 (±0.15 tolerance for partial weights)
+    ```json
+    {"technical_details": 0.25, "code_examples": 0.05, "visual_aids": 0.30, "troubleshooting": 0.15, "advanced_sections": 0.10}
+    // Sum = 0.85 ✓ (remaining 15% is unscored)
+    ```
 
 ### Consistency Checks (Warning if inconsistent)
 
@@ -252,6 +346,25 @@ The skill extracts requirements.md into this standardized structure:
    full_analysis_competitor_count: 8 ⚠️ (pre > full)
    ```
 
+5. **Export Format / CMS Platform:** `delivery.export_format` must match `delivery.cms_platform`
+   ```
+   cms_platform: "WordPress (Gutenberg)"
+   export_format: "gutenberg" ✓
+
+   cms_platform: "Markdown files (static site)"
+   export_format: "gutenberg" ⚠️ (mismatch)
+   ```
+
+6. **Trend Analysis Lookback:** `novelty.trend_analysis.lookback_months` should be ≥ 12 for meaningful trend detection
+   ```
+   lookback_months: 24 ✓
+   lookback_months: 6 ⚠️ (too short for reliable trend classification)
+   ```
+
+7. **Topic Pillars Structure:** If `content.topic_pillars` is a flat list, warn and suggest restructuring to `{primary, secondary[]}`
+
+8. **Length Per Format / Content Formats:** Keys in `content.length_per_format` should correspond to entries in `content.formats`
+
 ### Deprecation Warnings
 
 Flag outdated configuration patterns and suggest modern alternatives:
@@ -280,6 +393,7 @@ For each section:
 - Parse "Platform/Product" → `project.platform`
 - Parse bullet list under "Focus Areas" → `project.focus_areas[]`
 - Extract URLs from "Official Documentation" → `project.official_docs`
+- Parse "Other Authoritative Sources" → `project.other_authoritative_sources[]`
 
 **Audience:**
 - Parse roles from bullet list → `audience.primary_roles[]`
@@ -296,18 +410,60 @@ For each section:
 - Parse content formats → `content.formats[]`
 - Extract percentages from mix → `content.mix{}`
 - Parse word count range → `content.word_count_range[min, max]`
-- Extract topic pillars → `content.topic_pillars[]`
+- Parse "Depth" description → `content.depth`
+- Parse per-format word counts from "Length" → `content.length_per_format{}` (e.g., "Analysis: 1,200-2,000 words" → `{"analysis": [1200, 2000]}`)
+- Parse "Primary Pillar" → `content.topic_pillars.primary`
+- Parse "Secondary Pillars" bullet list → `content.topic_pillars.secondary[]`
+- Fallback: if pillars are a flat list (legacy format), assign first item as `primary`, rest as `secondary`
+
+**Novelty Controls:**
+- Parse "Saturation Sensitivity > Level" → `novelty.saturation_sensitivity.level`
+- Parse "Alternative Angle Preference > Depth angles" percentage → `novelty.alternative_angle_preference.depth_angles_pct`
+- Parse "Alternative Angle Preference > Use-case angles" percentage → `novelty.alternative_angle_preference.use_case_angles_pct`
+- Parse "Multi-Angle Generation > Enabled" → `novelty.multi_angle_generation.enabled`
+- Parse "Multi-Angle Generation > Variant types" → `novelty.multi_angle_generation.variant_types[]`
+- Parse "Multi-Angle Generation > Selection criteria" weights → `novelty.multi_angle_generation.selection_criteria.{novelty_weight, opportunity_weight, feasibility_weight}`
+- Parse "Trend Analysis > Enabled" → `novelty.trend_analysis.enabled`
+- Parse "Trend Analysis > Lookback months" → `novelty.trend_analysis.lookback_months`
+- Parse "Convergence Detection > Enabled" → `novelty.convergence_detection.enabled`
+- Parse "Convergence Detection > Min cluster size" → `novelty.convergence_detection.min_cluster_size`
+- Parse "Convergence Detection > Similarity threshold" → `novelty.convergence_detection.similarity_threshold`
 
 **Competitive Gap Analysis:**
 - Parse enabled/disabled → `competitive.run_preanalysis`
 - Extract numeric settings → `competitive.*_count`
 - Parse opportunity weights → `competitive.opportunity_weights{}`
 - Extract min scores and thresholds
+- Parse "Full Analysis Settings > Minimum Word Count Threshold" → `competitive.full_analysis.min_word_count_threshold`
+- Parse "Full Analysis Settings > Recency Filter" → `competitive.full_analysis.recency_filter`
+- Parse "Depth Scoring Weights" → `competitive.depth_scoring_weights.{technical_details, code_examples, visual_aids, troubleshooting, advanced_sections}`
 
-**Delivery & Localization:**
+**Delivery:**
 - Extract CMS platform → `delivery.cms_platform`
+- Parse export format → `delivery.export_format`
 - Parse HTML formatter → `delivery.html_formatter_skill`
+- Parse "Image Style" → `delivery.image_style`
+- Parse "Featured Images" → `delivery.featured_images`
+- Parse "Code Snippets" → `delivery.code_snippets`
+- Parse "Downloads" → `delivery.downloads`
+
+**Localization:**
 - Extract language/spelling → `localization.{language, spelling}`
+- Parse regions → `localization.regions[]`
+- Parse "Accessibility" → `localization.accessibility`
+
+**Quality & Review:**
+- Parse SME involvement → `quality.sme_involvement`
+- Parse review workflow → `quality.review_workflow[]`
+- Parse cadence → `quality.cadence`
+- Parse "Product Announcements Scope" → `quality.product_announcements_scope`
+
+**Additional Notes:**
+- Parse "Target Audience Insights & Pain Points" bullet list → `additional.pain_points[]`
+- Parse "Editorial Guardrails" bullet list → `additional.editorial_guardrails[]`
+- Parse "Sample Article Ideas" numbered list → `additional.sample_article_ideas[]`
+- Parse "KPIs & Measurement Details" → `additional.kpis_measurement`
+- Parse "Maintenance" → `additional.maintenance`
 
 ### Step 3: Validate Extracted Data
 
@@ -376,6 +532,8 @@ Generate validation report with:
 - ✅ audience.primary_roles: 3 roles found
 - ✅ brand.name: "Summix Blog"
 - ✅ content.formats: 5 formats found
+- ✅ content.depth: present
+- ✅ content.topic_pillars.primary: "WooCommerce Integration"
 - ✅ localization.spelling: "US"
 
 ### Format Validation ✅
@@ -384,6 +542,10 @@ Generate validation report with:
 - ✅ Word count range valid: [900, 2000]
 - ✅ All URLs valid (4 checked)
 - ✅ Percentages in correct range (0.0-1.0)
+- ✅ Multi-angle selection criteria weights sum to 1.0
+- ✅ Alternative angle preference sums to 100%
+- ✅ Convergence detection similarity threshold in range (0.40)
+- ✅ Length per format ranges valid (3 formats checked)
 
 ### Consistency Checks ⚠️
 - ✅ Content formats match content mix keys
@@ -392,6 +554,9 @@ Generate validation report with:
 - ⚠️ **Warning:** CMS platform "WordPress" but html_formatter_skill is "none"
   - Recommendation: Set to "gutenberg-formatter" for WordPress
 - ✅ Competitor counts aligned (pre: 8, full: 10)
+- ✅ Export format matches CMS platform
+- ✅ Trend analysis lookback (24 months) sufficient
+- ✅ Length per format keys match content formats
 
 ### Deprecation Notices 📌
 - No deprecated patterns detected
@@ -400,7 +565,7 @@ Generate validation report with:
 
 ## Configuration Summary
 
-**Extracted 8/8 sections:**
+**Extracted 11/11 sections:**
 1. ✅ Project Definition
 2. ✅ Audience
 3. ✅ Brand Identity
@@ -409,6 +574,9 @@ Generate validation report with:
 6. ✅ Competitive Gap Analysis
 7. ✅ Delivery Settings
 8. ✅ Localization
+9. ✅ Novelty Controls
+10. ✅ Quality & Review
+11. ✅ Additional Notes
 
 **Cached to:** .claude/cache/config.json
 **Cache expires:** 2025-11-05 15:32:15
@@ -441,7 +609,8 @@ Generate validation report with:
       "https://make.wordpress.org/",
       "https://woocommerce.com/blog/"
     ],
-    "repository": "https://github.com/wordpress"
+    "repository": "https://github.com/wordpress",
+    "other_authoritative_sources": []
   },
   "audience": {
     "primary_roles": [
@@ -490,12 +659,22 @@ Generate validation report with:
       "analysis": 0.05
     },
     "word_count_range": [900, 2000],
-    "topic_pillars": [
-      "WooCommerce Integration",
-      "Content Migration",
-      "CRM Workflows",
-      "Form Processing"
-    ]
+    "depth": "Intermediate with working code examples",
+    "length_per_format": {
+      "tutorials": [1200, 2000],
+      "playbooks": [1500, 2500],
+      "deep_dives": [1800, 3000],
+      "news": [500, 900],
+      "analysis": [1000, 1800]
+    },
+    "topic_pillars": {
+      "primary": "WooCommerce Integration",
+      "secondary": [
+        "Content Migration",
+        "CRM Workflows",
+        "Form Processing"
+      ]
+    }
   },
   "seo": {
     "strategy": ["Keyword-first", "Topic clusters", "Opportunistic"],
@@ -520,22 +699,83 @@ Generate validation report with:
       "Technical depth",
       "Working code examples",
       "Real-world integration patterns"
-    ]
+    ],
+    "full_analysis": {
+      "min_word_count_threshold": 800,
+      "recency_filter": "Last 12 months preferred"
+    },
+    "depth_scoring_weights": {
+      "technical_details": 0.25,
+      "code_examples": 0.30,
+      "visual_aids": 0.20,
+      "troubleshooting": 0.15,
+      "advanced_sections": 0.10
+    }
   },
   "delivery": {
     "cms_platform": "WordPress (Gutenberg editor)",
+    "export_format": "gutenberg",
     "html_formatter_skill": "none",
-    "image_style": "Technical diagrams and screenshots"
+    "image_style": "Technical diagrams and screenshots",
+    "featured_images": "Required; architecture diagrams",
+    "code_snippets": "PHP and JavaScript with syntax highlighting",
+    "downloads": "N/A"
   },
   "localization": {
     "language": "English",
     "regions": ["United States", "Global"],
-    "spelling": "US"
+    "spelling": "US",
+    "accessibility": "Alt text required; clear heading structure"
   },
   "quality": {
     "sme_involvement": "Required for integration tutorials",
     "review_workflow": ["@editor", "Legal/Compliance", "SME (technical tutorials)"],
-    "cadence": "2 posts per month"
+    "cadence": "2 posts per month",
+    "product_announcements_scope": "Cover WordPress core and WooCommerce major releases"
+  },
+  "novelty": {
+    "saturation_sensitivity": {
+      "level": "balanced"
+    },
+    "alternative_angle_preference": {
+      "depth_angles_pct": 60,
+      "use_case_angles_pct": 40
+    },
+    "multi_angle_generation": {
+      "enabled": true,
+      "variant_types": ["coverage", "depth", "use-case"],
+      "selection_criteria": {
+        "novelty_weight": 0.40,
+        "opportunity_weight": 0.35,
+        "feasibility_weight": 0.25
+      }
+    },
+    "trend_analysis": {
+      "enabled": true,
+      "lookback_months": 24
+    },
+    "convergence_detection": {
+      "enabled": true,
+      "min_cluster_size": 3,
+      "similarity_threshold": 0.40
+    }
+  },
+  "additional": {
+    "pain_points": [
+      "Complex multi-plugin integration debugging",
+      "Data sync failures between WordPress and CRMs",
+      "Migration downtime concerns"
+    ],
+    "editorial_guardrails": [
+      "Always test code examples on latest WordPress version",
+      "Disclose plugin affiliate relationships"
+    ],
+    "sample_article_ideas": [
+      "WooCommerce HPOS Migration: Complete Guide",
+      "WordPress REST API Performance Optimization"
+    ],
+    "kpis_measurement": "Track: Organic search traffic, tutorial completion rate, code snippet copy events",
+    "maintenance": "Review integration guides quarterly for API changes; update code examples for new WP versions"
   }
 }
 ```

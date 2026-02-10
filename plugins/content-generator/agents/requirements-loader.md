@@ -29,7 +29,7 @@ Provide the mode (optional, defaults to full extraction):
 ```
 Invoke requirements-loader agent.
 Mode: full | validation | subset
-Subset: seo | competitive | content | brand | audience (if mode=subset)
+Subset: seo | competitive | content | brand | audience | novelty | delivery | additional (if mode=subset)
 ```
 
 ## Workflow
@@ -46,7 +46,7 @@ Subset: seo | competitive | content | brand | audience (if mode=subset)
 | Input | Required | Description |
 |-------|----------|-------------|
 | mode | No | `full` (default), `validation`, or `subset` |
-| subset | No | If mode=subset: `seo`, `competitive`, `content`, `brand`, `audience` |
+| subset | No | If mode=subset: `seo`, `competitive`, `content`, `brand`, `audience`, `novelty`, `delivery`, `additional` |
 
 ## Outputs
 
@@ -60,14 +60,17 @@ Subset: seo | competitive | content | brand | audience (if mode=subset)
     "warnings": ["topic_candidate_count slightly low"]
   },
   "config": {
-    "project": { "industry": "...", "platform": "...", ... },
+    "project": { "industry": "...", "platform": "...", "other_authoritative_sources": [...], ... },
     "audience": { "primary_roles": [...], ... },
     "brand": { "name": "...", "voice": {...}, ... },
-    "content": { "formats": [...], "mix": {...}, ... },
+    "content": { "formats": [...], "mix": {...}, "depth": "...", "length_per_format": {...}, "topic_pillars": { "primary": "...", "secondary": [...] }, ... },
     "seo": { "strategy": [...], ... },
-    "competitive": { "run_preanalysis": true, ... },
-    "delivery": { "cms_platform": "...", ... },
-    "localization": { "spelling": "US", ... }
+    "competitive": { "run_preanalysis": true, "full_analysis": {...}, "depth_scoring_weights": {...}, ... },
+    "delivery": { "cms_platform": "...", "export_format": "...", "featured_images": "...", ... },
+    "localization": { "spelling": "US", "accessibility": "...", ... },
+    "quality": { "sme_involvement": "...", "product_announcements_scope": "...", ... },
+    "novelty": { "saturation_sensitivity": {...}, "multi_angle_generation": {...}, "trend_analysis": {...}, ... },
+    "additional": { "pain_points": [...], "editorial_guardrails": [...], "sample_article_ideas": [...], ... }
   }
 }
 ```
@@ -149,7 +152,7 @@ Agent returns:
 }
 ```
 
-### Subset Extraction
+### Subset Extraction (SEO)
 ```
 User: Invoke requirements-loader agent for SEO subset.
 
@@ -161,6 +164,29 @@ Agent returns:
       "strategy": ["Keyword-first", "Topic clusters"],
       "internal_linking": "3-5 contextual links",
       "primary_cta": "Newsletter subscribe"
+    }
+  }
+}
+```
+
+### Subset Extraction (Novelty)
+```
+User: Invoke requirements-loader agent for novelty subset.
+
+Agent returns:
+{
+  "status": "success",
+  "config": {
+    "novelty": {
+      "saturation_sensitivity": { "level": "balanced" },
+      "alternative_angle_preference": { "depth_angles_pct": 60, "use_case_angles_pct": 40 },
+      "multi_angle_generation": {
+        "enabled": true,
+        "variant_types": ["coverage", "depth", "use-case"],
+        "selection_criteria": { "novelty_weight": 0.40, "opportunity_weight": 0.35, "feasibility_weight": 0.25 }
+      },
+      "trend_analysis": { "enabled": true, "lookback_months": 24 },
+      "convergence_detection": { "enabled": true, "min_cluster_size": 3, "similarity_threshold": 0.40 }
     }
   }
 }
