@@ -25,10 +25,10 @@ Content-generator/                         # Repository root (plugin marketplace
 │       ├── .claude-plugin/
 │       │   └── plugin.json                # Plugin manifest
 │       ├── CLAUDE.md                      # Content generation guide
-│       ├── agents/                        # 15 agents (4 persona + 11 skill-specific)
+│       ├── agents/                        # 16 agents (4 persona + 12 skill-specific)
 │       ├── commands/                      # 5 slash commands (orchestrators)
 │       ├── docs/                          # Architecture documentation
-│       ├── skills/                        # 14+ specialized skills
+│       ├── skills/                        # 15+ specialized skills
 │       └── examples/                      # 7 pre-configured templates
 ├── project/                               # User content (git-ignored)
 │   ├── requirements.md                    # Active configuration
@@ -90,7 +90,7 @@ All agents, commands, and skills read `requirements.md` at runtime for:
 
 ### Plugin Component Architecture
 
-**15 Agents** (4 persona + 11 skill-specific):
+**16 Agents** (4 persona + 12 skill-specific):
 
 *Persona Agents* (who does the work):
 - `@researcher` - Multi-domain research, source verification, gap analysis
@@ -103,6 +103,7 @@ All agents, commands, and skills read `requirements.md` at runtime for:
 - `keyword-planner` - Strategic keyword planning
 - `keyword-analyst` - Keyword research and validation
 - `gap-analyst` - Competitive gap analysis
+- `gsc-analyst` - GSC search performance analysis (4 modes)
 - `topic-deduplicator` - Check for duplicate topics
 - `theme-indexer` - Build theme index
 - `fact-checker` - Claim verification
@@ -111,10 +112,11 @@ All agents, commands, and skills read `requirements.md` at runtime for:
 - `cms-exporter` - CMS-specific export
 - `sme-assessor` - SME requirement assessment
 
-**14+ Skills** (specialized tools):
+**15+ Skills** (specialized tools):
 - `competitive-gap-analyzer` - 3 modes: Full, Pre-Analysis, Batch
 - `content-research` - Domain-aware source prioritization
 - `fact-checker` - Quick (post-research) + Comprehensive (post-writing)
+- `gsc-analyzer` - GSC CSV analysis (4 modes: Full, Calendar, Article, Dashboard)
 - `media-discovery` - Embeddable media search
 - `seo-optimization` - Keywords, meta descriptions, internal linking
 - `requirements-validator` - Validate against requirements.md
@@ -200,21 +202,27 @@ project/
 ├── requirements.md                        # Configuration
 ├── Calendar/{Year}/{Month}/
 │   ├── content-calendar.md
+│   ├── gsc-calendar-signals.md            # GSC demand signals (if configured)
 │   └── gap-pre-analysis/{ID}-summary.md
-└── Articles/{ARTICLE-ID}/
-    ├── research-primary.md               # Parallel research agent 1
-    ├── research-landscape.md             # Parallel research agent 2
-    ├── research-brief.md                 # Merged research
-    ├── gap-analysis-report.md
-    ├── media-discovery.md
-    ├── claim-audit-quick.md
-    ├── draft.md
-    ├── claim-audit-full.md
-    ├── article.md                        # Final article
-    ├── article.html
-    ├── x-thread.md
-    ├── featured-image-prompt.json
-    └── meta.yml                          # 20-section metadata
+├── Articles/{ARTICLE-ID}/
+│   ├── research-primary.md               # Parallel research agent 1
+│   ├── research-landscape.md             # Parallel research agent 2
+│   ├── research-brief.md                 # Merged research
+│   ├── gap-analysis-report.md
+│   ├── gsc-article-data.md               # GSC ranking context (if configured)
+│   ├── media-discovery.md
+│   ├── claim-audit-quick.md
+│   ├── draft.md
+│   ├── claim-audit-full.md
+│   ├── article.md                        # Final article
+│   ├── article.html
+│   ├── x-thread.md
+│   ├── featured-image-prompt.json
+│   └── meta.yml                          # 20-section metadata
+└── GSC/                                   # GSC data (if configured)
+    ├── {site}-Performance-on-Search-{date}/ # GSC CSV exports
+    ├── url-mapping.json                   # Optional URL-to-article map
+    └── reports/                           # Generated GSC reports
 ```
 
 ---

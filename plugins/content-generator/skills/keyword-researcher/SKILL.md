@@ -211,13 +211,29 @@ Analyze top 10 results (top 5 for pre-validation):
 | Related searches | 8+ suggestions | 4-7 | <4 |
 | People Also Ask | 4+ questions | 2-3 | 0-1 |
 | Video results | Present | Sometimes | Rarely |
+| **GSC Validation** | **1,000+ impressions** | **100-999 impressions** | **<100 impressions** |
+
+**GSC Validation (conditional -- requires GSC article data):**
+
+If `gsc-article-data.md` is available for this article:
+1. Look up the primary keyword in the GSC query ecosystem (exact and partial matches)
+2. If found, use **actual impressions as the volume signal** -- this overrides proxy estimation
+3. GSC impressions represent real search demand over the export period
+4. Mark volume estimate as `source: GSC` with HIGH confidence (real data vs proxy signals)
+5. If the keyword is NOT found in GSC data, proceed with standard proxy estimation
+
+**When GSC data overrides proxy signals:**
+- GSC impression count directly maps to volume tier (see table row above)
+- Confidence is automatically HIGH (real data)
+- Note in report: "Volume validated by GSC data ({N} impressions over export period)"
 
 **Volume Classification:**
-- **HIGH**: 4+ signals indicate high volume
-- **MEDIUM**: 2-3 signals indicate medium volume
-- **LOW**: 0-1 signals indicate low volume
+- **HIGH**: 4+ signals indicate high volume (or GSC impressions >= 1,000)
+- **MEDIUM**: 2-3 signals indicate medium volume (or GSC impressions 100-999)
+- **LOW**: 0-1 signals indicate low volume (or GSC impressions < 100)
 
 **Confidence Assessment:**
+- GSC-validated data = HIGH confidence (overrides all proxy signals)
 - Strong signals (ads, featured snippets) = HIGH confidence
 - Weak signals (result count alone) = LOW confidence
 
@@ -236,6 +252,26 @@ Calculate difficulty score (1-100) based on competitive analysis:
 ```
 difficulty = (authority × 0.40) + (depth × 0.25) + (brands × 0.20) + (recency × 0.15)
 ```
+
+**GSC Calibration (conditional -- requires GSC article data):**
+
+If `gsc-article-data.md` is available, calibrate the difficulty score against the site's actual ranking outcomes:
+
+1. **Position-based calibration**: If the site already ranks for this keyword:
+   - Position 1-10: Site has proven ability to compete -- reduce difficulty by 10-15 points
+   - Position 11-20: Site has some authority -- reduce difficulty by 5-10 points
+   - Position 21-50: Site is visible but struggling -- no adjustment
+   - Position 50+: Difficulty assessment likely accurate -- no adjustment
+
+2. **Related keyword performance**: Look at the site's position for related queries in the GSC query ecosystem:
+   - If the site ranks well (position <10) for 3+ related queries: reduce difficulty by 5 points (established topical authority)
+   - If the site has no related rankings: increase difficulty by 5 points (no topical footprint)
+
+3. **Calibration note in report**: When GSC calibration is applied, document:
+   - Original difficulty score (SERP-only)
+   - GSC calibration adjustment (+/- points)
+   - Final calibrated score
+   - Rationale: "Site ranks at position {N} for this keyword" or "Site has topical authority via {N} related rankings"
 
 **Difficulty Tiers:**
 | Score | Tier | Description |
@@ -259,6 +295,21 @@ Analyze top 10 results to classify search intent:
 | **Commercial** | Product listings, review sites, comparison articles, "best" lists | Reviews, comparisons, buyer guides |
 | **Transactional** | Shopping results, pricing pages, product pages, ads with "buy" | Product pages, pricing, checkout flows |
 | **Navigational** | Brand homepage, specific site results, official pages | Official docs, brand pages, login pages |
+
+**GSC CTR-Based Intent Validation (conditional -- requires GSC article data):**
+
+If `gsc-article-data.md` is available and the site ranks for this keyword:
+
+1. **Compare actual CTR against position-expected CTR:**
+   - CTR significantly **above** expected for position: Strong intent match -- the site's content aligns well with searcher expectations. The SERP-classified intent is likely correct.
+   - CTR **within range** of expected: Normal intent match -- no adjustment needed.
+   - CTR significantly **below** expected for position: Possible intent mismatch -- the site's content may not match what searchers expect. Review SERP intent classification carefully.
+
+2. **Intent validation rules:**
+   - If CTR > 1.5x expected at position: Mark intent confidence as HIGH (validated by user behavior)
+   - If CTR < 0.5x expected at position: Flag potential intent mismatch -- "GSC data suggests users may expect different content at this position. Review title/meta alignment with classified intent."
+
+3. **Document in report:** "Intent classification {validated/flagged} by GSC CTR data (actual: {X}%, expected at position {N}: {Y}%)"
 
 ### Step 2.2: Intent Distribution
 
@@ -301,7 +352,7 @@ Based on intent classification, recommend content format:
 
 ## Phase 3: Long-Tail Keyword Expansion (2-3 minutes) [Full Mode Only]
 
-### Step 3.1: Autocomplete Mining
+### Step 3.1: Autocomplete Mining + GSC-Discovered Long-Tails
 
 Execute WebSearch with keyword modifiers:
 
@@ -317,6 +368,24 @@ WebSearch: "[keyword] [current year]"
 ```
 
 Extract autocomplete suggestions and related searches from each query.
+
+**GSC-Discovered Long-Tails (conditional -- requires GSC article data):**
+
+If `gsc-article-data.md` is available, supplement autocomplete mining with real queries from Queries.csv:
+
+1. **Extract GSC long-tail queries**: From the GSC query ecosystem, identify all queries that:
+   - Share 2+ terms with the primary keyword
+   - Have 3+ words (qualifying as long-tail)
+   - Have impressions above the configured `min_impressions` threshold
+
+2. **Merge with autocomplete results**: Add GSC-discovered long-tails to the candidate list
+   - Mark each as `source: GSC` with real impression count
+   - GSC-discovered queries have inherent volume validation (no proxy estimation needed)
+   - Deduplicate against autocomplete-mined queries (prefer GSC version with real data)
+
+3. **Priority boost**: GSC-discovered long-tails receive a priority boost in Step 3.4 ranking because they represent proven search demand, not estimated demand
+
+4. **Question-form queries**: GSC question queries ("how to...", "what is...", "why does...") are especially valuable -- these are real questions users type into Google. Add them to both the long-tail list and the PAA extraction in Step 3.2.
 
 ### Step 3.2: PAA (People Also Ask) Extraction
 
@@ -345,9 +414,10 @@ For each candidate long-tail keyword (target 10-15):
 4. **Uniqueness**: Not redundant with other long-tails
 
 **Long-Tail Output Format:**
-| Keyword | Volume Est. | Difficulty | Intent | Content Use |
-|---------|-------------|------------|--------|-------------|
-| "[long-tail]" | MED | 35 | Info | H2 section |
+| Keyword | Volume Est. | Difficulty | Intent | Content Use | Source |
+|---------|-------------|------------|--------|-------------|--------|
+| "[long-tail]" | MED | 35 | Info | H2 section | Autocomplete |
+| "[gsc long-tail]" | 450 imp. | 28 | Info | H3 section | GSC |
 
 ### Step 3.4: Long-Tail Prioritization
 
@@ -355,6 +425,14 @@ Rank long-tails by opportunity score:
 
 ```
 opportunity = (volume_score × 0.40) + ((100 - difficulty) × 0.40) + (relevance × 0.20)
+```
+
+**GSC Source Boost (conditional):**
+When GSC data is available, apply a 1.2x multiplier to opportunity scores for GSC-discovered long-tails. These represent proven search demand (real impressions) rather than estimated demand (proxy signals), making them higher-confidence opportunities.
+
+```
+# For GSC-sourced long-tails:
+opportunity = opportunity × 1.2
 ```
 
 Select top 10-15 long-tails for inclusion in report.

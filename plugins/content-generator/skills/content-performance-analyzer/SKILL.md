@@ -95,6 +95,26 @@ Please use the requirements-extractor skill to load current configuration.
 - Current opportunity score thresholds
 - Current gap strategy weights
 
+**Step 1.2B: Load GSC Performance Data (Conditional)**
+
+**Condition:** `config.analytics.gsc` exists and export path is valid. If not configured, skip silently and proceed to Step 1.3.
+
+Invoke `gsc-analyst` agent in performance dashboard mode:
+
+```
+Invoke gsc-analyst agent in performance dashboard mode.
+```
+
+**Expected Output:**
+- `project/GSC/reports/gsc-performance-dashboard.md`
+- URL-to-article-ID mappings
+- Per-article GSC metrics (clicks, impressions, position, CTR)
+- Performance tier assignments (Star/Steady/Growth/Underperformer/Low Visibility)
+- Updated `meta.yml` files with `gsc_data` section for each mapped article
+- Opportunity scores based on real CTR gaps
+
+**If GSC data unavailable:** Skip silently. Step 1.3 falls back to manual `meta.yml` performance entries. All downstream phases work without GSC data.
+
 **Step 1.3: Extract Article Metadata**
 
 For each article, extract from `meta.yml` and article frontmatter:
@@ -109,13 +129,26 @@ For each article, extract from `meta.yml` and article frontmatter:
 - Opportunity score (from gap analysis)
 - Primary differentiation tactics used
 
-**Performance Metadata (if available):**
+**Performance Metadata (from GSC or manual entry):**
+
+If GSC dashboard data was loaded in Step 1.2B, use `gsc_data` from `meta.yml` as the primary performance source:
+- `gsc_data.avg_position` → Keyword ranking
+- `gsc_data.total_clicks` → Organic traffic proxy (clicks from search)
+- `gsc_data.avg_ctr` → CTR performance
+- `gsc_data.total_impressions` → Search visibility
+- `gsc_data.opportunity_score` → Real CTR-gap-based opportunity
+- `gsc_data.authority_score` → Multi-query ranking authority
+- `gsc_data.performance_tier` → GSC-assigned tier
+
+If GSC data is absent, fall back to manual `performance` section in `meta.yml`:
 - Keyword rankings (position 1-100+)
 - Organic traffic (sessions/month)
 - Engagement metrics (time on page, scroll depth, bounce rate)
 - Conversion metrics (newsletter signups, CTA clicks)
 - Backlinks acquired
 - Social shares
+
+**Priority:** GSC data takes precedence over manual entries for overlapping fields (ranking, traffic, CTR). Manual-only fields (engagement, conversions, backlinks, social shares) supplement GSC data when both are available.
 
 **Example meta.yml structure:**
 ```yaml
@@ -195,7 +228,9 @@ Create structured dataset:
 
 **Step 2.1: Topic/Format Performance Analysis**
 
-Analyze which topics and formats drive best results:
+Analyze which topics and formats drive best results.
+
+**If GSC data available:** Group GSC metrics (clicks, impressions, position, CTR) by article format and topic pillar for evidence-based analysis using real search performance rather than manually entered estimates.
 
 #### By Format
 
@@ -250,27 +285,31 @@ Form Processing (n=3):
 
 **Step 2.2: Opportunity Score Correlation**
 
-Analyze relationship between gap analysis scores and outcomes:
+Analyze relationship between gap analysis scores and outcomes.
+
+**If GSC data available:** Use real GSC positions (`gsc_data.avg_position`) to validate whether predicted opportunity scores from gap analysis correlate with actual ranking outcomes. This replaces manual ranking entries with verified search console positions.
 
 ```
 Tier 1 Articles (Opportunity 4.0-5.0, n=18):
   - Avg Traffic: 2,900 sessions/month
-  - Avg Ranking: Position 2.8
+  - Avg Ranking: Position 2.8 (GSC-verified if available)
   - Avg Time to Rank: 45 days
   - Success Rate: 83% (15/18 reach top 5)
 
 Tier 2 Articles (Opportunity 3.0-3.9, n=9):
   - Avg Traffic: 1,800 sessions/month (-38%)
-  - Avg Ranking: Position 5.2
+  - Avg Ranking: Position 5.2 (GSC-verified if available)
   - Avg Time to Rank: 72 days
   - Success Rate: 56% (5/9 reach top 5)
 
 Tier 3 Articles (Opportunity 2.0-2.9, n=2):
   - Avg Traffic: 900 sessions/month (-69%)
-  - Avg Ranking: Position 12.5
+  - Avg Ranking: Position 12.5 (GSC-verified if available)
   - Avg Time to Rank: 90+ days
   - Success Rate: 0% (0/2 reach top 5)
 ```
+
+**With GSC validation:** Compare predicted opportunity scores against actual GSC performance tiers. If Tier 1 articles consistently land in GSC "Star Performer" or "Steady Performer" tiers, the gap analysis scoring is well-calibrated. Mismatches indicate scoring model needs adjustment.
 
 **Insight Example:** "Tier 1 opportunity scores strongly predict success: 83% success rate vs. 56% for Tier 2. Maintain 60%+ Tier 1 requirement in calendars."
 
@@ -332,7 +371,9 @@ Q4 2025 (Oct-Dec):
 
 **Step 2.5: Content Mix Optimization**
 
-Compare current content mix to performance-based ideal mix:
+Compare current content mix to performance-based ideal mix.
+
+**If GSC data available:** Use GSC clicks and impressions aggregated by format and pillar to calculate evidence-based content mix recommendations. GSC data provides real search demand validation rather than relying on manually tracked metrics alone.
 
 ```
 Current Content Mix (Target):
@@ -378,43 +419,69 @@ ART-202509-003: WordPress Webhook Handlers
 
 **Step 3.2: Competitive Displacement Detection**
 
-Identify articles losing position to competitors:
+Identify articles losing position to competitors.
+
+**If GSC data available:** Use real GSC position data for displacement detection instead of manually tracked rankings. When multiple GSC exports exist (different dates), compare positions across exports to detect actual ranking changes over time. This provides verified displacement alerts rather than estimates.
+
+**With single GSC export:** Compare GSC positions against manually recorded historical rankings in `meta.yml` to detect recent changes.
+
+**With multiple GSC exports:** Calculate position deltas directly from GSC data:
+- Position improved by 3+: Flag as gaining momentum
+- Position declined by 3+: Flag as competitive displacement
+- Position stable (within 2): No action needed
 
 ```
 ⚠️ Competitive Displacement Alerts (Last 30 Days):
 
 1. ART-202509-003: WordPress Webhook Handlers
-   - Lost Position: #2 → #5
+   - Lost Position: #2 → #5 (GSC-verified)
    - Displaced By: WPTavern.com (published Oct 20, fresher guide)
+   - GSC Impressions: 4,200 (demand still strong)
    - Action: Consider refresh/update
 
 2. ART-202508-001: WooCommerce Security Audit
-   - Lost Position: #3 → #6
+   - Lost Position: #3 → #6 (GSC-verified)
    - Displaced By: WooExperts.com (more comprehensive checklist)
+   - GSC Opportunity Score: 280 potential clicks recoverable
    - Action: Consider expansion/depth increase
 ```
 
 **Step 3.3: Refresh Opportunity Identification**
 
-Flag articles that would benefit from updates:
+Flag articles that would benefit from updates.
+
+**If GSC data available:** Calculate refresh priorities with quantified ROI based on real search data:
 
 ```
-📈 High-Value Refresh Opportunities:
+potential_gain = impressions x (expected_ctr_at_target_position - current_ctr)
+```
+
+GSC data identifies three refresh trigger types:
+1. **CTR gap refresh:** Good position but CTR significantly below expected (title/meta optimization)
+2. **Position recovery refresh:** Position declined from previous levels (content strengthening)
+3. **Expansion refresh:** Receiving impressions for queries not covered in content (add new sections)
+
+```
+High-Value Refresh Opportunities:
 
 1. ART-202505-002: Gravity Forms CRM Integration (Published: May 2025)
-   - Current Position: #4
-   - Current Traffic: 1,800 sessions/month
+   - Current Position: #4 (GSC-verified)
+   - GSC Clicks: 1,800/month | Impressions: 22,500/month
+   - Current CTR: 8.0% | Expected at Position 4: 8.0%
    - Refresh Trigger: Gravity Forms 3.0 released (Oct 2025)
-   - Estimated Impact: +40% traffic (position #2-3)
-   - Priority: HIGH (version update)
+   - Potential Gain: 675 additional clicks/month (if improved to position #2)
+   - Priority: HIGH (version update + position improvement opportunity)
 
 2. ART-202506-004: WooCommerce Data Sync (Published: Jun 2025)
-   - Current Position: #7
-   - Current Traffic: 1,200 sessions/month
+   - Current Position: #7 (GSC-verified)
+   - GSC Clicks: 540/month | Impressions: 18,000/month
+   - Current CTR: 3.0% | Expected at Position 7: 3.0%
    - Refresh Trigger: Stale content (6 months old)
-   - Estimated Impact: +25% traffic (position #4-5)
-   - Priority: MEDIUM (aging content)
+   - Potential Gain: 360 additional clicks/month (if improved to position #4)
+   - Priority: MEDIUM (aging content, quantified ROI)
 ```
+
+**Without GSC data:** Fall back to estimated impact percentages based on manual ranking data.
 
 ---
 
@@ -823,8 +890,8 @@ Let me analyze Q3 performance using the content-performance-analyzer skill.
 
 ### Current Limitations
 
-1. **Requires Metadata:** Depends on articles having `meta.yml` with performance data
-2. **Manual Metrics:** Performance metrics must be manually updated (no automatic GA integration)
+1. **Requires Metadata:** Depends on articles having `meta.yml` with performance data (GSC auto-populates if configured)
+2. **GSC is CSV-Based:** GSC integration uses CSV exports, not live API. Data freshness depends on export frequency.
 3. **Sample Size:** Needs minimum 10-15 articles for meaningful patterns
 4. **External Factors:** Can't automatically account for algorithm changes, competitor shifts
 5. **Single-Domain:** Analyzes one blog at a time (no cross-project insights)
@@ -833,7 +900,7 @@ Let me analyze Q3 performance using the content-performance-analyzer skill.
 
 1. **Automatic Metrics Integration:**
    - Connect to Google Analytics API
-   - Connect to Google Search Console API
+   - ~~Connect to Google Search Console API~~ (Partially achieved via CSV export integration)
    - Real-time ranking tracking
    - Automated backlink monitoring
 

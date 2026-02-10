@@ -429,6 +429,29 @@ Compare all competitors to identify opportunities:
 
 #### 3A: Coverage Gaps (What's Missing)
 
+**GSC-Confirmed Coverage Gaps (Conditional):**
+
+If GSC data is available (via `gsc-article-data.md` or `gsc-calendar-signals.md`), identify GSC-confirmed gaps BEFORE competitor analysis:
+
+- **Queries with high impressions but no dedicated page** are PROVEN coverage gaps — real search demand validates the opportunity without competitor analysis.
+- **Process:**
+  1. Load GSC query data (from gsc-analyst output or Queries.csv directly)
+  2. Identify queries with 50+ monthly impressions where no existing article targets them
+  3. Cross-reference with Pages.csv to confirm no page ranks in top 20 for the query
+  4. Mark these as **GSC-Confirmed Critical Gaps** (automatically 5-star priority)
+
+- **Output format:**
+
+| Query | Monthly Impressions | Current Best Page | Position | Gap Type |
+|-------|-------------------|-------------------|----------|----------|
+| "[query]" | [N] | [URL or none] | [N or -] | No dedicated coverage / Complete gap |
+
+GSC-confirmed gaps are added to the Coverage Gaps section with highest priority. They do not require competitor validation since real search demand proves the opportunity.
+
+**If GSC data unavailable:** Skip this sub-step, proceed with standard competitor-based gap identification below.
+
+---
+
 **Identify Underexplored Subtopics:**
 - Topics mentioned by 0 competitors = **Critical gap**
 - Topics mentioned by 1-2 competitors = **High-value gap**
@@ -446,8 +469,8 @@ Compare all competitors to identify opportunities:
 - Workflow variations not covered
 
 **Calculate Coverage Gap Priority:**
-- 5 stars: 3+ critical gaps identified
-- 4 stars: 1-2 critical gaps or 3+ high-value gaps
+- 5 stars: 3+ critical gaps identified (or any GSC-confirmed gaps with 200+ impressions)
+- 4 stars: 1-2 critical gaps or 3+ high-value gaps (or GSC-confirmed gaps with 50-200 impressions)
 - 3 stars: Multiple moderate gaps
 - 2 stars: Few small gaps
 - 1 star: Saturated coverage
@@ -506,6 +529,29 @@ Compare all competitors to identify opportunities:
 
 #### 3D: Recency Gaps (Outdated Information)
 
+**GSC Impression Trends for Recency Validation (Conditional):**
+
+If GSC data is available, use impression trends to validate whether users are actively searching for newer content:
+
+- **Process:**
+  1. Check GSC Queries.csv for version-specific queries (e.g., "wordpress 6.7", "react 19", "python 3.13")
+  2. Compare impressions for version-specific queries — rising impressions for newer versions confirm recency demand
+  3. Check Chart.csv for overall impression trends on the topic — growing impressions suggest increasing user interest
+  4. Identify queries containing "new", "latest", "update", "[year]" — these signal users actively seeking fresh content
+
+- **Output:**
+
+| Version Query | Monthly Impressions | Trend | Recency Signal |
+|--------------|-------------------|-------|---------------|
+| "[topic] 6.7" | 450 | Rising | Users seeking new version coverage |
+| "[topic] 6.5" | 120 | Declining | Previous version losing relevance |
+
+GSC impression trends provide evidence-based recency validation: if users are searching for newer versions, the recency gap is confirmed with real demand data rather than just competitor analysis.
+
+**If GSC data unavailable:** Skip this sub-step, proceed with standard recency analysis below.
+
+---
+
 **Check Version Currency:**
 - What product/plugin versions do competitors reference?
 - Is there a newer version released in last 3 months?
@@ -522,8 +568,8 @@ Compare all competitors to identify opportunities:
 - Check publish dates and "last updated" indicators
 
 **Calculate Recency Gap Priority:**
-- 5 stars: Major version/feature released, 0-2 competitors cover it
-- 4 stars: Significant updates missed by most competitors
+- 5 stars: Major version/feature released, 0-2 competitors cover it (or GSC shows rising impressions for new version queries)
+- 4 stars: Significant updates missed by most competitors (or GSC shows moderate impression growth for version queries)
 - 3 stars: Some outdated information present
 - 2 stars: Most competitors reasonably current
 - 1 star: All competitors very fresh

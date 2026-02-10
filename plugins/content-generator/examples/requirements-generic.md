@@ -189,6 +189,28 @@ This file configures the content generation system. Agents read this file at run
   4. Real-world use case examples
   5. Clear pros/cons comparisons
 
+### Search Analytics (Optional)
+
+<!-- Uncomment and configure to enable GSC-powered features.
+     Download CSV export from Google Search Console > Performance > Export.
+     Extract to project/GSC/ and set the path below. -->
+
+<!-- #### Google Search Console (GSC)
+* **Export Path**: /absolute/path/to/project/GSC/example.com-Performance-on-Search-2026-01-01
+* **Site URL**: https://example.com
+* **Freshness Threshold (Days)**: 30
+* **Analysis Modes**:
+  * Query Opportunities: true
+  * Page Performance: true
+  * Position Tracking: true
+  * Geographic Insights: false
+* **Filters**:
+  * Minimum Impressions: 5
+  * Minimum Position: 100
+  * CTR Threshold: 0.02
+  * Position Opportunity Range: [5, 30]
+-->
+
 ---
 
 ## CONTENT DELIVERY

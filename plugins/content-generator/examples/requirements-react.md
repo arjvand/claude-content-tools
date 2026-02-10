@@ -152,6 +152,28 @@ This file configures the content generation system. Agents read this file at run
   * Semantic similarity threshold for clustering
   * Range: 0.0-1.0 (higher = more similar signals required)
 
+### Search Analytics (Optional)
+
+<!-- Uncomment and configure to enable GSC-powered features.
+     Download CSV export from Google Search Console > Performance > Export.
+     Extract to project/GSC/ and set the path below. -->
+
+<!-- #### Google Search Console (GSC)
+* **Export Path**: /absolute/path/to/project/GSC/reactmastery.dev-Performance-on-Search-2026-01-01
+* **Site URL**: https://reactmastery.dev
+* **Freshness Threshold (Days)**: 30
+* **Analysis Modes**:
+  * Query Opportunities: true
+  * Page Performance: true
+  * Position Tracking: true
+  * Geographic Insights: false
+* **Filters**:
+  * Minimum Impressions: 5
+  * Minimum Position: 100
+  * CTR Threshold: 0.02
+  * Position Opportunity Range: [5, 30]
+-->
+
 ---
 
 ## CONTENT DELIVERY

@@ -27,6 +27,7 @@ Topic-agnostic content generation system using Claude AI agents (researcher, wri
 | `competitive-gap-analyzer` | Analyze competitors, identify differentiation opportunities |
 | `content-research` | Research topic with official documentation sources |
 | `fact-checker` | Verify claims via source audit (quick) or web search (comprehensive) |
+| `gsc-analyzer` | Analyze Google Search Console CSV exports (4 modes: full, calendar, article, dashboard) |
 | `keyword-researcher` | Research keywords for volume, difficulty, intent, and long-tail expansion |
 | `keyword-strategist` | Strategic keyword planning (clusters, funnel mapping, competitive positioning) |
 | `media-discovery` | Discover embeddable media (videos, social posts) with quality filtering |
@@ -50,24 +51,33 @@ project/
 ├── Calendar/{Year}/{Month}/
 │   ├── content-calendar.md                   # Monthly calendar
 │   ├── keyword-strategy.md                   # Strategic keyword plan (monthly)
+│   ├── gsc-calendar-signals.md               # GSC demand signals (if GSC configured)
 │   ├── gap-pre-analysis/{ID}-summary.md      # Pre-analysis summaries
 │   └── keyword-pre-validation/{ID}-keyword.md # Keyword pre-validation
-└── Articles/{ARTICLE-ID}/
-    ├── research-primary.md                   # Agent 1: Primary sources (parallel)
-    ├── research-landscape.md                 # Agent 2: Landscape analysis (parallel)
-    ├── research-brief.md                     # Merged research output
-    ├── keyword-research.md                   # Keyword analysis (full mode)
-    ├── keyword-strategy.md                   # Article keyword strategy
-    ├── media-discovery.md                    # Embed candidates (post-research)
-    ├── gap-analysis-report.md                # Competitive analysis
-    ├── claim-audit-quick.md                  # Quick fact-check (post-research)
-    ├── draft.md                              # Writer output
-    ├── claim-audit-full.md                   # Comprehensive fact-check (post-writing)
-    ├── article.md                            # Final article
-    ├── article.html                          # HTML export (if configured)
-    ├── x-thread.md                           # X (Twitter) thread
-    ├── featured-image-prompt.json            # Nano Banana image prompt
-    └── meta.yml                              # Metadata
+├── Articles/{ARTICLE-ID}/
+│   ├── research-primary.md                   # Agent 1: Primary sources (parallel)
+│   ├── research-landscape.md                 # Agent 2: Landscape analysis (parallel)
+│   ├── research-brief.md                     # Merged research output
+│   ├── keyword-research.md                   # Keyword analysis (full mode)
+│   ├── keyword-strategy.md                   # Article keyword strategy
+│   ├── media-discovery.md                    # Embed candidates (post-research)
+│   ├── gap-analysis-report.md                # Competitive analysis
+│   ├── gsc-article-data.md                   # GSC ranking context (if GSC configured)
+│   ├── claim-audit-quick.md                  # Quick fact-check (post-research)
+│   ├── draft.md                              # Writer output
+│   ├── claim-audit-full.md                   # Comprehensive fact-check (post-writing)
+│   ├── article.md                            # Final article
+│   ├── article.html                          # HTML export (if configured)
+│   ├── x-thread.md                           # X (Twitter) thread
+│   ├── featured-image-prompt.json            # Nano Banana image prompt
+│   └── meta.yml                              # Metadata
+└── GSC/                                      # GSC data (if configured)
+    ├── {site}-Performance-on-Search-{date}/  # GSC CSV export folder
+    │   ├── Queries.csv, Pages.csv, Chart.csv # Core CSVs
+    │   ├── Devices.csv, Countries.csv        # Optional CSVs
+    │   └── Search appearance.csv, Filters.csv
+    ├── url-mapping.json                      # Optional: manual URL-to-article-ID map
+    └── reports/                              # Generated GSC analysis reports
 ```
 
 **Article ID Format:** `ART-YYYYMM-NNN` (e.g., `ART-202510-001`)
@@ -80,6 +90,7 @@ All agents read `requirements.md` at runtime for:
 - Topic/Platform, Official Documentation Sources
 - Brand Voice, Target Audience, Content Mix
 - Word Count Range, CTA, CMS Platform
+- Search Analytics (optional): GSC export path, analysis modes, filters
 
 **New to configuration?** See `examples/requirements-ANNOTATED-TEMPLATE.md` for comprehensive documentation:
 - Field-by-field explanations with `[REQUIRED]` vs `[OPTIONAL]` tags
@@ -115,6 +126,7 @@ Available examples: `generic` (recommended), `wordpress`, `react`, `python`, `fi
 | `keyword-planner` | keyword-strategist | Strategic keyword planning |
 | `keyword-analyst` | keyword-researcher | Keyword research and validation |
 | `gap-analyst` | competitive-gap-analyzer | Competitive gap analysis |
+| `gsc-analyst` | gsc-analyzer | GSC search performance analysis (4 modes) |
 | `topic-deduplicator` | topic-deduplicator | Check for duplicate topics |
 | `theme-indexer` | theme-index-builder | Build theme index |
 | `fact-checker` | fact-checker | Claim verification |
@@ -248,6 +260,7 @@ agents/
 ├── keyword-planner.md      # Wraps keyword-strategist
 ├── keyword-analyst.md      # Wraps keyword-researcher
 ├── gap-analyst.md          # Wraps competitive-gap-analyzer
+├── gsc-analyst.md          # Wraps gsc-analyzer
 ├── topic-deduplicator.md   # Wraps topic-deduplicator
 ├── theme-indexer.md        # Wraps theme-index-builder
 ├── fact-checker.md         # Wraps fact-checker skill
@@ -264,6 +277,7 @@ skills/
 ├── competitive-gap-analyzer/
 ├── content-research/
 ├── fact-checker/
+├── gsc-analyzer/
 ├── keyword-researcher/
 ├── keyword-strategist/
 ├── media-discovery/

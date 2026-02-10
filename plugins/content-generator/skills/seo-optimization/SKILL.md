@@ -68,11 +68,51 @@ Please use the requirements-extractor skill to load validated configuration from
 - Both include primary keyword
 - Compelling call-to-action
 
+**GSC CTR Benchmark Enhancement (conditional -- requires GSC article data):**
+
+If `gsc-article-data.md` is available, use site-specific CTR benchmarks to set optimization targets:
+
+1. **Site-specific CTR curve**: The GSC analyzer calculates the site's own CTR by position (when 50+ queries exist at a given position). Use these instead of industry averages:
+   - Industry average Position 1 CTR: ~30%
+   - Site-specific Position 1 CTR: may differ significantly (e.g., 22% or 38%)
+
+2. **CTR target setting**: For the target keyword's current or target position:
+   - If actual CTR < site's average CTR at that position: title/meta description needs optimization
+   - If actual CTR >= site's average CTR: current title/meta is performing well
+
+3. **Meta optimization guidance based on CTR gap**:
+   - **Large CTR gap** (actual < 50% of expected): Title and meta description both need rewriting. Focus on matching search intent more precisely.
+   - **Moderate CTR gap** (actual 50-80% of expected): Minor title tweaks or meta description improvements. Consider adding power words, numbers, or current year.
+   - **No gap or above expected**: Current meta elements are effective. Preserve during optimization.
+
+4. **Document in SEO audit**: "CTR benchmark source: {site-specific / industry average}. Target CTR at position {N}: {X}%. Current CTR: {Y}%."
+
 ### 4. Internal Linking
 - 3-5 relevant internal links
 - Descriptive anchor text
 - Link to pillar content
 - Topic cluster connections
+
+**GSC Authority-Ranked Link Targets (conditional -- requires GSC article data):**
+
+If `gsc-article-data.md` is available, replace generic internal linking guidance with data-driven link target selection:
+
+1. **Authority score ranking**: The GSC analyzer calculates an authority score for each page: `sum(clicks x (1 / position))` across all queries. Pages with higher authority scores are stronger link sources.
+
+2. **Preferred internal link targets** (ranked by authority):
+   - **High-authority pages** (position <5, high clicks): These are the site's strongest pages. Linking FROM the current article TO these pages strengthens topic cluster signals. Linking FROM these pages TO the current article passes maximum authority.
+   - **Topically relevant pages**: Among high-authority pages, prioritize those topically related to the current article's keyword.
+   - **Growth candidate pages** (position 10-20): Linking to these pages from new content can help push them onto page 1.
+
+3. **Link target selection process**:
+   - From `gsc-article-data.md`, identify pages in the query ecosystem with authority scores
+   - Rank by: `authority_score x topical_relevance`
+   - Select top 3-5 as internal link targets
+   - For each, suggest descriptive anchor text aligned with the target page's primary keyword
+
+4. **Bidirectional linking opportunities**: If the current article covers a topic that high-authority pages reference, recommend adding a return link from those pages to the new article (note this as a post-publication action item).
+
+5. **Document in SEO audit**: "Internal link targets selected via GSC authority ranking. Top target: {page} (authority score: {N}, position: {pos})."
 
 ### 5. External Linking
 - 2-4 authoritative external links per article
@@ -123,7 +163,7 @@ Provide:
 - [10 pts] Meta description 150-160 chars with keyword + CTA
 
 **Internal Links (10 points):**
-- [10 pts] 3-5 internal links (tier-adjusted)
+- [10 pts] 3-5 internal links (tier-adjusted), GSC authority-ranked when available
 - [6 pts] 2 internal links
 - [3 pts] 1 internal link
 - [0 pts] 0 internal links

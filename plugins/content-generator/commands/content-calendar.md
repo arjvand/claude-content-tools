@@ -31,13 +31,14 @@ This command orchestrates multiple skill-specific agents in sequence:
 ```
 Phase 1: Foundation
 ├── requirements-loader → Validate config
+├── gsc-analyst (calendar mode) → GSC signals (if configured)
 ├── theme-indexer → Build theme index (if past calendars exist)
 └── keyword-planner → Strategic keyword planning
 
 Phase 2: Generation
-├── @signal-researcher → Generate topic candidates
+├── @signal-researcher → Generate topic candidates (trend + GSC demand signals)
 ├── keyword-analyst (batch) → Validate keywords
-├── gap-analyst (batch) → Competitive analysis
+├── gap-analyst (batch) → Competitive analysis (GSC-confirmed gaps pre-validated)
 └── topic-deduplicator → Check for duplicates
 
 Phase 3: Finalization
@@ -64,6 +65,31 @@ Invoke requirements-loader agent for full config extraction.
 **Blocking Gate:** If validation errors → STOP and report to user.
 
 **Time:** <30 seconds
+
+---
+
+### Step 0C: GSC Search Signals (Conditional)
+
+**Condition:** `config.analytics.gsc` exists and export path is valid. If not configured, skip silently and proceed to Step 1B.
+
+**Invoke `gsc-analyst` agent (calendar integration mode):**
+
+```
+Invoke gsc-analyst agent in calendar integration mode.
+Calendar: $TARGET_YEAR/$TARGET_MONTH
+```
+
+**Expected Output:**
+- `project/Calendar/{Year}/{Month}/gsc-calendar-signals.md`
+- New content opportunities (queries with no dedicated page, `gsc_validated: true`)
+- Expansion targets (pages at position 11-50 with high impressions)
+- Refresh candidates (good position, CTR below expected)
+- Pillar gap analysis (query coverage per configured pillar)
+- Seasonal patterns from Chart.csv (if available)
+
+**If GSC data unavailable or stale:** Log info, proceed without GSC signals. All downstream steps work without GSC data.
+
+**Time:** 3-4 minutes (skipped instantly if GSC not configured)
 
 ---
 
@@ -124,15 +150,22 @@ Historical Mode: $HISTORICAL_MODE
 
 Using keyword strategy from: project/Calendar/{Year}/{Month}/keyword-strategy.md
 
+GSC Signals (if available): project/Calendar/{Year}/{Month}/gsc-calendar-signals.md
+- Treat GSC new content opportunities as supplementary demand signals
+- GSC-backed candidates get `gsc_validated: true` flag and boosted priority
+- Topic candidates come from TWO sources: trend-based signals AND GSC demand signals
+
 Generate 12-15 topic candidates with:
 - Keyword-aligned opportunities (prioritize Tier 1-2)
 - Trend signals appropriate to reference date
+- GSC demand signals (if gsc-calendar-signals.md exists)
 - Format recommendations per requirements.md
 ```
 
 **Expected Output:**
 - 12-15 quality-screened topic candidates
 - `project/Calendar/{Year}/{Month}/topic-candidates.md`
+- Candidates sourced from GSC data are flagged with `gsc_validated: true`
 
 **Time:** 10-20 minutes
 
@@ -166,6 +199,13 @@ Keywords: [extracted from topic-candidates.md]
 ```
 Invoke gap-analyst agent in batch mode.
 Topics: [keyword-validated topics from Step 2A]
+
+GSC Pre-Validation (if gsc-calendar-signals.md exists):
+- Topics flagged with `gsc_validated: true` represent GSC-confirmed content gaps
+  (queries with real search demand but no dedicated page)
+- For GSC-confirmed gaps: skip full competitor analysis, assign minimum Tier 2
+  (GSC data already proves demand exists)
+- Still run differentiation angle analysis for GSC-confirmed topics
 ```
 
 **Expected Output:**
@@ -174,8 +214,9 @@ Topics: [keyword-validated topics from Step 2A]
 - Primary differentiation angles
 - `project/Calendar/{Year}/{Month}/gap-pre-analysis/`
 - `batch-results.json`
+- GSC-confirmed topics marked with `gsc_pre_validated: true` in results
 
-**Time:** 15-20 minutes (parallelized)
+**Time:** 15-20 minutes (parallelized, faster for GSC-confirmed gaps)
 
 ---
 
@@ -232,12 +273,15 @@ Using results from all agents, generate the content calendar:
 
 **Calendar Format:**
 
-| ID | Title | Keyword | Format | Gap Score | Tier | Keyword Diff | Funnel | SME | Status |
-|----|-------|---------|--------|-----------|------|--------------|--------|-----|--------|
-| ART-YYYYMM-001 | ... | ... | ... | 4.5 | T1 | 42 | Consider | None | Pending |
+| ID | Title | Keyword | Format | Gap Score | Tier | Keyword Diff | Funnel | GSC | SME | Status |
+|----|-------|---------|--------|-----------|------|--------------|--------|-----|-----|--------|
+| ART-YYYYMM-001 | ... | ... | ... | 4.5 | T1 | 42 | Consider | Yes | None | Pending |
+
+The **GSC** column indicates whether the topic was validated by GSC search demand data (`Yes` = `gsc_validated: true`, `—` = trend-based only).
 
 **Include:**
 - Gap Analysis Summary (Tier distribution)
+- GSC Signal Summary (if GSC data was available: new content opportunities used, expansion targets, refresh candidates)
 - Excluded Topics with reasons
 - SME Requirements Summary
 - Content Mix Distribution
@@ -251,6 +295,7 @@ Using results from all agents, generate the content calendar:
 | File | Description |
 |------|-------------|
 | `content-calendar.md` | Final calendar with all metadata |
+| `gsc-calendar-signals.md` | GSC demand signals (if GSC configured) |
 | `keyword-strategy.md` | Strategic keyword plan |
 | `keyword-strategy.json` | Structured keyword data |
 | `topic-candidates.md` | Raw topic candidates |

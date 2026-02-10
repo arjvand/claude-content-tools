@@ -29,29 +29,30 @@ Phase 1: Setup & Strategic Context Loading
 ├── 1B: Parse calendar entry → Extract article details
 ├── 1C: Load calendar context → Reuse gap pre-analysis (NEW - saves 5-10 min)
 ├── 1D: Content mix validation → Check format balance (OPTIONAL)
-└── 1E: Theme deduplication → Check topic overlap (OPTIONAL)
+├── 1E: Theme deduplication → Check topic overlap (OPTIONAL)
+└── 1F: gsc-analyst (article mode) → GSC ranking context (CONDITIONAL on GSC config)
 
 Phase 2: Tier-Adaptive Research (Parallel)
 ├── Tier 1 (≥4.0): Full parallel research (15-20 min)
-│   ├── @researcher (Agent 1) → Primary sources
-│   └── @researcher (Agent 2) → Landscape analysis (skip gap if pre-analysis exists)
+│   ├── @researcher (Agent 1) → Primary sources + GSC query ecosystem
+│   └── @researcher (Agent 2) → Landscape analysis + GSC position context
 ├── Tier 2 (3.0-3.9): Standard parallel research (10-15 min)
-│   ├── @researcher (Agent 1) → Primary sources
-│   └── @researcher (Agent 2) → Landscape analysis (skip gap if pre-analysis exists)
+│   ├── @researcher (Agent 1) → Primary sources + GSC query ecosystem
+│   └── @researcher (Agent 2) → Landscape analysis + GSC position context
 ├── Tier 3 (2.0-2.9): Streamlined research (8-12 min)
-│   └── @researcher (Agent 1 only) → Focused primary sources
+│   └── @researcher (Agent 1 only) → Focused primary sources + GSC query ecosystem
 ├── Tier 4 (<2.0): Minimal research (5-8 min)
-│   └── @researcher (Agent 2 only) → Light landscape overview
-├── keyword-analyst → Keyword research
+│   └── @researcher (Agent 2 only) → Light landscape overview + GSC position context
+├── keyword-analyst → Keyword research + GSC impressions/long-tails
 └── fact-checker (quick) → Verify research claims
 
 Phase 3: Writing with Funnel Optimization
-├── @writer → Draft article with funnel-stage tone/CTA (NEW)
+├── @writer → Draft article with funnel-stage tone/CTA + GSC expansion queries
 ├── media-discoverer → Find embeddable media
-└── seo-optimizer → SEO optimization
+└── seo-optimizer → SEO optimization + GSC authority links/CTR benchmarks
 
 Phase 4: Review & Export
-├── @editor → Editorial review with funnel validation (NEW)
+├── @editor → Editorial review with funnel validation + GSC query coverage check
 ├── fact-checker (comprehensive) → Full claim verification
 └── cms-exporter → CMS-ready export
 ```
@@ -321,6 +322,51 @@ theme_deduplication:
 
 ---
 
+### Step 1F: Load GSC Article Data (CONDITIONAL - 2-3 minutes)
+
+**Condition:** `config.analytics.gsc` exists and export path is valid. If GSC is not configured, skip this step silently and proceed to Phase 2.
+
+**Objective:** Load real search performance data for the target keyword to enhance research, keyword analysis, SEO optimization, and editorial review.
+
+**Invoke `gsc-analyst` agent in article mode:**
+
+```
+Invoke gsc-analyst agent in article mode.
+Article ID: [ARTICLE-ID]
+Target Keyword: "[primary keyword from calendar entry]"
+Page URL: [existing URL from meta.yml if this is an update, otherwise omit]
+```
+
+**Expected Output:** `project/Articles/[ARTICLE-ID]/gsc-article-data.md`
+
+Contents include:
+- **Ranking Context**: Current position, impressions, CTR, opportunity score for target keyword
+- **Query Ecosystem**: Primary, secondary, long-tail, and question-form queries users actually search
+- **CTR Analysis**: Actual vs expected CTR gap with optimization recommendations
+- **Content Recommendations**: Suggested H2/H3 sections and FAQ entries from query data
+- **Untargeted Opportunities**: Valuable queries no current page covers well
+
+**Pass GSC context flags to subsequent phases:**
+- `GSC_DATA_AVAILABLE = true|false`
+- `GSC_ARTICLE_DATA_PATH = project/Articles/[ARTICLE-ID]/gsc-article-data.md`
+
+**Data Flow to Downstream Steps:**
+
+| Consumer | Data Passed | Purpose |
+|----------|------------|---------|
+| @researcher Agent 1 | Query ecosystem (primary + secondary queries) | Scope research to cover queries users actually search |
+| @researcher Agent 2 | Ranking context (position data) | Real competitive positioning context |
+| keyword-analyst | Impressions as volume signal, GSC long-tail queries | Replace proxy estimation with real data |
+| @writer | Expansion queries, question-form queries | Additional H2/H3 sections, FAQ entries |
+| seo-optimizer | Authority scores, CTR benchmarks | Authority-ranked internal links, CTR targets |
+| @editor | Full query ecosystem list | Validate high-impression queries are addressed |
+
+**If GSC data unavailable:** All downstream steps proceed with their standard (non-GSC) workflows. No step is blocked by absent GSC data.
+
+**Time:** 2-3 minutes
+
+---
+
 ## Phase 2: Research (Parallel Execution)
 
 ### Step 2A: Tier-Adaptive Parallel Research (UPDATED)
@@ -363,8 +409,16 @@ Historical Mode: $HISTORICAL_MODE
 Calendar Context: [Pass calendar-context.json if available]
 Funnel Stage: [Awareness|Consideration|Decision] (from calendar entry)
 Research Depth: [Full for T1, Standard for T2]
+GSC Data: [Pass gsc-article-data.md path if GSC_DATA_AVAILABLE=true]
 Output: project/Articles/[ARTICLE-ID]/research-primary.md
 ```
+
+**GSC Enhancement for Agent 1 (conditional):**
+If `GSC_DATA_AVAILABLE=true`, pass the query ecosystem from `gsc-article-data.md`:
+- **Primary queries**: These are what real users search for around this topic -- research must cover these exact queries
+- **Question-form queries**: Real FAQ demand -- ensure research addresses these questions
+- **Secondary queries**: Related themes to broaden research scope
+- Agent 1 uses GSC queries to validate research coverage (are we answering what users actually ask?)
 
 **Agent 2 - Landscape Research (@researcher):**
 ```
@@ -377,8 +431,15 @@ Calendar Context: [Pass calendar-context.json if available]
 Funnel Stage: [Awareness|Consideration|Decision] (from calendar entry)
 Skip Gap Analysis: [true if pre-analysis exists, false otherwise]
 Research Depth: [Full for T1, Standard for T2]
+GSC Data: [Pass gsc-article-data.md path if GSC_DATA_AVAILABLE=true]
 Output: project/Articles/[ARTICLE-ID]/research-landscape.md
 ```
+
+**GSC Enhancement for Agent 2 (conditional):**
+If `GSC_DATA_AVAILABLE=true`, pass the ranking context from `gsc-article-data.md`:
+- **Current position data**: Real ranking context replaces guesswork about competitive positioning
+- **CTR analysis**: Identifies whether existing SERP presence has snippet optimization opportunities
+- **Untargeted opportunities**: Queries with high impressions but poor coverage -- landscape analysis should address these gaps
 
 **⚠️ PARALLEL NOTE:** Both agents MUST be launched in a SINGLE message.
 
@@ -396,10 +457,13 @@ Historical Mode: $HISTORICAL_MODE
 Calendar Context: [Pass calendar-context.json if available]
 Funnel Stage: [Awareness|Consideration|Decision] (from calendar entry)
 Research Depth: Focused (streamlined mode)
+GSC Data: [Pass gsc-article-data.md path if GSC_DATA_AVAILABLE=true]
 Output: project/Articles/[ARTICLE-ID]/research-primary.md
 ```
 
 Note: Skip Agent 2 and gap analysis for Tier 3. Use calendar pre-analysis context directly.
+
+**GSC Enhancement (conditional):** If GSC data available, Agent 1 uses the query ecosystem to focus streamlined research on queries with highest real impressions. This is especially valuable for Tier 3 where research time is limited -- GSC data ensures the limited research covers what users actually search for.
 
 ---
 
@@ -415,10 +479,13 @@ Historical Mode: $HISTORICAL_MODE
 Calendar Context: [Pass calendar-context.json if available]
 Skip Gap Analysis: true (use pre-analysis)
 Research Depth: Light (minimal mode)
+GSC Data: [Pass gsc-article-data.md path if GSC_DATA_AVAILABLE=true]
 Output: project/Articles/[ARTICLE-ID]/research-landscape.md
 ```
 
 Note: Skip Agent 1 for Tier 4. Minimal research for low-opportunity content.
+
+**GSC Enhancement (conditional):** If GSC data available, Agent 2 uses position data to quickly contextualize the competitive landscape from actual ranking data rather than SERP estimation.
 
 ---
 
@@ -438,11 +505,21 @@ Note: Skip Agent 1 for Tier 4. Minimal research for low-opportunity content.
 Invoke keyword-analyst agent in full mode.
 Article ID: [ARTICLE-ID]
 Primary Keyword: "[primary keyword from calendar entry]"
+GSC Data: [Pass gsc-article-data.md path if GSC_DATA_AVAILABLE=true]
 ```
 
+**GSC Enhancement (conditional):**
+If `GSC_DATA_AVAILABLE=true`, the keyword-analyst receives:
+- **Real impressions** from Queries.csv to replace proxy-based volume estimation
+- **GSC long-tail queries**: Actual queries from the query ecosystem supplement autocomplete mining
+- **Position data**: Calibrates difficulty assessment against the site's real ranking outcomes
+- **CTR data**: Validates intent classification (high CTR vs expected = strong intent match)
+
+See `keyword-researcher/SKILL.md` for how GSC data integrates into each analysis phase.
+
 **Expected Output:**
-- Volume, difficulty, intent classification
-- Long-tail keyword expansion (10-15)
+- Volume, difficulty, intent classification (GSC-calibrated when available)
+- Long-tail keyword expansion (10-15, supplemented by GSC-discovered queries)
 - Semantic keyword clusters (3-5)
 - `project/Articles/[ARTICLE-ID]/keyword-research.md`
 
@@ -494,7 +571,15 @@ Keyword Research: project/Articles/[ARTICLE-ID]/keyword-research.md
 Format: [format from calendar]
 Tier: [T1|T2|T3|T4] (from calendar-context.json)
 Opportunity Score: [score] (from calendar-context.json)
+GSC Data: [Pass gsc-article-data.md path if GSC_DATA_AVAILABLE=true]
 ```
+
+**GSC Enhancement for @writer (conditional):**
+If `GSC_DATA_AVAILABLE=true`, the writer receives:
+- **Expansion queries**: High-impression queries from the query ecosystem that should become H2/H3 sections
+- **Question-form queries**: Real questions users search for -- these become FAQ entries or inline answers
+- **Content recommendations**: Specific section suggestions from the GSC article data report
+- The writer incorporates these into the article structure without disrupting the natural content flow
 
 **Tier-Adaptive Depth Guidelines (NEW):**
 
@@ -647,7 +732,15 @@ Invoke seo-optimizer agent.
 Article: project/Articles/[ARTICLE-ID]/draft.md
 Primary Keyword: "[primary keyword]"
 Tier: [T1|T2|T3|T4] (from calendar-context.json)
+GSC Data: [Pass gsc-article-data.md path if GSC_DATA_AVAILABLE=true]
 ```
+
+**GSC Enhancement for seo-optimizer (conditional):**
+If `GSC_DATA_AVAILABLE=true`, the SEO optimizer receives:
+- **Authority-ranked internal link targets**: Pages with high authority scores (position <5, high clicks) become preferred internal link sources. Replaces generic internal linking with data-driven link targets.
+- **Site-specific CTR benchmarks**: The site's own CTR curve by position calibrates meta title/description optimization targets instead of using industry averages.
+
+See `seo-optimization/SKILL.md` for how GSC data integrates into Checklist #3 (Meta Elements) and Checklist #4 (Internal Linking).
 
 **Tier-Adaptive SEO Targets (NEW):**
 
@@ -706,7 +799,13 @@ SEO Audit: project/Articles/[ARTICLE-ID]/seo-audit.md
 Media Discovery: project/Articles/[ARTICLE-ID]/media-discovery.md
 Tier: [T1|T2|T3|T4] (from calendar-context.json)
 Opportunity Score: [score]
+GSC Data: [Pass gsc-article-data.md path if GSC_DATA_AVAILABLE=true]
 ```
+
+**GSC Enhancement for @editor (conditional):**
+If `GSC_DATA_AVAILABLE=true`, the editor performs an additional validation:
+- **Query coverage check**: Verify that high-impression queries from the GSC query ecosystem are addressed in the article content. Flag any primary or secondary queries (impressions > configured threshold) that are not covered.
+- This ensures the article captures the real search demand identified by GSC data.
 
 **Tier-Adaptive Review Stringency (NEW):**
 
@@ -935,14 +1034,15 @@ Create `project/Articles/[ARTICLE-ID]/summary.md`:
 
 | File | Description |
 |------|-------------|
+| `gsc-article-data.md` | GSC ranking context and query ecosystem (conditional on GSC config) |
 | `research-primary.md` | Primary sources (parallel Agent 1) |
 | `research-landscape.md` | Landscape analysis (parallel Agent 2) |
 | `research-brief.md` | Merged research brief |
-| `keyword-research.md` | Keyword analysis |
+| `keyword-research.md` | Keyword analysis (GSC-calibrated when available) |
 | `media-discovery.md` | Embed candidates |
 | `claim-audit-quick.md` | Quick fact-check |
 | `draft.md` | Writer output |
-| `seo-audit.md` | SEO recommendations |
+| `seo-audit.md` | SEO recommendations (GSC-enhanced when available) |
 | `claim-audit-full.md` | Comprehensive fact-check |
 | `article.md` | Final article |
 | `article.html` | CMS export |
@@ -955,7 +1055,7 @@ Create `project/Articles/[ARTICLE-ID]/summary.md`:
 
 | Phase | Duration | Notes |
 |-------|----------|-------|
-| Phase 1: Setup & Context | 3-6 minutes | +2-4 min for calendar context loading |
+| Phase 1: Setup & Context | 3-9 minutes | +2-4 min calendar context, +2-3 min GSC (conditional) |
 | Phase 2: Tier-Adaptive Research | 5-20 minutes | **Varies by tier** (see breakdown below) |
 | Phase 3: Writing & Enhancement | 20-35 minutes | No change |
 | Phase 4: Review & Export | 15-25 minutes | No change |

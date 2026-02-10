@@ -470,6 +470,79 @@ This section configures how gap analysis works. Highly recommended to include fo
 
 ---
 
+### Search Analytics
+
+**[OPTIONAL]** - **Impact: HIGH (when configured)** - Used by: `gsc-analyst`, `gsc-analyzer`, `competitive-gap-analyzer`, `seo-optimization`, `keyword-researcher`
+
+This section configures Google Search Console (GSC) CSV export integration. When configured, real search performance data replaces estimation-based workflows across calendar planning, article writing, SEO optimization, and performance tracking.
+
+**All GSC features are fully optional.** Existing workflows work unchanged without this section.
+
+#### Google Search Console (GSC)
+
+* **Export Path**: [Absolute path to GSC export folder]
+  - **What it controls**: Where the system looks for GSC CSV export files
+  - **Examples**: "/home/user/Projects/mysite/project/GSC/mysite.com-Performance-on-Search-2026-02-01"
+  - **Impact**: All GSC-powered features depend on this path containing valid CSV files
+  - **Required files**: Queries.csv + Pages.csv (minimum); Chart.csv, Devices.csv, Countries.csv optional
+  - **Folder naming**: GSC exports use the convention `{site}-Performance-on-Search-{YYYY-MM-DD}`
+  - **Validation**: Path must exist and contain at minimum Queries.csv and Pages.csv
+
+* **Site URL**: [Your site URL as registered in GSC]
+  - **What it controls**: Used to validate that Pages.csv URLs match your site
+  - **Examples**: "https://example.com", "https://www.myblog.com"
+  - **Impact**: Site URL must match the base domain in Pages.csv URLs
+
+* **Freshness Threshold (Days)**: [Number, default: 30]
+  - **What it controls**: How old GSC data can be before triggering a staleness warning
+  - **Examples**: 30 (recommended), 14 (strict), 60 (lenient)
+  - **Impact**: Data older than this threshold produces a warning but analysis still runs
+  - **Date source**: Parsed from export folder name date
+
+* **Analysis Modes**:
+  - **Query Opportunities**: true/false (default: true)
+    - Discover queries with high impressions but no dedicated content
+  - **Page Performance**: true/false (default: true)
+    - Score pages by click/position performance
+  - **Position Tracking**: true/false (default: true)
+    - Track position data for target keywords
+  - **Geographic Insights**: true/false (default: false)
+    - Analyze performance by country (requires Countries.csv)
+
+* **Filters**:
+  - **Minimum Impressions**: [Number, default: 5]
+    - Ignore queries below this threshold (removes noise)
+  - **Minimum Position**: [Number, default: 100]
+    - Maximum position to include (100 = include all)
+  - **CTR Threshold**: [Number, default: 0.02]
+    - CTR below this for a position signals underperformance
+  - **Position Opportunity Range**: [min, max] (default: [5, 30])
+    - Position range for "striking distance" opportunities
+
+**Configuration Impact Matrix**:
+| Field | Agents/Skills Affected | What Changes |
+|-------|----------------------|--------------|
+| Export Path | gsc-analyst, gsc-analyzer | Enables all GSC features |
+| Site URL | gsc-analyzer | URL-to-article mapping validation |
+| Freshness Threshold | gsc-analyzer | Staleness warnings |
+| Analysis Modes | gsc-analyzer | Which analysis types run |
+| Filters | gsc-analyzer, competitive-gap-analyzer, seo-optimization | Data filtering thresholds |
+
+**Troubleshooting**:
+- **GSC features not activating?** Verify Export Path exists and contains Queries.csv + Pages.csv
+- **Stale data warnings?** Download a fresh GSC export from Google Search Console
+- **URL mapping failing?** Check that Site URL matches Pages.csv URLs, or create `project/GSC/url-mapping.json`
+- **Too much noise in query data?** Increase Minimum Impressions filter (try 10 or 25)
+
+**Setup Guide**:
+1. Go to Google Search Console > Performance > Export (top right)
+2. Choose "Download CSV"
+3. Extract the ZIP to `project/GSC/`
+4. Set `Export Path` to the extracted folder path
+5. Set `Site URL` to match your GSC property
+
+---
+
 ## CONTENT DELIVERY
 
 ### Publication Platform
@@ -680,6 +753,7 @@ Complete reference of which configuration fields affect which agents/skills:
 | Topic Pillars | ✅ Topic selection | ❌ | ❌ | ❌ | N/A |
 | SEO Intent | ❌ | ❌ | ✅ Keywords | ✅ SEO check | seo-optimization |
 | Gap Analysis Weights | ✅ Topic scoring | ✅ Competitor analysis | ✅ Differentiation | ✅ Strategy validation | competitive-gap-analyzer |
+| Search Analytics (GSC) | ✅ Demand signals | ✅ Ranking context | ✅ Query targeting | ✅ Performance data | gsc-analyzer, seo-optimization, keyword-researcher, competitive-gap-analyzer |
 | CMS Platform | ❌ | ❌ | ❌ | ✅ Export format | cms-formatter |
 | Spelling | ❌ | ❌ | ✅ Spelling rules | ✅ Spelling check | N/A |
 | Editorial Guardrails | ❌ | ❌ | ❌ | ✅ Compliance | N/A |

@@ -67,6 +67,7 @@ I need just the SEO configuration from requirements.md. Please use the requireme
 - `audience` - Roles, skill levels, segments
 - `novelty` - Novelty controls (saturation, angles, multi-angle, trends, convergence)
 - `delivery` - CMS platform, export format, visual standards
+- `analytics` - Search analytics configuration (GSC export path, filters, analysis modes)
 - `additional` - Pain points, editorial guardrails, sample ideas, KPIs, maintenance
 
 **Output:**
@@ -209,6 +210,25 @@ The skill extracts requirements.md into this standardized structure:
       "similarity_threshold": 0.40
     }
   },
+  "analytics": {
+    "gsc": {
+      "export_path": "string (absolute path to GSC export folder)",
+      "site_url": "string (URL)",
+      "freshness_threshold_days": 30,
+      "analysis_modes": {
+        "query_opportunities": true,
+        "page_performance": true,
+        "position_tracking": true,
+        "geographic_insights": false
+      },
+      "filters": {
+        "min_impressions": 5,
+        "min_position": 100,
+        "ctr_threshold": 0.02,
+        "position_opportunity_range": [5, 30]
+      }
+    }
+  },
   "additional": {
     "pain_points": ["string"],
     "editorial_guardrails": ["string"],
@@ -307,6 +327,36 @@ The skill extracts requirements.md into this standardized structure:
     ```json
     {"technical_details": 0.25, "code_examples": 0.05, "visual_aids": 0.30, "troubleshooting": 0.15, "advanced_sections": 0.10}
     // Sum = 0.85 ✓ (remaining 15% is unscored)
+    ```
+
+11. **Analytics GSC Export Path:** If `analytics.gsc` is present, `export_path` must be an existing directory containing at minimum `Queries.csv` and `Pages.csv`
+    ```
+    /home/user/GSC/summix.io-Performance-on-Search-2026-01-15/ ✓ (contains Queries.csv + Pages.csv)
+    /home/user/GSC/missing-folder/ ✗ (directory does not exist)
+    /home/user/GSC/empty-folder/ ✗ (missing required CSV files)
+    ```
+
+12. **Analytics GSC Site URL:** If `analytics.gsc` is present, `site_url` must be a valid URL and should match the base domain found in Pages.csv URLs
+    ```
+    https://summix.io ✓ (matches Pages.csv domain)
+    summix.io ✗ (missing protocol)
+    https://other-site.com ⚠️ (does not match Pages.csv domain)
+    ```
+
+13. **Analytics GSC Freshness:** If `analytics.gsc` is present, parse the date from the export folder name convention `{site}-Performance-on-Search-{YYYY-MM-DD}` and compare against `freshness_threshold_days`. Warn if data is stale.
+    ```
+    Export folder date: 2026-01-15, threshold: 30 days, today: 2026-02-01 → ✓ (17 days old)
+    Export folder date: 2025-11-01, threshold: 30 days, today: 2026-02-01 → ⚠️ (92 days old, exceeds 30-day threshold)
+    ```
+
+14. **Analytics GSC Filters:** If `analytics.gsc.filters` is present, validate numeric ranges
+    ```
+    min_impressions: 5 ✓ (positive integer)
+    min_impressions: -1 ✗ (must be ≥ 0)
+    min_position: 100 ✓ (1-100 range)
+    ctr_threshold: 0.02 ✓ (0.0-1.0 range)
+    position_opportunity_range: [5, 30] ✓ (min < max, within 1-100)
+    position_opportunity_range: [30, 5] ✗ (min > max)
     ```
 
 ### Consistency Checks (Warning if inconsistent)
@@ -458,6 +508,17 @@ For each section:
 - Parse cadence → `quality.cadence`
 - Parse "Product Announcements Scope" → `quality.product_announcements_scope`
 
+**Analytics (OPTIONAL — entire section):**
+- Parse "Search Analytics > Google Search Console > Export Path" → `analytics.gsc.export_path`
+- Parse "Search Analytics > Google Search Console > Site URL" → `analytics.gsc.site_url`
+- Parse "Search Analytics > Google Search Console > Freshness Threshold" → `analytics.gsc.freshness_threshold_days`
+- Parse "Search Analytics > Google Search Console > Analysis Modes" → `analytics.gsc.analysis_modes.{query_opportunities, page_performance, position_tracking, geographic_insights}`
+- Parse "Search Analytics > Google Search Console > Filters > Min Impressions" → `analytics.gsc.filters.min_impressions`
+- Parse "Search Analytics > Google Search Console > Filters > Min Position" → `analytics.gsc.filters.min_position`
+- Parse "Search Analytics > Google Search Console > Filters > CTR Threshold" → `analytics.gsc.filters.ctr_threshold`
+- Parse "Search Analytics > Google Search Console > Filters > Position Opportunity Range" → `analytics.gsc.filters.position_opportunity_range`
+- If section is absent: skip entirely (backward compatible, no defaults applied)
+
 **Additional Notes:**
 - Parse "Target Audience Insights & Pain Points" bullet list → `additional.pain_points[]`
 - Parse "Editorial Guardrails" bullet list → `additional.editorial_guardrails[]`
@@ -565,7 +626,7 @@ Generate validation report with:
 
 ## Configuration Summary
 
-**Extracted 11/11 sections:**
+**Extracted 12/12 sections:**
 1. ✅ Project Definition
 2. ✅ Audience
 3. ✅ Brand Identity
@@ -576,7 +637,8 @@ Generate validation report with:
 8. ✅ Localization
 9. ✅ Novelty Controls
 10. ✅ Quality & Review
-11. ✅ Additional Notes
+11. ✅ Analytics (optional, present if configured)
+12. ✅ Additional Notes
 
 **Cached to:** .claude/cache/config.json
 **Cache expires:** 2025-11-05 15:32:15
