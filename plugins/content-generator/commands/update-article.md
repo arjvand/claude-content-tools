@@ -2,6 +2,7 @@
 name: update-article
 description: Update an existing article with edits, content changes, or structural modifications while maintaining quality standards
 argument-hint: [article-id] [update-description] (e.g., "ART-202511-001 Fix the broken link in prerequisites and update WordPress version to 6.7")
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch, Task
 ---
 
 # Update Article (Cross-Industry)

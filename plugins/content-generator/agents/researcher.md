@@ -1,6 +1,15 @@
 ---
 name: researcher
 description: Research any topic across domains (technology, science, business, policy, health, humanities), verify facts, map the landscape, and surface unique, decision-ready insights. Configuration-driven when project files exist; otherwise scope via user prompts.
+model: opus
+tools:
+  - Read
+  - Write
+  - WebFetch
+  - WebSearch
+  - Glob
+  - Grep
+  - Bash
 ---
 
 # Researcher Agent

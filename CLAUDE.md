@@ -28,7 +28,7 @@ Content-generator/                         # Repository root (plugin marketplace
 │       ├── agents/                        # 16 agents (4 persona + 12 skill-specific)
 │       ├── commands/                      # 5 slash commands (orchestrators)
 │       ├── docs/                          # Architecture documentation
-│       ├── skills/                        # 15+ specialized skills
+│       ├── skills/                        # 22 specialized skills
 │       └── examples/                      # 7 pre-configured templates
 ├── project/                               # User content (git-ignored)
 │   ├── requirements.md                    # Active configuration
@@ -112,16 +112,29 @@ All agents, commands, and skills read `requirements.md` at runtime for:
 - `cms-exporter` - CMS-specific export
 - `sme-assessor` - SME requirement assessment
 
-**15+ Skills** (specialized tools):
+**22 Skills** (specialized tools):
+- `angle-generator` - Generate 3 angle variants (coverage, depth, use-case) from a single signal
+- `claude-md-optimizer` - Create, audit, and optimize CLAUDE.md files for Claude Code projects
+- `cms-formatter` - Export to Gutenberg/Ghost/Medium/HTML
 - `competitive-gap-analyzer` - 3 modes: Full, Pre-Analysis, Batch
+- `content-performance-analyzer` - Analyze historical content performance for data-driven recommendations
 - `content-research` - Domain-aware source prioritization
 - `fact-checker` - Quick (post-research) + Comprehensive (post-writing)
+- `featured-image-generator` - Generate Nano Banana JSON prompts for featured images
 - `gsc-analyzer` - GSC CSV analysis (4 modes: Full, Calendar, Article, Dashboard)
+- `keyword-researcher` - Keyword research for volume, difficulty, intent, long-tail expansion
+- `keyword-strategist` - Strategic keyword planning (clusters, funnel mapping)
 - `media-discovery` - Embeddable media search
-- `seo-optimization` - Keywords, meta descriptions, internal linking
+- `media-embedding` - Validate and convert media embeds to platform-specific embed code
+- `requirements-extractor` - Centralized configuration extraction and validation
 - `requirements-validator` - Validate against requirements.md
-- `cms-formatter` - Export to Gutenberg/Ghost/Medium/HTML
-- Plus more specialized skills
+- `semantic-cluster-analyzer` - Detect cross-signal convergence patterns for synthesis topics
+- `seo-optimization` - Keywords, meta descriptions, internal linking
+- `sme-complexity-assessor` - Assess technical complexity and SME requirements
+- `theme-index-builder` - Build theme index from past calendars for deduplication
+- `topic-deduplicator` - Check topic candidates against past content
+- `trend-momentum-analyzer` - Analyze topic momentum trends and predict saturation
+- `x-thread-generator` - Generate X (Twitter) threads from articles
 
 **5 Commands** (user-facing orchestrators):
 - `/content-generator:content-calendar` - Generate monthly calendar (8-12 articles)

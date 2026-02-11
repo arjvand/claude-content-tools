@@ -2,6 +2,7 @@
 name: content-calendar
 description: Generate a monthly content calendar based on requirements.md configuration (cross-industry)
 argument-hint: [month year] (e.g., "October 2025")
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch, Task
 ---
 
 # Generate Content Calendar

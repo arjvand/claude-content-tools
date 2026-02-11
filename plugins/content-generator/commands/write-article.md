@@ -2,6 +2,7 @@
 name: write-article
 description: Generate a complete article from the content calendar with research, writing, SEO, compliance, accessibility, and multi‑channel packaging (cross‑industry)
 argument-hint: [calendar-path] [article-id] (e.g., "project/Calendar/2025/October/content-calendar.md ART-202510-001")
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, WebSearch, WebFetch, Task
 ---
 
 # Write Article from Calendar (Cross‑Industry)

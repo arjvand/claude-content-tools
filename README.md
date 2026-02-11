@@ -19,10 +19,10 @@ Install the content-generator plugin:
 ## Features
 
 - **AI Agents**: Specialized researcher, writer, and editor agents for content production
-- **14 Skills**: Competitive gap analysis, fact-checking, SEO optimization, and more
+- **22 Skills**: Competitive gap analysis, fact-checking, SEO optimization, and more
 - **5 Commands**: Generate content calendars, write articles, create X threads
 - **Topic-Agnostic**: Configure for any niche via `requirements.md`
-- **6 Example Templates**: WordPress, React, Python, Finance, Psychology, Entertainment
+- **7 Example Templates**: Generic, WordPress, React, Python, Finance, Psychology, Entertainment
 
 ## Quick Start
 
@@ -77,16 +77,28 @@ Install the content-generator plugin:
 
 | Skill | Purpose |
 |-------|---------|
+| `angle-generator` | Generate 3 angle variants (coverage, depth, use-case) from a single signal |
+| `claude-md-optimizer` | Create, audit, and optimize CLAUDE.md files for Claude Code projects |
+| `cms-formatter` | Convert to CMS-specific formats (Gutenberg, Ghost, Medium, HTML) |
 | `competitive-gap-analyzer` | Analyze competitors, identify differentiation opportunities |
+| `content-performance-analyzer` | Analyze historical content performance for data-driven recommendations |
 | `content-research` | Research topics with official documentation sources |
 | `fact-checker` | Verify claims via source audit or web search |
-| `keyword-researcher` | Validate keyword viability, difficulty, search intent |
-| `media-discovery` | Discover embeddable media (videos, social posts) |
-| `seo-optimization` | Keywords, meta descriptions, internal linking |
-| `requirements-validator` | Validate against requirements.md |
-| `cms-formatter` | Convert to CMS-specific formats (Gutenberg, Ghost, Medium, HTML) |
-| `x-thread-generator` | Generate X (Twitter) threads |
 | `featured-image-generator` | Generate image prompts |
+| `gsc-analyzer` | Analyze Google Search Console CSV exports (4 modes) |
+| `keyword-researcher` | Validate keyword viability, difficulty, search intent |
+| `keyword-strategist` | Strategic keyword planning (clusters, funnel mapping) |
+| `media-discovery` | Discover embeddable media (videos, social posts) |
+| `media-embedding` | Validate and convert media embeds to platform-specific embed code |
+| `requirements-extractor` | Centralized configuration extraction and validation |
+| `requirements-validator` | Validate against requirements.md |
+| `semantic-cluster-analyzer` | Detect cross-signal convergence patterns for synthesis topics |
+| `seo-optimization` | Keywords, meta descriptions, internal linking |
+| `sme-complexity-assessor` | Assess technical complexity and SME requirements |
+| `theme-index-builder` | Build theme index from past calendars for deduplication |
+| `topic-deduplicator` | Check topic candidates against past content |
+| `trend-momentum-analyzer` | Analyze topic momentum trends and predict saturation |
+| `x-thread-generator` | Generate X (Twitter) threads |
 
 ## Configuration
 

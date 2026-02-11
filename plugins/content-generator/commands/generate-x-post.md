@@ -2,6 +2,7 @@
 name: generate-x-post
 description: Generate a full X (Twitter) thread from a published article
 argument-hint: [article-id] (e.g., "ART-202511-001")
+allowed-tools: Read, Write, Bash, Glob, Grep
 ---
 
 # Generate X Thread from Article

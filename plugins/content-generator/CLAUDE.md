@@ -24,20 +24,28 @@ Topic-agnostic content generation system using Claude AI agents (researcher, wri
 
 | Skill | Purpose |
 |-------|---------|
+| `angle-generator` | Generate 3 angle variants (coverage, depth, use-case) from a single signal |
+| `claude-md-optimizer` | Create, audit, and optimize CLAUDE.md files for Claude Code projects |
+| `cms-formatter` | Convert to CMS-specific formats (Gutenberg, Ghost, Medium, HTML) |
 | `competitive-gap-analyzer` | Analyze competitors, identify differentiation opportunities |
+| `content-performance-analyzer` | Analyze historical content performance for data-driven recommendations |
 | `content-research` | Research topic with official documentation sources |
 | `fact-checker` | Verify claims via source audit (quick) or web search (comprehensive) |
+| `featured-image-generator` | Generate Nano Banana JSON prompts for featured images |
 | `gsc-analyzer` | Analyze Google Search Console CSV exports (4 modes: full, calendar, article, dashboard) |
 | `keyword-researcher` | Research keywords for volume, difficulty, intent, and long-tail expansion |
 | `keyword-strategist` | Strategic keyword planning (clusters, funnel mapping, competitive positioning) |
 | `media-discovery` | Discover embeddable media (videos, social posts) with quality filtering |
-| `seo-optimization` | Keywords, meta descriptions, internal linking |
+| `media-embedding` | Validate and convert media embeds to platform-specific embed code |
+| `requirements-extractor` | Centralized configuration extraction and validation |
 | `requirements-validator` | Validate against requirements.md |
-| `cms-formatter` | Convert to CMS-specific formats (Gutenberg, Ghost, Medium, HTML) |
-| `x-thread-generator` | Generate X (Twitter) threads from articles |
-| `featured-image-generator` | Generate Nano Banana JSON prompts for featured images |
+| `semantic-cluster-analyzer` | Detect cross-signal convergence patterns for synthesis topics |
+| `seo-optimization` | Keywords, meta descriptions, internal linking |
+| `sme-complexity-assessor` | Assess technical complexity and SME requirements |
 | `theme-index-builder` | Build theme index from past calendars for deduplication (12-month lookback, dynamic theme generation) |
 | `topic-deduplicator` | Check topic candidates against past content (6-month hard-block, similarity scoring, differentiation analysis) |
+| `trend-momentum-analyzer` | Analyze topic momentum trends and predict saturation |
+| `x-thread-generator` | Generate X (Twitter) threads from articles |
 
 ---
 
@@ -274,19 +282,26 @@ agents/
 
 ```
 skills/
+├── angle-generator/
+├── claude-md-optimizer/
+├── cms-formatter/
 ├── competitive-gap-analyzer/
+├── content-performance-analyzer/
 ├── content-research/
 ├── fact-checker/
+├── featured-image-generator/
 ├── gsc-analyzer/
 ├── keyword-researcher/
 ├── keyword-strategist/
 ├── media-discovery/
-├── seo-optimization/
+├── media-embedding/
+├── requirements-extractor/
 ├── requirements-validator/
-├── cms-formatter/
-├── x-thread-generator/
-├── featured-image-generator/
+├── semantic-cluster-analyzer/
+├── seo-optimization/
+├── sme-complexity-assessor/
 ├── theme-index-builder/
 ├── topic-deduplicator/
-└── sme-complexity-assessor/
+├── trend-momentum-analyzer/
+└── x-thread-generator/
 ```

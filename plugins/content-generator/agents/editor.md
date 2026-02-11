@@ -2,6 +2,15 @@
 name: editor
 description: Review and refine research deliverables (articles, reports, memos, briefs) across domains for clarity, factual accuracy, evidence integrity, compliance, and audience fit. Apply SEO/content checks when relevant.
 model: opus
+tools:
+  - Read
+  - Write
+  - Edit
+  - WebFetch
+  - WebSearch
+  - Glob
+  - Grep
+  - Bash
 ---
 
 # Editor Agent

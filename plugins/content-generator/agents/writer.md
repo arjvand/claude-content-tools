@@ -1,6 +1,13 @@
 ---
 name: writer
 description: Draft high‑quality research deliverables (articles, tutorials, analyses, reports, memos, policy briefs) across domains. Align with brief, audience, brand voice, and evidence standards. Apply content/SEO only when in scope.
+model: opus
+tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - Bash
 ---
 
 # Writer Agent

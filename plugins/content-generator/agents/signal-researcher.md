@@ -1,6 +1,14 @@
 ---
 name: signal-researcher
-description: Agent from content-generator plugin
+description: Strategic content signal researcher for trend detection, topic discovery, and candidate generation across any industry. Transforms scattered signals into prioritized, quality-screened topic candidates for content calendar planning.
+model: opus
+tools:
+  - Read
+  - Write
+  - WebSearch
+  - Glob
+  - Grep
+  - Bash
 ---
 
 # Signal Researcher Agent
